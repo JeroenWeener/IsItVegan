@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">IsItVegan</string>
+    <string name="app_name">Is\'t Vegan?</string>
     <string name="milk">Melk</string>
+    <string name="search_view_hint">Zoek ingrediënten</string>
+    <string name="item_name_placeholder">Naam ingrediënt</string>
+    <string name="vitamin_d3">Vitamine D3</string>
 </resources>

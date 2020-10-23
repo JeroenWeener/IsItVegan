@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.AppCompatTextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent">
-</androidx.appcompat.widget.AppCompatTextView>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal"
+    android:background="@drawable/vegan_gradient"
+>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/ingredient_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:text="@string/item_name_placeholder"
+        android:textSize="24sp" />
+</androidx.appcompat.widget.LinearLayoutCompat>

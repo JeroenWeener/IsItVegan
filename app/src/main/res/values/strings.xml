@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">IsItVegan</string>
+    <string name="app_name">Is it Vegan?</string>
     <string name="milk">Milk</string>
+    <string name="search_view_hint">Search ingredients</string>
+    <string name="item_name_placeholder">Ingredient name</string>
+    <string name="vitamin_d3">Vitamin D3</string>
 </resources>

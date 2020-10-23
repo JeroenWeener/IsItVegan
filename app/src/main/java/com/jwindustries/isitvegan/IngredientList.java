@@ -1,11 +1,87 @@
 package com.jwindustries.isitvegan;
 
+import android.content.Context;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class IngredientList {
-    public static List<Ingredient> INGREDIENTS = Arrays.asList(
-            new Ingredient("Melk", true),
-            new Ingredient("Melk", true)
-    );
+    public static List<Ingredient> getIngredientList(Context context) {
+        return Arrays.asList(
+                new Ingredient(context.getResources().getString(R.string.milk), false),
+                new Ingredient(context.getResources().getString(R.string.vitamin_d3), false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", true),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false),
+                new Ingredient("Dummy data", false)
+        );
+    }
 }
