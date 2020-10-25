@@ -2,18 +2,32 @@ package com.jwindustries.isitvegan;
 
 public class Ingredient {
     private String name;
-    private boolean isVegan;
+    private IngredientType type;
 
-    public Ingredient(String name, boolean isVegan) {
+    // Optional
+    private String extraInformation;
+
+    public Ingredient(String name, IngredientType type) {
         this.name = name;
-        this.isVegan = isVegan;
+        this.type = type;
+    }
+
+    public Ingredient(String name, IngredientType type, String extraInformation) {
+        this.name = name;
+        this.type = type;
+        this.extraInformation = extraInformation;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isVegan() {
-        return isVegan;
+    public IngredientType getIngredientType() {
+        return type;
+    }
+
+    public String getExtraInformation() {
+        return extraInformation;
     }
 }
+

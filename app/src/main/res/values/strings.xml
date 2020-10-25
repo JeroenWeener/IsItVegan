@@ -4,4 +4,5 @@
     <string name="search_view_hint">Search ingredients</string>
     <string name="item_name_placeholder">Ingredient name</string>
     <string name="vitamin_d3">Vitamin D3</string>
+    <string name="view_ingredient_button_content_description">View ingredient</string>
 </resources>

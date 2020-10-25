@@ -50,7 +50,19 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         Ingredient ingredient = ingredientList.get(position);
         holder.ingredientNameView.setText(ingredient.getName());
 
-        int drawableId = ingredient.isVegan() ? R.drawable.vegan_gradient : R.drawable.non_vegan_gradient;
+        int drawableId;
+        switch (ingredient.getIngredientType()) {
+            case VEGAN:
+                drawableId = R.drawable.vegan_gradient;
+                break;
+            case NOT_VEGAN:
+                drawableId = R.drawable.non_vegan_gradient;
+                break;
+            case DEPENDS:
+            default:
+                drawableId = R.drawable.depends_gradient;
+        }
+
         holder.ingredientNameView
                 .setBackground(ResourcesCompat.getDrawable(this.context.getResources(), drawableId, this.context.getTheme()));
     }
