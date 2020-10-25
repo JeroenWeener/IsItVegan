@@ -1,9 +1,11 @@
 package com.jwindustries.isitvegan;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,11 +20,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     private List<Ingredient> ingredientList;
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
+        public View ingredientView;
         public TextView ingredientNameView;
+        public ImageView ingredientViewIcon;
 
         public IngredientViewHolder(View ingredientView) {
             super(ingredientView);
+            this.ingredientView = ingredientView;
             this.ingredientNameView = ingredientView.findViewById(R.id.ingredient_text_view);
+            this.ingredientViewIcon = ingredientView.findViewById(R.id.ingredient_view_more_icon);
         }
     }
 
@@ -41,7 +47,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     @Override
     public IngredientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View ingredientView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.ingredient_text_view, parent, false);
+                .inflate(R.layout.ingredient_row_view, parent, false);
         return new IngredientViewHolder(ingredientView);
     }
 
@@ -49,6 +55,13 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         Ingredient ingredient = ingredientList.get(position);
         holder.ingredientNameView.setText(ingredient.getName());
+        holder.ingredientView.setOnClickListener(view -> {
+            if (ingredient.hasExtraInformation()) {
+                this.viewIngredient(ingredient);
+            }
+        });
+
+        holder.ingredientViewIcon.setVisibility(ingredient.hasExtraInformation() ? View.VISIBLE : View.GONE);
 
         int drawableId;
         switch (ingredient.getIngredientType()) {
@@ -62,7 +75,6 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             default:
                 drawableId = R.drawable.depends_gradient;
         }
-
         holder.ingredientNameView
                 .setBackground(ResourcesCompat.getDrawable(this.context.getResources(), drawableId, this.context.getTheme()));
     }
@@ -70,5 +82,11 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     @Override
     public int getItemCount() {
         return this.ingredientList.size();
+    }
+
+    private void viewIngredient(Ingredient ingredient) {
+        Intent viewIngredientIntent = new Intent(context, IngredientViewActivity.class);
+        viewIngredientIntent.putExtra(context.getResources().getString(R.string.ingredient_key), ingredient);
+        context.startActivity(viewIngredientIntent);
     }
 }

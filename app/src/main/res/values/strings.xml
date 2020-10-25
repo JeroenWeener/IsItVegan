@@ -5,4 +5,8 @@
     <string name="item_name_placeholder">Ingredient name</string>
     <string name="vitamin_d3">Vitamin D3</string>
     <string name="view_ingredient_button_content_description">View ingredient</string>
+    <string name="vitamin_d3_extra">Vitamin D3 is often gotton from sheeps, but can also be gotten from plants</string>
+    <string name="ingredient_key" translatable="false">INGREDIENT_KEY</string>
+    <string name="ingredient_information_placeholder">Information</string>
+    <string name="ingredient_name_placeholder">Ingredient name</string>
 </resources>

@@ -6,4 +6,7 @@
     <string name="item_name_placeholder">Naam ingrediënt</string>
     <string name="vitamin_d3">Vitamine D3</string>
     <string name="view_ingredient_button_content_description">Bekijk ingredient</string>
+    <string name="vitamin_d3_extra">Vitamine D3 wordt vaak gewonnen uit schaapswolvet. Het kan echter ook uit planten worden gehaald</string>
+    <string name="ingredient_information_placeholder">Informatie</string>
+    <string name="ingredient_name_placeholder">Naam ingrediënt</string>
 </resources>

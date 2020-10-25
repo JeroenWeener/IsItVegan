@@ -9,7 +9,7 @@ public class IngredientList {
     public static List<Ingredient> getIngredientList(Context context) {
         return Arrays.asList(
                 new Ingredient(context.getResources().getString(R.string.milk), IngredientType.NOT_VEGAN),
-                new Ingredient(context.getResources().getString(R.string.vitamin_d3), IngredientType.NOT_VEGAN),
+                new Ingredient(context.getResources().getString(R.string.vitamin_d3), IngredientType.NOT_VEGAN, context.getResources().getString(R.string.vitamin_d3_extra)),
                 new Ingredient("Dummy data", IngredientType.NOT_VEGAN),
                 new Ingredient("Dummy data", IngredientType.NOT_VEGAN),
                 new Ingredient("Dummy data", IngredientType.DEPENDS),

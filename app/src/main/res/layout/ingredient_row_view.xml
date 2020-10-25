@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/ingredient_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:background="@drawable/vegan_gradient">
+    android:background="@drawable/vegan_gradient"
+>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/ingredient_text_view"
@@ -15,7 +18,8 @@
         android:text="@string/item_name_placeholder"
         android:textSize="24sp" />
 
-    <ImageButton
+    <ImageView
+        android:id="@+id/ingredient_view_more_icon"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:layout_constraintRight_toRightOf="parent"

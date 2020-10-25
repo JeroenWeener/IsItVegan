@@ -1,21 +1,24 @@
 package com.jwindustries.isitvegan;
 
-public class Ingredient {
+import java.io.Serializable;
+
+public class Ingredient implements Serializable {
     private String name;
     private IngredientType type;
 
     // Optional
-    private String extraInformation;
+    private String information;
+
 
     public Ingredient(String name, IngredientType type) {
         this.name = name;
         this.type = type;
     }
 
-    public Ingredient(String name, IngredientType type, String extraInformation) {
+    public Ingredient(String name, IngredientType type, String information) {
         this.name = name;
         this.type = type;
-        this.extraInformation = extraInformation;
+        this.information = information;
     }
 
     public String getName() {
@@ -26,8 +29,12 @@ public class Ingredient {
         return type;
     }
 
-    public String getExtraInformation() {
-        return extraInformation;
+    public boolean hasExtraInformation() {
+        return information != null;
+    }
+
+    public String getInformation() {
+        return information;
     }
 }
 
