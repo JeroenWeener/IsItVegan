@@ -14,17 +14,18 @@ public class MainActivity extends AppCompatActivity {
     private IngredientAdapter adapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         RecyclerView ingredientRecyclerView = this.findViewById(R.id.ingredient_view);
         RecyclerView.LayoutManager layoutManager =
-                new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         ingredientRecyclerView.setLayoutManager(layoutManager);
         adapter = new IngredientAdapter(this);
         ingredientRecyclerView.setAdapter(adapter);
-        ingredientRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        ingredientRecyclerView.addItemDecoration(
+                new DividerItemDecoration(ingredientRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
     }
 
     @Override
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         searchView.setIconifiedByDefault(false);
-        searchView.setIconified(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {

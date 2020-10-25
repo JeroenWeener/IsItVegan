@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Is\'t Vegan?</string>
+    <string name="app_name">Is \'t Vegan?</string>
     <string name="milk">Melk</string>
     <string name="search_view_hint">Zoek ingrediënten</string>
     <string name="item_name_placeholder">Naam ingrediënt</string>
     <string name="vitamin_d3">Vitamine D3</string>
-    <string name="view_ingredient_button_content_description">Bekijk ingredient</string>
+    <string name="view_ingredient_button_content_description">Bekijk ingrediënt</string>
     <string name="vitamin_d3_extra">Vitamine D3 wordt vaak gewonnen uit schaapswolvet. Het kan echter ook uit planten worden gehaald</string>
     <string name="ingredient_information_placeholder">Informatie</string>
     <string name="ingredient_name_placeholder">Naam ingrediënt</string>

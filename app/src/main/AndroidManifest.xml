@@ -20,7 +20,8 @@
 
         <activity
             android:name=".IngredientViewActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleInstance" />
 
     </application>
 
