@@ -24,7 +24,7 @@
         android:layout_height="match_parent"
         app:layout_constraintRight_toRightOf="parent"
         android:background="@android:color/transparent"
-        android:contentDescription="@string/view_ingredient_button_content_description"
+        android:contentDescription="@string/ingview_ingredient_button_content_description"
         android:src="@drawable/ic_baseline_navigate_next_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

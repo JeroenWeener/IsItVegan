@@ -22,17 +22,18 @@ public class IngredientViewActivity extends AppCompatActivity {
             int drawableId;
             switch (ingredient.getIngredientType()) {
                 case VEGAN:
-                    drawableId = R.drawable.vegan_gradient;
+                    drawableId = R.drawable.vegan_gradient_lower_right;
                     break;
                 case NOT_VEGAN:
-                    drawableId = R.drawable.non_vegan_gradient;
+                    drawableId = R.drawable.non_vegan_gradient_lower_right;
                     break;
                 case DEPENDS:
                 default:
-                    drawableId = R.drawable.depends_gradient;
+                    drawableId = R.drawable.depends_gradient_lower_right;
                     break;
             }
-            nameView.setBackground(ResourcesCompat.getDrawable(this.getResources(), drawableId, this.getTheme()));
+
+            findViewById(R.id.ingredient_view).setBackground(ResourcesCompat.getDrawable(this.getResources(), drawableId, this.getTheme()));
 
             ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
         }

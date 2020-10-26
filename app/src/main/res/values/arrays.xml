@@ -1,0 +1,28 @@
+<resources>
+    <!-- Language Preference -->
+    <string-array name="language_entries">
+        <item>@string/language_entries_system</item>
+        <item>Nederlands</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="language_values">
+        <item>system</item>
+        <item>nl</item>
+        <item>en</item>
+    </string-array>
+
+
+    <!-- Theme Preference -->
+    <string-array name="theme_entries">
+        <item>@string/theme_entries_system</item>
+        <item>@string/theme_entries_light</item>
+        <item>@string/theme_entries_dark</item>
+    </string-array>
+
+    <string-array name="theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+</resources>
