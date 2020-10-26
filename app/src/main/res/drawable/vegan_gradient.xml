@@ -3,9 +3,9 @@
     <gradient
         android:type="linear"
         android:angle="0"
-        android:startColor="@android:color/white"
-        android:centerColor="@android:color/white"
-        android:endColor="@color/colorIsVegan"
-        android:centerX="0.5"
+        android:startColor="@color/colorGradientStart"
+        android:centerColor="@color/colorGradientStart"
+        android:endColor="@color/colorIngredientTypeVegan"
+        android:centerX="0.7"
     />
 </shape>
