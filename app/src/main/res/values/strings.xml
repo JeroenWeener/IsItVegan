@@ -35,7 +35,7 @@
     <string name="ingredient_lactic_acid">Lactic acid (E270)</string>
     <string name="ingredient_cocoa_butter">Cocoa butter</string>
     <string name="ingredient_eggplant">Eggplant</string>
-    <string name="ingredient_eggplant_info">Despite its name, eggplants do not actually contain eggs. They thank their name due to their appearance. Did you know that the eggplant is actually a fruit and not a vegetable?</string>
+    <string name="ingredient_eggplant_info">Despite its name, eggplants do not actually contain eggs. They thank their name due to their shape. Did you know that the eggplant is actually a fruit and not a vegetable?</string>
     <string name="ingredient_lactic_acid_info">Most lactic acid is vegan, as it primarily occurs during the natural fermentation process of plants or is man-made using plants.</string>
     <string name="ingredient_cacoa_butter_info">Cacoa butter is the fat contained in cocoa beans.</string>
     <string name="action_settings">Settings</string>

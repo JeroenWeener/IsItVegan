@@ -7,7 +7,7 @@ import java.util.List;
 
 public class IngredientList {
     public static List<Ingredient> getIngredientList(Context context) {
-        return Arrays.asList(
+        List<Ingredient> ingredientList = Arrays.asList(
                 new Ingredient(context.getResources().getString(R.string.ingredient_beeswax), IngredientType.NOT_VEGAN),
                 new Ingredient(context.getResources().getString(R.string.ingredient_butter_fat), IngredientType.NOT_VEGAN),
                 new Ingredient(context.getResources().getString(R.string.ingredient_buttermilk), IngredientType.NOT_VEGAN),
@@ -37,5 +37,9 @@ public class IngredientList {
                 new Ingredient(context.getResources().getString(R.string.ingredient_vitamin_d3), IngredientType.DEPENDS, context.getResources().getString(R.string.ingredient_vitamin_d3_info)),
                 new Ingredient(context.getResources().getString(R.string.ingredient_yogurt), IngredientType.NOT_VEGAN)
         );
+
+        ingredientList.sort((a, b) -> a.getName().compareTo(b.getName()));
+        
+        return ingredientList;
     }
 }
