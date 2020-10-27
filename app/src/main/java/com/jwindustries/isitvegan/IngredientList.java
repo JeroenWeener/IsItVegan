@@ -39,7 +39,7 @@ public class IngredientList {
         );
 
         ingredientList.sort((a, b) -> a.getName().compareTo(b.getName()));
-        
+
         return ingredientList;
     }
 }
