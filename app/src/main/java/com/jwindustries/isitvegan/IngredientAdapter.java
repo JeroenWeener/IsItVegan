@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> {
-    private Context context;
+    private final Context context;
     private List<Ingredient> ingredientList;
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {

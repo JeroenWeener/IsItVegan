@@ -10,6 +10,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 

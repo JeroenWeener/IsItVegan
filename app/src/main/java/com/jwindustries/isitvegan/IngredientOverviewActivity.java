@@ -1,12 +1,15 @@
 package com.jwindustries.isitvegan;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +33,24 @@ public class IngredientOverviewActivity extends AppCompatActivity {
         ingredientRecyclerView.setAdapter(adapter);
         ingredientRecyclerView.addItemDecoration(
                 new DividerItemDecoration(ingredientRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+    }
+
+    @Override
+    public void onStart() {
+        this.handleTheme();
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
+        super.onPause();
     }
 
     @Override
@@ -80,6 +101,22 @@ public class IngredientOverviewActivity extends AppCompatActivity {
             return false;
         } else {
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void handleTheme() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String themeSetting = prefs.getString("theme", "system");
+        switch (themeSetting) {
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "system":
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
     }
 
