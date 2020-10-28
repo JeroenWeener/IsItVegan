@@ -55,9 +55,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         Ingredient ingredient = ingredientList.get(position);
         holder.ingredientNameView.setText(ingredient.getName());
         holder.ingredientView.setOnClickListener(view -> {
-            if (ingredient.hasExtraInformation()) {
-                this.viewIngredient(ingredient);
-            }
+            this.viewIngredient(ingredient);
         });
 
         int drawableId;

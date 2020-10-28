@@ -29,10 +29,6 @@ public class Ingredient implements Serializable {
         return type;
     }
 
-    public boolean hasExtraInformation() {
-        return information != null;
-    }
-
     public String getInformation() {
         return information;
     }

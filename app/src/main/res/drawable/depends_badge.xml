@@ -2,13 +2,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <solid android:color="@color/secondary"/>
+            <solid android:color="@color/colorWarning"/>
         </shape>
     </item>
     <item
-        android:drawable="@drawable/ic_baseline_warning_24"
-        android:bottom="8dp"
+        android:drawable="@drawable/warning_white"
+        android:bottom="7dp"
         android:left="5dp"
         android:right="5dp"
-        android:top="2dp"/>
+        android:top="3dp"/>
 </layer-list>
