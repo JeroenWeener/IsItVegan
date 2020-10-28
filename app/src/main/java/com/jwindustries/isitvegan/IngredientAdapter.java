@@ -83,14 +83,14 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         Intent intent = new Intent(activity, IngredientViewActivity.class);
         intent.putExtra(activity.getResources().getString(R.string.ingredient_key), ingredient);
 
-        View badgeView = holder.ingredientTypeIconView;
-        badgeView.setTransitionName("badge");
         View nameView = holder.ingredientNameView;
         nameView.setTransitionName("name");
+        View badgeView = holder.ingredientTypeIconView;
+        badgeView.setTransitionName("badge");
 
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(activity,
-                Pair.create(badgeView, "badge"),
-                Pair.create(nameView, "name"));
+//                Pair.create(nameView, "name"),
+                Pair.create(badgeView, "badge"));
 
         this.activity.startActivity(intent, options.toBundle());
     }

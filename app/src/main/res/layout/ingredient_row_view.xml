@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="24dp"
         android:text="@string/item_name_placeholder"
-        android:textSize="24sp" />
+        android:textSize="18sp" />
 
     <ImageView
         android:id="@+id/ingredient_row_badge"
@@ -23,7 +23,9 @@
         android:layout_width="0dp"
         android:adjustViewBounds="true"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_margin="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="24dp"
         android:src="@drawable/vegan_badge" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
