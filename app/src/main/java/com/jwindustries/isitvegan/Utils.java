@@ -30,7 +30,7 @@ public class Utils {
         }
     }
 
-    public static String getAppLanguage(Context context) {
+    public static String getAppLocale(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String locale = preferences.getString("language_app", "system");
         if (locale.equals("system")) {
@@ -39,8 +39,8 @@ public class Utils {
         return locale;
     }
 
-    public static String handleAppLanguage(Context context) {
-        String localeString = getAppLanguage(context);
+    public static String handleAppLocale(Context context) {
+        String localeString = getAppLocale(context);
         Locale locale = new Locale(localeString);
         Locale.setDefault(locale);
         Resources resources = context.getResources();
@@ -50,18 +50,18 @@ public class Utils {
         return localeString;
     }
 
-    public static String getIngredientLanguage(Context context) {
+    public static String getIngredientLocale(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String locale = preferences.getString("language_ingredients", "app");
         if (locale.equals("app")) {
-            locale = getAppLanguage(context);
+            locale = getAppLocale(context);
         }
         return locale;
     }
 
     @NonNull
     public static Resources getLocalizedResources(Context context) {
-        Locale desiredLocale = new Locale(getIngredientLanguage(context));
+        Locale desiredLocale = new Locale(getIngredientLocale(context));
         Configuration configuration = context.getResources().getConfiguration();
         configuration = new Configuration(configuration);
         configuration.setLocale(desiredLocale);

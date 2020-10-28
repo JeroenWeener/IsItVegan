@@ -9,6 +9,7 @@
 
     <TextView
         android:id="@+id/ingredient_name_view"
+        android:transitionName="name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -20,6 +21,7 @@
 
     <ImageView
         android:id="@+id/ingredient_badge"
+        android:transitionName="badge"
         android:layout_height="wrap_content"
         android:layout_width="60dp"
         android:adjustViewBounds="true"

@@ -23,8 +23,8 @@ public class IngredientOverviewActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         Utils.handleTheme(this);
 
-        this.appLocale = Utils.handleAppLanguage(this);
-        this.ingredientsLocale = Utils.getIngredientLanguage(this);
+        this.appLocale = Utils.handleAppLocale(this);
+        this.ingredientsLocale = Utils.getIngredientLocale(this);
         // Reset title as locale may have changed
         this.setTitle(R.string.app_name);
 
@@ -46,8 +46,8 @@ public class IngredientOverviewActivity extends BaseActivity {
         super.onRestart();
 
         // Recreate when language has changed
-        if (!Utils.getAppLanguage(this).equals(this.appLocale) ||
-                !Utils.getIngredientLanguage(this).equals(this.ingredientsLocale)) {
+        if (!Utils.getAppLocale(this).equals(this.appLocale) ||
+                !Utils.getIngredientLocale(this).equals(this.ingredientsLocale)) {
             this.recreate();
         }
     }
@@ -97,7 +97,7 @@ public class IngredientOverviewActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
             this.startActivity(new Intent(this, SettingsActivity.class));
-            return false;
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }

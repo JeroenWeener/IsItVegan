@@ -3,6 +3,7 @@ package com.jwindustries.isitvegan;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,11 +83,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         Intent intent = new Intent(activity, IngredientViewActivity.class);
         intent.putExtra(activity.getResources().getString(R.string.ingredient_key), ingredient);
 
-        String transitionName = "badge-" + ingredient.getName();
-        View view = holder.ingredientTypeIconView;
-        view.setTransitionName(transitionName);
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(activity, view, transitionName);
+        View badgeView = holder.ingredientTypeIconView;
+        badgeView.setTransitionName("badge");
+        View nameView = holder.ingredientNameView;
+        nameView.setTransitionName("name");
 
-        activity.startActivity(intent, options.toBundle());
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(activity,
+                Pair.create(badgeView, "badge"),
+                Pair.create(nameView, "name"));
+
+        this.activity.startActivity(intent, options.toBundle());
     }
 }

@@ -1,6 +1,7 @@
 package com.jwindustries.isitvegan;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -8,7 +9,7 @@ public class IngredientViewActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Utils.handleAppLanguage(this);
+        Utils.handleAppLocale(this);
         // Reset title as locale may have changed
         this.setTitle(R.string.app_name);
 
@@ -33,9 +34,17 @@ public class IngredientViewActivity extends BaseActivity {
                     drawableId = R.drawable.depends_badge;
                     break;
             }
-            ImageView ingredientTypeIcon = findViewById(R.id.ingredient_badge);
-            ingredientTypeIcon.setImageResource(drawableId);
-            ingredientTypeIcon.setTransitionName("badge-" + ingredient.getName());
+            ((ImageView) findViewById(R.id.ingredient_badge)).setImageResource(drawableId);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finishAfterTransition();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 }

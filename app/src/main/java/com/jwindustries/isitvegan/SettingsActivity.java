@@ -11,7 +11,7 @@ public class SettingsActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Utils.handleAppLanguage(this);
+        Utils.handleAppLocale(this);
         // Reset title as locale may have changed
         this.setTitle(R.string.action_settings);
 
