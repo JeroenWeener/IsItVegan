@@ -19,7 +19,7 @@
         android:text="@string/ingredient_name_placeholder" />
 
     <ImageView
-        android:id="@+id/ingredient_type_icon"
+        android:id="@+id/ingredient_badge"
         android:layout_height="wrap_content"
         android:layout_width="60dp"
         android:adjustViewBounds="true"

@@ -53,18 +53,6 @@ public class IngredientOverviewActivity extends BaseActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.getMenuInflater().inflate(R.menu.searchbar_menu, menu);
 

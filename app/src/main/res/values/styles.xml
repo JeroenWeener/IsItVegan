@@ -6,6 +6,12 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:fontFamily">@font/source_sans_pro_regular</item>
+
+        <!-- specify shared element transitions -->
+        <item name="android:windowSharedElementEnterTransition">
+            @transition/change_image_transform</item>
+        <item name="android:windowSharedElementExitTransition">
+            @transition/change_image_transform</item>
     </style>
 
 </resources>

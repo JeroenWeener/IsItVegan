@@ -1,6 +1,7 @@
 package com.jwindustries.isitvegan;
 
-import android.content.Context;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> {
-    private final Context context;
+    private final Activity activity;
     private List<Ingredient> ingredientList;
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
@@ -27,17 +28,17 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             super(ingredientView);
             this.ingredientView = ingredientView;
             this.ingredientNameView = ingredientView.findViewById(R.id.ingredient_text_view);
-            this.ingredientTypeIconView = ingredientView.findViewById(R.id.ingredient_type_icon);
+            this.ingredientTypeIconView = ingredientView.findViewById(R.id.ingredient_row_badge);
         }
     }
 
-    public IngredientAdapter(Context context) {
-        this.context = context;
-        this.ingredientList = IngredientList.getIngredientList(context);
+    public IngredientAdapter(Activity activity) {
+        this.activity = activity;
+        this.ingredientList = IngredientList.getIngredientList(activity);
     }
 
     public void filterItems(String query) {
-        this.ingredientList = IngredientList.getIngredientList(this.context).stream().filter((ingredient) ->
+        this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) ->
                 ingredient.getName().toLowerCase().contains(query)).collect(Collectors.toList());
         this.notifyDataSetChanged();
     }
@@ -54,9 +55,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         Ingredient ingredient = ingredientList.get(position);
         holder.ingredientNameView.setText(ingredient.getName());
-        holder.ingredientView.setOnClickListener(view -> {
-            this.viewIngredient(ingredient);
-        });
+        holder.ingredientView.setOnClickListener(view -> this.viewIngredient(holder, ingredient));
 
         int drawableId;
         switch (ingredient.getIngredientType()) {
@@ -69,6 +68,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             case DEPENDS:
             default:
                 drawableId = R.drawable.depends_badge;
+                break;
         }
         holder.ingredientTypeIconView.setImageResource(drawableId);
     }
@@ -78,9 +78,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         return this.ingredientList.size();
     }
 
-    private void viewIngredient(Ingredient ingredient) {
-        Intent viewIngredientIntent = new Intent(context, IngredientViewActivity.class);
-        viewIngredientIntent.putExtra(context.getResources().getString(R.string.ingredient_key), ingredient);
-        context.startActivity(viewIngredientIntent);
+    private void viewIngredient(IngredientViewHolder holder, Ingredient ingredient) {
+        Intent intent = new Intent(activity, IngredientViewActivity.class);
+        intent.putExtra(activity.getResources().getString(R.string.ingredient_key), ingredient);
+
+        String transitionName = "badge-" + ingredient.getName();
+        View view = holder.ingredientTypeIconView;
+        view.setTransitionName(transitionName);
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(activity, view, transitionName);
+
+        activity.startActivity(intent, options.toBundle());
     }
 }

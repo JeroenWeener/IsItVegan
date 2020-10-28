@@ -33,7 +33,9 @@ public class IngredientViewActivity extends BaseActivity {
                     drawableId = R.drawable.depends_badge;
                     break;
             }
-            ((ImageView) findViewById(R.id.ingredient_type_icon)).setImageResource(drawableId);
+            ImageView ingredientTypeIcon = findViewById(R.id.ingredient_badge);
+            ingredientTypeIcon.setImageResource(drawableId);
+            ingredientTypeIcon.setTransitionName("badge-" + ingredient.getName());
         }
     }
 }
