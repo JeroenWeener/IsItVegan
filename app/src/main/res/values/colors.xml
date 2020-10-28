@@ -10,4 +10,5 @@
 
     <color name="primary">#FFFFFF</color>
     <color name="secondary">#EEEEEE</color>
+    <color name="accent">#A1A1A1</color>
 </resources>
