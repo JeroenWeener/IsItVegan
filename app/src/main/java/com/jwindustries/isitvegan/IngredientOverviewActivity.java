@@ -1,15 +1,11 @@
 package com.jwindustries.isitvegan;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,11 +13,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 
-public class IngredientOverviewActivity extends AppCompatActivity {
+public class IngredientOverviewActivity extends BaseActivity {
+    private String locale;
     private IngredientAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Utils.handleTheme(this);
+
+        this.locale = Utils.handleLanguage(this);
+        // Reset title as locale may have changed
+        this.setTitle(R.string.app_name);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -36,21 +39,25 @@ public class IngredientOverviewActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart() {
-        this.handleTheme();
-        super.onStart();
+    public void onRestart() {
+        super.onRestart();
+
+        // Recreate when language has changed
+        if (!Utils.getLanguage(this).equals(this.locale)) {
+            this.recreate();
+        }
     }
 
     @Override
     public void onResume() {
-        overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
         super.onResume();
+        overridePendingTransition(R.anim.slide_out_right, R.anim.slide_in_left);
     }
 
     @Override
     public void onPause() {
-        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
         super.onPause();
+        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
     }
 
     @Override
@@ -104,22 +111,6 @@ public class IngredientOverviewActivity extends AppCompatActivity {
         }
     }
 
-    private void handleTheme() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String themeSetting = prefs.getString("theme", "system");
-        switch (themeSetting) {
-            case "light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            case "system":
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        }
-    }
-
     private void showKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -128,7 +119,6 @@ public class IngredientOverviewActivity extends AppCompatActivity {
     }
 
     private void hideKeyboard() {
-        // Check if view has focus
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

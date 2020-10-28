@@ -1,19 +1,23 @@
 package com.jwindustries.isitvegan;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
-
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class IngredientViewActivity extends AppCompatActivity {
+public class IngredientViewActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        Utils.handleLanguage(this);
+        // Reset title as locale may have changed
+        this.setTitle(R.string.app_name);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredient_view);
 
         Ingredient ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.ingredient_key));
+
+        ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
 
         if (ingredient != null) {
             TextView nameView = this.findViewById(R.id.ingredient_name_view);
@@ -22,20 +26,17 @@ public class IngredientViewActivity extends AppCompatActivity {
             int drawableId;
             switch (ingredient.getIngredientType()) {
                 case VEGAN:
-                    drawableId = R.drawable.vegan_gradient_lower_right;
+                    drawableId = R.drawable.vegan_badge;
                     break;
                 case NOT_VEGAN:
-                    drawableId = R.drawable.non_vegan_gradient_lower_right;
+                    drawableId = R.drawable.not_vegan_badge;
                     break;
                 case DEPENDS:
                 default:
-                    drawableId = R.drawable.depends_gradient_lower_right;
+                    drawableId = R.drawable.depends_badge;
                     break;
             }
-
-            findViewById(R.id.ingredient_view).setBackground(ResourcesCompat.getDrawable(this.getResources(), drawableId, this.getTheme()));
-
-            ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
+            ((ImageView) findViewById(R.id.ingredient_type_icon)).setImageResource(drawableId);
         }
     }
 }

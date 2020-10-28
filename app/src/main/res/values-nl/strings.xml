@@ -4,12 +4,9 @@
     <string name="search_view_hint">Zoek ingrediënten</string>
     <string name="item_name_placeholder">Naam ingrediënt</string>
     <string name="ingredient_vitamin_d3">Vitamine D3</string>
-    <string name="ingview_ingredient_button_content_description">Bekijk ingrediënt</string>
     <string name="ingredient_vitamin_d3_info">Vitamine D3 kan worden verkregen uit een dierlijke bron (zoals schapenwol) of korstmos (een veganistische bron).</string>
     <string name="ingredient_information_placeholder">Informatie</string>
     <string name="ingredient_name_placeholder">Naam ingrediënt</string>
-    <string name="ingredient_milk">Melk</string>
-    <string name="ingredient_cheese">Kaas</string>
     <string name="ingredient_gelatin">Gelatine</string>
     <string name="ingredient_buttermilk">Karnemelk</string>
     <string name="ingredient_milk_powder">Melkpoeder</string>
@@ -22,10 +19,8 @@
     <string name="ingredient_lactitol">Lactitol (E966)</string>
     <string name="ingredient_milk_sugar">Melksuiker</string>
     <string name="ingredient_lcysteine">L-cysteïne</string>
-    <string name="ingredient_yogurt">Yoghurt</string>
     <string name="ingredient_castoreum">Castoreum, Bevergeil</string>
     <string name="ingredient_honey">Honing</string>
-    <string name="ingredient_butter">Boter</string>
     <string name="ingredient_butter_fat">Botervet</string>
     <string name="ingredient_glycerine">Glycerine</string>
     <string name="ingredient_lactobacillus">Lactobacillus</string>
@@ -45,4 +40,5 @@
     <string name="theme_entries_light">Licht</string>
     <string name="theme_entries_dark">Donker</string>
     <string name="language_entries_system">Systeemtaal</string>
+    <string name="ingredient_information_empty">Geen informatie</string>
 </resources>

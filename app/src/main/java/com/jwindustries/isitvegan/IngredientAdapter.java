@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -22,13 +21,13 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
         public View ingredientView;
         public TextView ingredientNameView;
-        public ImageView ingredientViewIcon;
+        public ImageView ingredientTypeIconView;
 
         public IngredientViewHolder(View ingredientView) {
             super(ingredientView);
             this.ingredientView = ingredientView;
             this.ingredientNameView = ingredientView.findViewById(R.id.ingredient_text_view);
-            this.ingredientViewIcon = ingredientView.findViewById(R.id.ingredient_view_more_icon);
+            this.ingredientTypeIconView = ingredientView.findViewById(R.id.ingredient_type_icon);
         }
     }
 
@@ -61,22 +60,19 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             }
         });
 
-        holder.ingredientViewIcon.setVisibility(ingredient.hasExtraInformation() ? View.VISIBLE : View.GONE);
-
         int drawableId;
         switch (ingredient.getIngredientType()) {
             case VEGAN:
-                drawableId = R.drawable.vegan_gradient;
+                drawableId = R.drawable.vegan_badge;
                 break;
             case NOT_VEGAN:
-                drawableId = R.drawable.non_vegan_gradient;
+                drawableId = R.drawable.not_vegan_badge;
                 break;
             case DEPENDS:
             default:
-                drawableId = R.drawable.depends_gradient;
+                drawableId = R.drawable.depends_badge;
         }
-        holder.ingredientNameView
-                .setBackground(ResourcesCompat.getDrawable(this.context.getResources(), drawableId, this.context.getTheme()));
+        holder.ingredientTypeIconView.setImageResource(drawableId);
     }
 
     @Override

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3DDC84</color>
-    <color name="colorPrimaryDark">#00A956</color>
+    <color name="colorPrimaryDark">#3DDC84</color>
     <color name="colorAccent">#00A956</color>
 
-    <color name="colorGradientStart">#FFFFFF</color>
-
-    <color name="colorIngredientTypeVegan">#3DDC84</color>
-    <color name="colorIngredientTypeNotVegan">#E53935</color>
-    <color name="colorIngredientTypeDepends">#03A9F4</color>
+    <color name="primary">#FFFFFF</color>
+    <color name="secondary">#EEEEEE</color>
+    <color name="tertiary">#F0F0F0</color>
 </resources>

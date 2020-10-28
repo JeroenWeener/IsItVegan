@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:orientation="horizontal"
-    android:background="@drawable/vegan_gradient"
->
+    android:background="?android:attr/selectableItemBackground">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/ingredient_text_view"
@@ -19,12 +18,12 @@
         android:textSize="24sp" />
 
     <ImageView
-        android:id="@+id/ingredient_view_more_icon"
-        android:layout_width="wrap_content"
+        android:id="@+id/ingredient_type_icon"
         android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:adjustViewBounds="true"
         app:layout_constraintRight_toRightOf="parent"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/ingview_ingredient_button_content_description"
-        android:src="@drawable/ic_baseline_navigate_next_24" />
+        android:layout_margin="8dp"
+        android:src="@drawable/vegan_badge" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

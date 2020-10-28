@@ -1,15 +1,12 @@
 <resources>
     <string name="app_name">Is it Vegan?</string>
-    <string name="ingredient_milk">Milk</string>
     <string name="search_view_hint">Search ingredients</string>
     <string name="item_name_placeholder">Ingredient name</string>
     <string name="ingredient_vitamin_d3">Vitamin D3</string>
-    <string name="ingview_ingredient_button_content_description">View ingredient</string>
     <string name="ingredient_vitamin_d3_info">Vitamin D3 can be derived from an animal source (such as sheep’s wool) or lichen (a vegan-friendly source).</string>
     <string name="ingredient_key" translatable="false">INGREDIENT_KEY</string>
     <string name="ingredient_information_placeholder">Information</string>
     <string name="ingredient_name_placeholder">Ingredient name</string>
-    <string name="ingredient_cheese">Cheese</string>
     <string name="ingredient_gelatin">Gelatin</string>
     <string name="ingredient_buttermilk">Buttermilk</string>
     <string name="ingredient_milk_powder">Milk powder</string>
@@ -22,10 +19,8 @@
     <string name="ingredient_lactitol">Lactitol (E966)</string>
     <string name="ingredient_milk_sugar">Milk sugar</string>
     <string name="ingredient_lcysteine">L-cysteine</string>
-    <string name="ingredient_yogurt">Yogurt</string>
     <string name="ingredient_castoreum">Castoreum</string>
     <string name="ingredient_honey">Honey</string>
-    <string name="ingredient_butter">Butter</string>
     <string name="ingredient_butter_fat">Butter fat</string>
     <string name="ingredient_glycerine">Glycerine</string>
     <string name="ingredient_lactobacillus">Lactobacillus</string>
@@ -49,6 +44,7 @@
     <string name="theme_entries_light">Light</string>
     <string name="theme_entries_dark">Dark</string>
     <string name="language_entries_system">System language</string>
+    <string name="ingredient_information_empty">No information</string>
 
     <!-- Sync Preferences -->
 </resources>

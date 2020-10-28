@@ -10,25 +10,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".BaseActivity" />
         <activity
             android:name=".IngredientOverviewActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".IngredientViewActivity"
             android:parentActivityName=".IngredientOverviewActivity" />
-
         <activity
             android:name=".SettingsActivity"
             android:label="@string/action_settings"
             android:parentActivityName=".IngredientOverviewActivity" />
-
     </application>
 
 </manifest>
