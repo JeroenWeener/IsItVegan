@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
@@ -29,27 +30,42 @@ public class Utils {
         }
     }
 
-    public static String getLanguage(Context context) {
+    public static String getAppLanguage(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString("language", "system");
-    }
-
-    public static String handleLanguage(Context context) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String languageSetting = preferences.getString("language", "system");
-        if (languageSetting.equals("system")) {
-            languageSetting = Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
+        String locale = preferences.getString("language_app", "system");
+        if (locale.equals("system")) {
+            locale = Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage();
         }
-        changeLanguage(context, languageSetting);
-        return languageSetting;
+        return locale;
     }
 
-    private static void changeLanguage(Context context, String language) {
-        Locale locale = new Locale(language);
+    public static String handleAppLanguage(Context context) {
+        String localeString = getAppLanguage(context);
+        Locale locale = new Locale(localeString);
         Locale.setDefault(locale);
         Resources resources = context.getResources();
         Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
+        return localeString;
+    }
+
+    public static String getIngredientLanguage(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String locale = preferences.getString("language_ingredients", "app");
+        if (locale.equals("app")) {
+            locale = getAppLanguage(context);
+        }
+        return locale;
+    }
+
+    @NonNull
+    public static Resources getLocalizedResources(Context context) {
+        Locale desiredLocale = new Locale(getIngredientLanguage(context));
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration = new Configuration(configuration);
+        configuration.setLocale(desiredLocale);
+        Context localizedContext = context.createConfigurationContext(configuration);
+        return localizedContext.getResources();
     }
 }

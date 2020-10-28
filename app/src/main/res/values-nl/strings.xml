@@ -35,10 +35,13 @@
     <string name="ingredient_cacoa_butter_info">Cacaoboter is het vet verkregen uit cacaobonen.</string>
     <string name="action_settings">Instellingen</string>
     <string name="setting_theme">Thema</string>
-    <string name="setting_language">Taal</string>
+    <string name="setting_language_app">App</string>
     <string name="theme_entries_system">Systeemthema</string>
     <string name="theme_entries_light">Licht</string>
     <string name="theme_entries_dark">Donker</string>
-    <string name="language_entries_system">Systeemtaal</string>
     <string name="ingredient_information_empty">Geen informatie</string>
+    <string name="preference_category_language">Taal</string>
+    <string name="setting_language_ingredients">Ingrediënten</string>
+    <string name="language_app_entries_system">Systeemtaal</string>
+    <string name="language_ingredients_entries_app">Gebruik de taal van de app</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.jwindustries.isitvegan;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import java.io.Serializable;
 
@@ -10,12 +11,12 @@ public class Ingredient implements Serializable {
     private final String information;
 
 
-    public Ingredient(Context context, int nameResourceId, IngredientType type) {
-        this(context, nameResourceId, type, R.string.ingredient_information_empty);
+    public Ingredient(Context context, Resources resources, int nameResourceId, IngredientType type) {
+        this(context, resources, nameResourceId, type, R.string.ingredient_information_empty);
     }
 
-    public Ingredient(Context context, int nameResourceId, IngredientType type, int informationResourceId) {
-        this.name = context.getString(nameResourceId);
+    public Ingredient(Context context, Resources resources, int nameResourceId, IngredientType type, int informationResourceId) {
+        this.name = resources.getString(nameResourceId);
         this.type = type;
         this.information = context.getString(informationResourceId);
     }

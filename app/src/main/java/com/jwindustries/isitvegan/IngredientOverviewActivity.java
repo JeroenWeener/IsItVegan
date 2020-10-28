@@ -14,14 +14,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 
 public class IngredientOverviewActivity extends BaseActivity {
-    private String locale;
+    private String appLocale;
+    private String ingredientsLocale;
+
     private IngredientAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Utils.handleTheme(this);
 
-        this.locale = Utils.handleLanguage(this);
+        this.appLocale = Utils.handleAppLanguage(this);
+        this.ingredientsLocale = Utils.getIngredientLanguage(this);
         // Reset title as locale may have changed
         this.setTitle(R.string.app_name);
 
@@ -43,7 +46,8 @@ public class IngredientOverviewActivity extends BaseActivity {
         super.onRestart();
 
         // Recreate when language has changed
-        if (!Utils.getLanguage(this).equals(this.locale)) {
+        if (!Utils.getAppLanguage(this).equals(this.appLocale) ||
+                !Utils.getIngredientLanguage(this).equals(this.ingredientsLocale)) {
             this.recreate();
         }
     }

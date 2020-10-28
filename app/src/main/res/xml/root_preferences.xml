@@ -8,12 +8,24 @@
         app:title="@string/setting_theme"
         app:useSimpleSummaryProvider="true" />
 
-    <ListPreference
-        app:defaultValue="system"
-        app:entries="@array/language_entries"
-        app:entryValues="@array/language_values"
-        app:key="language"
-        app:title="@string/setting_language"
-        app:useSimpleSummaryProvider="true" />
+    <PreferenceCategory app:title="@string/preference_category_language">
+
+        <ListPreference
+            app:defaultValue="system"
+            app:entries="@array/app_language_entries"
+            app:entryValues="@array/app_language_values"
+            app:key="language_app"
+            app:title="@string/setting_language_app"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="app"
+            app:entries="@array/ingredients_language_entries"
+            app:entryValues="@array/ingredients_language_values"
+            app:key="language_ingredients"
+            app:title="@string/setting_language_ingredients"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

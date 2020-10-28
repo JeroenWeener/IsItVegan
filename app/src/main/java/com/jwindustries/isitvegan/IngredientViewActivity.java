@@ -8,7 +8,7 @@ public class IngredientViewActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Utils.handleLanguage(this);
+        Utils.handleAppLanguage(this);
         // Reset title as locale may have changed
         this.setTitle(R.string.app_name);
 
@@ -16,12 +16,9 @@ public class IngredientViewActivity extends BaseActivity {
         setContentView(R.layout.activity_ingredient_view);
 
         Ingredient ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.ingredient_key));
-
-        ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
-
         if (ingredient != null) {
-            TextView nameView = this.findViewById(R.id.ingredient_name_view);
-            nameView.setText(ingredient.getName());
+            ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName());
+            ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
 
             int drawableId;
             switch (ingredient.getIngredientType()) {

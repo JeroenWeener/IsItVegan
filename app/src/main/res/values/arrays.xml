@@ -1,15 +1,30 @@
 <resources>
-    <!-- Language Preference -->
-    <string-array name="language_entries">
-        <item>@string/language_entries_system</item>
-        <item>Nederlands</item>
+
+    <!-- App Language Preference -->
+    <string-array name="app_language_entries">
+        <item>@string/language_app_entries_system</item>
         <item>English</item>
+        <item>Nederlands</item>
     </string-array>
 
-    <string-array name="language_values">
+    <string-array name="app_language_values">
         <item>system</item>
-        <item>nl</item>
         <item>en</item>
+        <item>nl</item>
+    </string-array>
+
+
+    <!-- Ingredient Language Preference -->
+    <string-array name="ingredients_language_entries">
+        <item>@string/language_ingredients_entries_app</item>
+        <item>English</item>
+        <item>Nederlands</item>
+    </string-array>
+
+    <string-array name="ingredients_language_values">
+        <item>app</item>
+        <item>en</item>
+        <item>nl</item>
     </string-array>
 
 
@@ -25,4 +40,5 @@
         <item>light</item>
         <item>dark</item>
     </string-array>
+
 </resources>

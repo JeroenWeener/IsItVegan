@@ -1,5 +1,6 @@
 package com.jwindustries.isitvegan;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -10,7 +11,7 @@ public class SettingsActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Utils.handleLanguage(this);
+        Utils.handleAppLanguage(this);
         // Reset title as locale may have changed
         this.setTitle(R.string.action_settings);
 
@@ -54,10 +55,14 @@ public class SettingsActivity extends BaseActivity {
                 case "theme":
                     Utils.handleTheme(this.getActivity());
                     break;
-                case "language":
+                case "language_app":
                     // Recreate activity to update text
-                    this.getActivity().recreate();
+                    Activity activity = this.getActivity();
+                    if (activity != null) {
+                        activity.recreate();
+                    }
                     break;
+                case "language_ingredients":
                 default:
                     break;
             }

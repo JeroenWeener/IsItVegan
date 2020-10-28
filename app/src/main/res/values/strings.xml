@@ -39,12 +39,15 @@
 
     <!-- Messages Preferences -->
     <string name="setting_theme">Theme</string>
-    <string name="setting_language">Language</string>
+    <string name="setting_language_app">App</string>
     <string name="theme_entries_system">System theme</string>
     <string name="theme_entries_light">Light</string>
     <string name="theme_entries_dark">Dark</string>
-    <string name="language_entries_system">System language</string>
     <string name="ingredient_information_empty">No information</string>
+    <string name="preference_category_language">Language</string>
+    <string name="setting_language_ingredients">Ingredients</string>
+    <string name="language_app_entries_system">System language</string>
+    <string name="language_ingredients_entries_app">Use app language</string>
 
     <!-- Sync Preferences -->
 </resources>
