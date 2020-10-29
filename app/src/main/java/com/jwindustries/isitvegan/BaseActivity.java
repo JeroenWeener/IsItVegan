@@ -15,7 +15,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setIcon(R.drawable.logo);
-            actionBar.setDisplayShowTitleEnabled(false);
         }
     }
 }
