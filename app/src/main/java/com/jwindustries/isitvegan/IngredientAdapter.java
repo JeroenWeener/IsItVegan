@@ -40,7 +40,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
 
     public void filterItems(String query) {
         this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) ->
-                ingredient.getName().toLowerCase().contains(query)).collect(Collectors.toList());
+                ingredient
+                        .getName()
+                        .toLowerCase()
+                        .contains(query
+                                .replace(" ", "")
+                                .toLowerCase()
+                        )
+        ).collect(Collectors.toList());
+
         this.notifyDataSetChanged();
     }
 
