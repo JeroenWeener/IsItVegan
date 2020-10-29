@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#444444</color>
-    <color name="secondary">#222222</color>
-    <color name="accent">#A1A1A1</color>
+    <color name="colorPrimary">#222222</color>
+    <color name="colorSecondary">#444444</color>
+    <color name="colorTertiary">#A1A1A1</color>
+    <color name="colorAccent">#EEEEEE</color>
+
+    <color name="colorSuccess">#00A956</color>
+    <color name="colorError">#E53935</color>
+    <color name="colorWarning">#FFB300</color>
 </resources>

@@ -15,7 +15,7 @@ public class IngredientList {
                 new Ingredient(context, resources, R.string.ingredient_buttermilk, IngredientType.NOT_VEGAN),
                 new Ingredient(context, resources, R.string.ingredient_carmine, IngredientType.NOT_VEGAN),
                 new Ingredient(context, resources, R.string.ingredient_castoreum, IngredientType.NOT_VEGAN),
-                new Ingredient(context, resources, R.string.ingredient_cocoa_butter, IngredientType.VEGAN, R.string.ingredient_cacoa_butter_info),
+                new Ingredient(context, resources, R.string.ingredient_cocoa_butter, IngredientType.VEGAN, R.string.ingredient_cacao_butter_info),
                 new Ingredient(context, resources, R.string.ingredient_eggplant, IngredientType.VEGAN, R.string.ingredient_eggplant_info),
                 new Ingredient(context, resources, R.string.ingredient_egg, IngredientType.NOT_VEGAN),
                 new Ingredient(context, resources, R.string.ingredient_gelatin, IngredientType.NOT_VEGAN),

@@ -32,12 +32,8 @@
     <string name="ingredient_eggplant">Eggplant</string>
     <string name="ingredient_eggplant_info">Despite its name, eggplants do not actually contain eggs. They thank their name due to their shape. Did you know that the eggplant is actually a fruit and not a vegetable?</string>
     <string name="ingredient_lactic_acid_info">Most lactic acid is vegan, as it primarily occurs during the natural fermentation process of plants or is man-made using plants.</string>
-    <string name="ingredient_cacoa_butter_info">Cacoa butter is the fat contained in cocoa beans.</string>
+    <string name="ingredient_cacao_butter_info">Cacao butter is the fat contained in cocoa beans.</string>
     <string name="action_settings">Settings</string>
-
-    <!-- Preference Titles -->
-
-    <!-- Messages Preferences -->
     <string name="setting_theme">Theme</string>
     <string name="setting_language_app">App</string>
     <string name="theme_entries_system">System theme</string>
@@ -48,6 +44,4 @@
     <string name="setting_language_ingredients">Ingredients</string>
     <string name="language_app_entries_system">System language</string>
     <string name="language_ingredients_entries_app">Use app language</string>
-
-    <!-- Sync Preferences -->
 </resources>

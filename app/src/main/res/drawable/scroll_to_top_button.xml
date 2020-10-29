@@ -8,10 +8,10 @@
             android:useLevel="false"
         >
             <stroke
-                android:color="@color/accent"
+                android:color="@color/colorTertiary"
                 android:width="0.5dp"
             />
-            <solid android:color="@color/primary"/>
+            <solid android:color="@color/colorSecondary"/>
         </shape>
     </item>
     <item
