@@ -39,15 +39,9 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     }
 
     public void filterItems(String query) {
+        final String normalizedQuery = this.normalizeString(query);
         this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) ->
-                ingredient
-                        .getName()
-                        .toLowerCase()
-                        .contains(query
-                                .replace(" ", "")
-                                .toLowerCase()
-                        )
-        ).collect(Collectors.toList());
+                this.normalizeString(ingredient.getName()).contains(normalizedQuery)).collect(Collectors.toList());
 
         this.notifyDataSetChanged();
     }
@@ -101,5 +95,15 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
                 Pair.create(badgeView, "badge"));
 
         this.activity.startActivity(intent, options.toBundle());
+    }
+
+    private String normalizeString(String string) {
+        return string
+                .toLowerCase()
+                .replace(" ", "")
+                .replace("-", "")
+                .replace("," , "")
+                .replace("(", "")
+                .replace(")", "");
     }
 }
