@@ -6,9 +6,9 @@
         </shape>
     </item>
     <item
-        android:drawable="@drawable/warning_white"
-        android:bottom="7dp"
+        android:drawable="@drawable/question_mark_white"
+        android:bottom="5dp"
         android:left="5dp"
         android:right="5dp"
-        android:top="3dp"/>
+        android:top="5dp"/>
 </layer-list>
