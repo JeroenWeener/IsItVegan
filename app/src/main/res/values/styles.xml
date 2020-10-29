@@ -5,6 +5,9 @@
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:windowLightStatusBar">true</item>
+
         <item name="android:fontFamily">@font/source_sans_pro_regular</item>
 
         <!-- specify shared element transitions -->
