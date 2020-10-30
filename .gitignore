@@ -10,6 +10,7 @@
 *.class
 
 # Generated files
+app/src/main/assets/generated/
 bin/
 gen/
 out/
