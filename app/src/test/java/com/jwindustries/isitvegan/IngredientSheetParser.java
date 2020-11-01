@@ -20,7 +20,7 @@ public class IngredientSheetParser {
     private static final String STRINGS_GERMAN_PATH = System.getProperty("user.dir") + "/src/main/assets/generated/strings-german.txt";
     private static final String INGREDIENT_LIST_PATH = System.getProperty("user.dir") + "/src/main/assets/generated/ingredient-list.txt";
 
-    private static final String[] STRINGS_RESOURCE_TEMPLATE = new String[]{"<string name=\"", "\">", "</string>"};
+    private static final String[] STRINGS_RESOURCE_TEMPLATE = new String[]{"<string name=\"ingredient_", "\">", "</string>"};
     private static final String[] INGREDIENT_LIST_TEMPLATE = new String[]{"new Ingredient(context, resources, R.string.ingredient_", ", IngredientType.", ", R.string.ingredient_", "_info),"};
 
     @Test
@@ -124,6 +124,8 @@ public class IngredientSheetParser {
                 .split(",")[0]
                 .split(" \\(")[0]
                 .replace(" ", "_")
+                    .replace("-", "_")
+                .replace("'", "")
         ).collect(Collectors.toList());
     }
 
@@ -133,6 +135,8 @@ public class IngredientSheetParser {
         for (int index = 0; index < stringResourceIdentifiers.size(); index++) {
             String identifier = stringResourceIdentifiers.get(index);
             String string = strings.get(index);
+
+            string = string.replace("'", "\\'");
 
             String stringResource =
                     STRINGS_RESOURCE_TEMPLATE[0] +
@@ -153,6 +157,8 @@ public class IngredientSheetParser {
         for (int index = 0; index < stringResourceIdentifiers.size(); index++) {
             String identifier = stringResourceIdentifiers.get(index);
             String string = strings.get(index);
+
+            string = string.replace("'", "\\'");
 
             String stringResource =
                     STRINGS_RESOURCE_TEMPLATE[0] +
