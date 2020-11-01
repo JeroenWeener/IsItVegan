@@ -38,7 +38,7 @@
     <PreferenceCategory app:title="@string/preference_category_info">
         <Preference
             app:icon="@drawable/info"
-            app:title="@string/about_button"
+            app:title="@string/about"
             app:key="about_button"
         />
     </PreferenceCategory>

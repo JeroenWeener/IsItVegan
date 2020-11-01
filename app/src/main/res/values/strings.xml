@@ -17,7 +17,8 @@
     <string name="setting_language_ingredients">Ingredients</string>
     <string name="language_app_entries_system">System language</string>
     <string name="language_ingredients_entries_app">Use app language</string>
-    <string name="about_button">About</string>
+    <string name="about">About</string>
+    <string name="about_text">Hi! My name is Jeroen and I developed this app in the first weeks that I became vegan. I found it annoying to browse websites in the store to find out whether products were vegan or not. With this app, I hope to support others in their quest for an animal-friendly lifestyle. \n\nA list like this will never be finished nor flawless. If you miss information or find an error, please let me know by sending an email to contactisitvegan@gmail.com.</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agar-agar (E406)</string>

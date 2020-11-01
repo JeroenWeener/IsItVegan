@@ -4,12 +4,11 @@
 
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".Activities.BaseActivity" />
         <activity
             android:name=".Activities.IngredientOverviewActivity"
@@ -26,6 +25,10 @@
             android:name=".Activities.SettingsActivity"
             android:label="@string/action_settings"
             android:parentActivityName=".Activities.IngredientOverviewActivity" />
+        <activity
+            android:name=".Activities.AboutActivity"
+            android:label="@string/about"
+            android:parentActivityName=".Activities.SettingsActivity" />
     </application>
 
 </manifest>

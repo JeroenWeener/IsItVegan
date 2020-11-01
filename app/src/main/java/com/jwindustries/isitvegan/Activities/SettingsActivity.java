@@ -1,6 +1,7 @@
 package com.jwindustries.isitvegan.Activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -43,7 +44,7 @@ public class SettingsActivity extends BaseActivity {
             Preference button = findPreference("about_button");
             if (button != null) {
                 button.setOnPreferenceClickListener(preference -> {
-                    System.out.println("Test");
+                    this.startActivity(new Intent(this.getActivity(), AboutActivity.class));
                     return true;
                 });
             }
