@@ -1,16 +1,22 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ListPreference
-        app:defaultValue="system"
-        app:entries="@array/theme_entries"
-        app:entryValues="@array/theme_values"
-        app:key="theme"
-        app:title="@string/setting_theme"
-        app:useSimpleSummaryProvider="true" />
+    <PreferenceCategory app:title="@string/preference_category_ui">
+
+        <ListPreference
+            app:icon="@drawable/lens"
+            app:defaultValue="system"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:key="theme"
+            app:title="@string/setting_theme"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/preference_category_language">
 
         <ListPreference
+            app:icon="@drawable/language"
             app:defaultValue="system"
             app:entries="@array/app_language_entries"
             app:entryValues="@array/app_language_values"
@@ -19,6 +25,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
+            app:icon="@drawable/short_text"
             app:defaultValue="app"
             app:entries="@array/ingredients_language_entries"
             app:entryValues="@array/ingredients_language_values"
@@ -26,6 +33,14 @@
             app:title="@string/setting_language_ingredients"
             app:useSimpleSummaryProvider="true" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/preference_category_info">
+        <Preference
+            app:icon="@drawable/info"
+            app:title="@string/about_button"
+            app:key="about_button"
+        />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -12,9 +12,12 @@
     <string name="theme_entries_light">Licht</string>
     <string name="theme_entries_dark">Donker</string>
     <string name="preference_category_language">Taal</string>
+    <string name="preference_category_ui">Weergave</string>
+    <string name="preference_category_info">Informatie</string>
     <string name="setting_language_ingredients">Ingrediënten</string>
     <string name="language_app_entries_system">Systeemtaal</string>
     <string name="language_ingredients_entries_app">Gebruik de taal van de app</string>
+    <string name="about_button">Over</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agaragar (E406)</string>
