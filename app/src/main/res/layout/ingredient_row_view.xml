@@ -8,14 +8,30 @@
     android:orientation="horizontal"
     android:background="?android:attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/ingredient_text_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:paddingHorizontal="24dp"
-        android:text="@string/ingredient_name_placeholder"
-        android:textSize="16sp" />
+        android:orientation="vertical"
+        android:layout_marginHorizontal="24dp"
+    >
+
+        <TextView
+            android:id="@+id/ingredient_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ingredient_name_placeholder"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/ingredient_e_number_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ingredient_e_number_placeholder"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/ingredient_row_badge"

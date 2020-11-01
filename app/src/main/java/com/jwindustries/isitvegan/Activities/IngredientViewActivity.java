@@ -2,6 +2,7 @@ package com.jwindustries.isitvegan.Activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +25,13 @@ public class IngredientViewActivity extends BaseActivity {
         if (ingredient != null) {
             ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName());
             ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
+
+            TextView eNumberView = this.findViewById(R.id.ingredient_e_number_view);
+            if (ingredient.hasENumber()) {
+                eNumberView.setText(ingredient.getENumber());
+            } else {
+                eNumberView.setVisibility(View.GONE);
+            }
 
             int drawableId;
             switch (ingredient.getIngredientType()) {

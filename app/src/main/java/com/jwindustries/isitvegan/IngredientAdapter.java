@@ -25,12 +25,14 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
         public View ingredientView;
         public TextView ingredientNameView;
+        public TextView ingredientENumberView;
         public ImageView ingredientTypeIconView;
 
         public IngredientViewHolder(View ingredientView) {
             super(ingredientView);
             this.ingredientView = ingredientView;
             this.ingredientNameView = ingredientView.findViewById(R.id.ingredient_text_view);
+            this.ingredientENumberView = ingredientView.findViewById(R.id.ingredient_e_number_view);
             this.ingredientTypeIconView = ingredientView.findViewById(R.id.ingredient_row_badge);
         }
     }
@@ -43,7 +45,8 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public void filterItems(String query) {
         final String normalizedQuery = this.normalizeString(query);
         this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) ->
-                this.normalizeString(ingredient.getName()).contains(normalizedQuery)).collect(Collectors.toList());
+                // Search both name and e-number
+                this.normalizeString(ingredient.getName().concat(ingredient.getENumber())).contains(normalizedQuery)).collect(Collectors.toList());
 
         this.notifyDataSetChanged();
     }
@@ -60,6 +63,14 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         Ingredient ingredient = ingredientList.get(position);
         holder.ingredientNameView.setText(ingredient.getName());
+
+        if (ingredient.hasENumber()) {
+            holder.ingredientENumberView.setVisibility(View.VISIBLE);
+            holder.ingredientENumberView.setText(ingredient.getENumber());
+        } else {
+            holder.ingredientENumberView.setVisibility(View.GONE);
+        }
+
         holder.ingredientView.setOnClickListener(view -> this.viewIngredient(holder, ingredient));
 
         int drawableId;

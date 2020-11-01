@@ -20,8 +20,8 @@ public class IngredientSheetParser {
     private static final String STRINGS_GERMAN_PATH = System.getProperty("user.dir") + "/src/main/assets/generated/strings-german.txt";
     private static final String INGREDIENT_LIST_PATH = System.getProperty("user.dir") + "/src/main/assets/generated/ingredient-list.txt";
 
-    private static final String[] STRINGS_RESOURCE_TEMPLATE = new String[]{"<string name=\"ingredient_", "\">", "</string>"};
-    private static final String[] INGREDIENT_LIST_TEMPLATE = new String[]{"new Ingredient(context, resources, R.string.ingredient_", ", IngredientType.", ", R.string.ingredient_", "_info),"};
+    private static final String[] STRING_RESOURCE_TEMPLATE = new String[]{"<string name=\"ingredient_", "\">", "</string>"};
+    private static final String[] INGREDIENT_LIST_TEMPLATE = new String[]{"new Ingredient(context, resources, R.string.ingredient_", ", IngredientType.", ", R.string.ingredient_", "_info," , "),"};
 
     @Test
     public void parse() {
@@ -32,10 +32,11 @@ public class IngredientSheetParser {
         List<String> germanNames = data.stream().map(row -> row.get(2)).collect(Collectors.toList());
 
         List<String> ingredientTypes = data.stream().map(row -> row.get(3)).collect(Collectors.toList());
+        List<String> eNumbers = data.stream().map(row -> row.get(4)).collect(Collectors.toList());
 
-        List<String> englishInfo = data.stream().map(row -> row.get(4)).collect(Collectors.toList());
-        List<String> dutchInfo = data.stream().map(row -> row.get(5)).collect(Collectors.toList());
-        List<String> germanInfo = data.stream().map(row -> row.get(6)).collect(Collectors.toList());
+        List<String> englishInfo = data.stream().map(row -> row.get(5)).collect(Collectors.toList());
+        List<String> dutchInfo = data.stream().map(row -> row.get(6)).collect(Collectors.toList());
+        List<String> germanInfo = data.stream().map(row -> row.get(7)).collect(Collectors.toList());
 
         List<String> stringResourceIdentifiers = this.generateStringResourceIdentifiers(englishNames);
 
@@ -55,7 +56,7 @@ public class IngredientSheetParser {
         String dutchResourceFile = String.join("\n", dutchResources);
         String germanResourceFile = String.join("\n", germanResources);
 
-        List<String> ingredientList = this.generateIngredientList(stringResourceIdentifiers, ingredientTypes);
+        List<String> ingredientList = this.generateIngredientList(stringResourceIdentifiers, ingredientTypes, eNumbers);
         String ingredientListFile = String.join("\n", ingredientList);
 
         // Remove trailing comma
@@ -139,11 +140,11 @@ public class IngredientSheetParser {
             string = string.replace("'", "\\'");
 
             String stringResource =
-                    STRINGS_RESOURCE_TEMPLATE[0] +
+                    STRING_RESOURCE_TEMPLATE[0] +
                     identifier +
-                    STRINGS_RESOURCE_TEMPLATE[1] +
+                    STRING_RESOURCE_TEMPLATE[1] +
                     string +
-                    STRINGS_RESOURCE_TEMPLATE[2];
+                    STRING_RESOURCE_TEMPLATE[2];
 
             stringResources.add(stringResource);
         }
@@ -161,12 +162,12 @@ public class IngredientSheetParser {
             string = string.replace("'", "\\'");
 
             String stringResource =
-                    STRINGS_RESOURCE_TEMPLATE[0] +
+                    STRING_RESOURCE_TEMPLATE[0] +
                     identifier +
                     "_info" +
-                    STRINGS_RESOURCE_TEMPLATE[1] +
+                    STRING_RESOURCE_TEMPLATE[1] +
                     string +
-                    STRINGS_RESOURCE_TEMPLATE[2];
+                    STRING_RESOURCE_TEMPLATE[2];
 
             stringResources.add(stringResource);
         }
@@ -174,12 +175,18 @@ public class IngredientSheetParser {
         return stringResources;
     }
 
-    private List<String> generateIngredientList(List<String> stringResourceIdentifiers, List<String> ingredientTypes) {
+    private List<String> generateIngredientList(List<String> stringResourceIdentifiers, List<String> ingredientTypes, List<String> eNumbers) {
         List<String> stringResources = new ArrayList<>();
 
         for (int index = 0; index < stringResourceIdentifiers.size(); index++) {
             String identifier = stringResourceIdentifiers.get(index);
             String ingredientType = ingredientTypes.get(index);
+            String eNumber = eNumbers.get(index);
+            if (eNumber.length() > 0) {
+                eNumber = "\"" + eNumber + "\"";
+            } else {
+                eNumber = "null";
+            }
 
             String stringResource =
                     INGREDIENT_LIST_TEMPLATE[0] +
@@ -191,7 +198,10 @@ public class IngredientSheetParser {
                             .replace("Depends", "DEPENDS") +
                     INGREDIENT_LIST_TEMPLATE[2] +
                     identifier +
-                    INGREDIENT_LIST_TEMPLATE[3];
+                    INGREDIENT_LIST_TEMPLATE[3] +
+                    eNumber +
+                    INGREDIENT_LIST_TEMPLATE[4]
+            ;
 
             stringResources.add(stringResource);
         }
