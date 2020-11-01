@@ -1,4 +1,4 @@
-package com.jwindustries.isitvegan;
+package com.jwindustries.isitvegan.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,6 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
+
+import com.jwindustries.isitvegan.IngredientAdapter;
+import com.jwindustries.isitvegan.R;
+import com.jwindustries.isitvegan.Utils;
 
 public class IngredientOverviewActivity extends BaseActivity {
     private String appLocale;

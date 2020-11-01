@@ -1,9 +1,11 @@
-package com.jwindustries.isitvegan;
+package com.jwindustries.isitvegan.Activities;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.jwindustries.isitvegan.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

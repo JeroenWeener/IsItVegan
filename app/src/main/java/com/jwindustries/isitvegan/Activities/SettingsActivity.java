@@ -1,11 +1,15 @@
-package com.jwindustries.isitvegan;
+package com.jwindustries.isitvegan.Activities;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.jwindustries.isitvegan.R;
+import com.jwindustries.isitvegan.Utils;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -35,6 +39,14 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+
+            Preference button = findPreference("about_button");
+            if (button != null) {
+                button.setOnPreferenceClickListener(preference -> {
+                    System.out.println("Test");
+                    return true;
+                });
+            }
         }
 
         @Override

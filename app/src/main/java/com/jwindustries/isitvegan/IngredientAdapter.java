@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jwindustries.isitvegan.Activities.IngredientViewActivity;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -10,9 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".Activities.BaseActivity" />
         <activity
-            android:name=".IngredientOverviewActivity"
+            android:name=".Activities.IngredientOverviewActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,12 +20,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".IngredientViewActivity"
-            android:parentActivityName=".IngredientOverviewActivity" />
+            android:name=".Activities.IngredientViewActivity"
+            android:parentActivityName=".Activities.IngredientOverviewActivity" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".Activities.SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".IngredientOverviewActivity" />
+            android:parentActivityName=".Activities.IngredientOverviewActivity" />
     </application>
 
 </manifest>

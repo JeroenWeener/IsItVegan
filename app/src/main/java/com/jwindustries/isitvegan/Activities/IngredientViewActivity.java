@@ -1,9 +1,13 @@
-package com.jwindustries.isitvegan;
+package com.jwindustries.isitvegan.Activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.jwindustries.isitvegan.Ingredient;
+import com.jwindustries.isitvegan.R;
+import com.jwindustries.isitvegan.Utils;
 
 public class IngredientViewActivity extends BaseActivity {
 
