@@ -79,7 +79,7 @@ public class IngredientList {
                 new Ingredient(context, resources, R.string.ingredient_wool_fat, IngredientType.NOT_VEGAN, R.string.ingredient_wool_fat_info,"E913")
         );
 
-        // Sort alphabetically. Ignore '(' characters
+        // Sort alphabetically, ignoring '(' characters
         ingredientList.sort((a, b) -> a.getName().replace("(", "").compareTo(b.getName().replace("(", "")));
 
         return ingredientList;

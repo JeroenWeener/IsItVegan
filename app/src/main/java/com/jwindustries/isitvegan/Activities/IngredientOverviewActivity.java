@@ -16,6 +16,8 @@ import android.widget.SearchView;
 import com.jwindustries.isitvegan.IngredientAdapter;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
+import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
+import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
 public class IngredientOverviewActivity extends BaseActivity {
     private String appLocale;
@@ -25,6 +27,7 @@ public class IngredientOverviewActivity extends BaseActivity {
     private LinearLayoutManager layoutManager;
     private IngredientAdapter adapter;
     private View scrollToTopButton;
+    private RecyclerView.OnScrollListener scrollListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,19 +39,18 @@ public class IngredientOverviewActivity extends BaseActivity {
         this.setTitle(R.string.app_name);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_overview);
+        this.setContentView(R.layout.activity_overview);
 
-        recyclerView = this.findViewById(R.id.ingredient_view);
-        scrollToTopButton = this.findViewById(R.id.scroll_to_top_button);
+        this.layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        this.adapter = new IngredientAdapter(this);
 
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new IngredientAdapter(this);
-        recyclerView.setAdapter(adapter);
+        this.recyclerView = this.findViewById(R.id.ingredient_view);
+        this.recyclerView.setLayoutManager(layoutManager);
+        this.recyclerView.setAdapter(adapter);
 
-        /*
-         * Handle scrollToTopButton
-         */
+        ((DragScrollBar) this.findViewById(R.id.dragScrollBar)).setIndicator(new AlphabetIndicator(this), true);
+
+        this.scrollToTopButton = this.findViewById(R.id.scroll_to_top_button);
         scrollToTopButton.setOnClickListener(v -> recyclerView.smoothScrollToPosition(0));
     }
 
@@ -151,8 +153,9 @@ public class IngredientOverviewActivity extends BaseActivity {
             initiallyShowing = false;
         }
 
-        recyclerView.clearOnScrollListeners();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        // Remove and add scroll listener
+        this.recyclerView.removeOnScrollListener(this.scrollListener);
+        this.scrollListener = new RecyclerView.OnScrollListener() {
             private boolean showingScrollToTopButton = initiallyShowing;
             private boolean firstTime = true;
 
@@ -181,6 +184,7 @@ public class IngredientOverviewActivity extends BaseActivity {
                     showingScrollToTopButton = false;
                 }
             }
-        });
+        };
+        this.recyclerView.addOnScrollListener(scrollListener);
     }
 }

@@ -14,11 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jwindustries.isitvegan.Activities.IngredientViewActivity;
+import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> {
+public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> implements INameableAdapter {
     private final Activity activity;
     private List<Ingredient> ingredientList;
 
@@ -44,11 +45,23 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
 
     public void filterItems(String query) {
         final String normalizedQuery = this.normalizeString(query);
-        this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) ->
-                // Search both name and e-number
-                this.normalizeString(ingredient.getName().concat(ingredient.getENumber())).contains(normalizedQuery)).collect(Collectors.toList());
+        this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) -> {
+            boolean nameMatch = this.normalizeString(ingredient.getName()).contains(normalizedQuery);
+            boolean eNumberMatch = ingredient.hasENumber() && this.normalizeString(ingredient.getENumber()).contains(normalizedQuery);
+            return nameMatch || eNumberMatch;
+        }).collect(Collectors.toList());
 
         this.notifyDataSetChanged();
+    }
+
+    @Override
+    public Character getCharacterForElement(int position) {
+        Ingredient ingredient = this.ingredientList.get(position);
+        char character =  ingredient.getName().replace("(", "").charAt(0);
+        if(Character.isDigit(character)) {
+            character = '#';
+        }
+        return character;
     }
 
     @NonNull
@@ -61,7 +74,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
 
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
-        Ingredient ingredient = ingredientList.get(position);
+        Ingredient ingredient = this.ingredientList.get(position);
         holder.ingredientNameView.setText(ingredient.getName());
 
         if (ingredient.hasENumber()) {
