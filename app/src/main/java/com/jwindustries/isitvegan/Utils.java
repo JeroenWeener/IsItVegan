@@ -68,4 +68,38 @@ public class Utils {
         Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
     }
+
+    public static String normalizeString(String string) {
+        return string
+                .toLowerCase()
+
+                // Remove spaces
+                .replace(" ", "")
+
+                // Remove special characters
+                .replace("-", "")
+                .replace("," , "")
+                .replace("'", "")
+                .replace("(", "")
+                .replace(")", "")
+
+                // Transform special latin characters to their base form
+                .replace("ä", "a")
+                .replace("á", "a")
+                .replace("à", "a")
+                .replace("ë", "e")
+                .replace("é", "e")
+                .replace("è", "e")
+                .replace("ï", "i")
+                .replace("í", "i")
+                .replace("ì", "i")
+                .replace("ö", "o")
+                .replace("ó", "o")
+                .replace("ò", "o")
+                .replace("ü", "u")
+                .replace("ú", "u")
+                .replace("ù", "u")
+                .replace("ÿ", "y")
+                .replace("ý", "y");
+    }
 }

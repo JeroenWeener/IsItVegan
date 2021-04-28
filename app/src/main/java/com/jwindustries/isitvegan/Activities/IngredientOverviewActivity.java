@@ -115,7 +115,10 @@ public class IngredientOverviewActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
+        if (item.getItemId() == R.id.action_camera) {
+            this.startActivity(new Intent(this, ScanActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.action_settings) {
             this.startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else {
@@ -144,7 +147,7 @@ public class IngredientOverviewActivity extends BaseActivity {
         int positionThreshold = 4;
 
         boolean initiallyShowing;
-        int topItemPosition = layoutManager.findFirstVisibleItemPosition();
+        int topItemPosition = this.layoutManager.findFirstVisibleItemPosition();
         if (topItemPosition >= positionThreshold) {
             scrollToTopButton.setAlpha(1f);
             initiallyShowing = true;

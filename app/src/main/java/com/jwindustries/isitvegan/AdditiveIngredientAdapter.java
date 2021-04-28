@@ -16,12 +16,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jwindustries.isitvegan.Activities.IngredientViewActivity;
 import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> implements INameableAdapter {
+/**
+ * An ingredient adapter that is initially empty. Ingredients are added on the fly
+ */
+public class AdditiveIngredientAdapter
+        extends RecyclerView.Adapter<AdditiveIngredientAdapter.IngredientViewHolder>
+        implements INameableAdapter {
+
     private final Activity activity;
-    private List<Ingredient> ingredientList;
+    private final List<Ingredient> ingredientList;
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
         public View ingredientView;
@@ -38,27 +45,30 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         }
     }
 
-    public IngredientAdapter(Activity activity) {
+    public AdditiveIngredientAdapter(Activity activity) {
         this.activity = activity;
-        this.ingredientList = IngredientList.getIngredientList(activity);
+        this.ingredientList = new ArrayList<>();
     }
 
-    public void filterItems(String query) {
-        final String normalizedQuery = Utils.normalizeString(query);
-        this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) -> {
-            boolean nameMatch = Utils.normalizeString(ingredient.getName()).contains(normalizedQuery);
-            boolean eNumberMatch = ingredient.hasENumber() && Utils.normalizeString(ingredient.getENumber()).contains(normalizedQuery);
-            return nameMatch || eNumberMatch;
-        }).collect(Collectors.toList());
-
-        this.notifyDataSetChanged();
+    /**
+     * Adds provided ingredients to ingredient list
+     * Only adds ingredients that are not already in the list
+     * @param ingredients the ingredients to be add to the ingredient list
+     * @return the number of ingredients added to the list
+     */
+    public int addIngredients(List<Ingredient> ingredients) {
+        List<Ingredient> newIngredients = ingredients.stream().filter(ingredient ->
+                !this.ingredientList.contains(ingredient)).collect(Collectors.toList());
+        this.ingredientList.addAll(0, newIngredients);
+        this.notifyItemRangeInserted(0, newIngredients.size());
+        return newIngredients.size();
     }
 
     @Override
     public Character getCharacterForElement(int position) {
         Ingredient ingredient = this.ingredientList.get(position);
         char character =  ingredient.getName().replace("(", "").charAt(0);
-        if(Character.isDigit(character)) {
+        if (Character.isDigit(character)) {
             character = '#';
         }
         return character;

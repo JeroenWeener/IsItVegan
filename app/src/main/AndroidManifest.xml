@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jwindustries.isitvegan">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jwindustries.isitvegan"
+>
+
+    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -9,12 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".Activities.BaseActivity" />
+
         <activity
             android:name=".Activities.IngredientOverviewActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -29,6 +37,14 @@
             android:name=".Activities.AboutActivity"
             android:label="@string/about"
             android:parentActivityName=".Activities.SettingsActivity" />
+        <activity
+            android:name=".Activities.ScanActivity"
+            android:label="@string/title_scan"
+            android:parentActivityName=".Activities.IngredientOverviewActivity" />
+
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
     </application>
 
 </manifest>

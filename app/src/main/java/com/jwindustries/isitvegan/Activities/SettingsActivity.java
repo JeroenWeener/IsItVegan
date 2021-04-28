@@ -21,7 +21,7 @@ public class SettingsActivity extends BaseActivity {
         this.setTitle(R.string.action_settings);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
+        setContentView(R.layout.activity_settings);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
