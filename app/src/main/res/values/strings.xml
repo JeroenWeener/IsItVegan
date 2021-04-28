@@ -16,7 +16,7 @@
     <string name="preference_category_language">Language</string>
     <string name="preference_category_ui">Display</string>
     <string name="preference_category_info">Information</string>
-    <string name="setting_language_ingredients">Ingredients</string>
+    <string name="setting_language_ingredients">Ingredient names</string>
     <string name="language_app_entries_system">System language</string>
     <string name="language_ingredients_entries_app">Use app language</string>
     <string name="about">About</string>

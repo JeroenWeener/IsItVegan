@@ -15,7 +15,7 @@
     <string name="preference_category_language">Taal</string>
     <string name="preference_category_ui">Weergave</string>
     <string name="preference_category_info">Informatie</string>
-    <string name="setting_language_ingredients">Ingrediënten</string>
+    <string name="setting_language_ingredients">Ingrediëntnamen</string>
     <string name="language_app_entries_system">Systeemtaal</string>
     <string name="language_ingredients_entries_app">Gebruik de taal van de app</string>
     <string name="about">Over</string>
