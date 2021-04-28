@@ -1,16 +1,22 @@
 package com.jwindustries.isitvegan.Activities;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jwindustries.isitvegan.Ingredient;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 
 public class IngredientViewActivity extends BaseActivity {
+    private Ingredient ingredient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -21,7 +27,7 @@ public class IngredientViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredient_view);
 
-        Ingredient ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.ingredient_key));
+        this.ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.ingredient_key));
         if (ingredient != null) {
             ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName());
             ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
@@ -51,9 +57,29 @@ public class IngredientViewActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.ingredient_view_actionbar_menu, menu);
+        return true;
+    }
+
+    public void searchOnline() {
+        String url = "https://duckduckgo.com/?q=" + this.ingredient.getName() + "+vegan";
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.error_opening_browser, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             this.finishAfterTransition();
+            return true;
+        } else if (item.getItemId() == R.id.action_search_online) {
+            this.searchOnline();
             return true;
         } else {
             return super.onOptionsItemSelected(item);

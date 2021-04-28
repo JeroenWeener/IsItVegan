@@ -76,7 +76,7 @@ public class IngredientOverviewActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         this.getMenuInflater().inflate(R.menu.actionbar_menu, menu);
 
-        MenuItem menuItem = menu.findItem(R.id.searchView);
+        MenuItem menuItem = menu.findItem(R.id.search_view);
         final SearchView searchView = (SearchView) menuItem.getActionView();
         final IngredientOverviewActivity activity = this;
 

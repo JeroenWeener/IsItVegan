@@ -23,6 +23,8 @@
     <string name="about_text">Hi! My name is Jeroen and I developed this app in the first weeks that I became vegan. I found it annoying to browse websites in the store to find out whether products were vegan or not. With this app, I hope to support others in their quest for an animal-friendly lifestyle. \n\nA list like this will never be finished nor flawless. If you miss information or find an error, please let me know by sending an email to contactisitvegan@gmail.com.</string>
     <string name="title_scan">Scan</string>
     <string name="scan_hint">Point your device at the product\'s ingredient list</string>
+    <string name="error_opening_browser">Error opening browser</string>
+    <string name="title_search_online">Search online</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agar-agar</string>
