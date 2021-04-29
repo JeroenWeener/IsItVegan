@@ -78,6 +78,7 @@ public class IngredientOverviewActivity extends BaseActivity {
 
         MenuItem menuItem = menu.findItem(R.id.search_view);
         final SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint(this.getString(R.string.search_view_hint));
         final IngredientOverviewActivity activity = this;
 
         menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
