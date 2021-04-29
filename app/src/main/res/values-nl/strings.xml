@@ -24,6 +24,8 @@
     <string name="scan_hint">Richt de camera op de ingrediëntenlijst van het product</string>
     <string name="error_opening_browser">Error bij openenen van browser</string>
     <string name="title_search_online">Zoek online</string>
+    <string name="share_message">Ik raad je deze app aan! 🌱</string>
+    <string name="button_share">Deel deze app</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agaragar</string>

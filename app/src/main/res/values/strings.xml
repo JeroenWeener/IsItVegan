@@ -25,6 +25,8 @@
     <string name="scan_hint">Point your device at the product\'s ingredient list</string>
     <string name="error_opening_browser">Error opening browser</string>
     <string name="title_search_online">Search online</string>
+    <string name="share_message">Let me recommend you this application! 🌱</string>
+    <string name="button_share">Share this app</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agar-agar</string>
