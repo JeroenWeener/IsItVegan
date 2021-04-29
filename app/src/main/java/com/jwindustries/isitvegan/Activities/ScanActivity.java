@@ -56,13 +56,13 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
 
         this.layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         this.recyclerView = this.findViewById(R.id.ingredient_view);
-        this.recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(this.adapter);
+        this.recyclerView.setLayoutManager(this.layoutManager);
+        this.recyclerView.setAdapter(this.adapter);
 
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
 
-        imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
-        imageAnalyzer.setAnalyzer(cameraExecutor, new TextReadAnalyzer(this));
+        this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
+        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new TextReadAnalyzer(this));
 
         this.ingredientList = IngredientList.getIngredientList(this);
 
@@ -75,9 +75,9 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
 
     @Override
     public void onTextFound(String foundText) {
-        List<Ingredient> foundIngredients = ingredientList
+        List<Ingredient> foundIngredients = this.ingredientList
                 .stream()
-                .filter(ingredient -> Utils.isIngredientInString(ingredient, Utils.normalizeString(foundText)))
+                .filter(ingredient -> Utils.isIngredientInText(ingredient, Utils.normalizeString(foundText, false)))
                 .collect(Collectors.toList());
         int numberAdded = this.adapter.addIngredients(foundIngredients);
         if (numberAdded > 0) {
@@ -97,22 +97,22 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(
-            (Runnable) () -> {
-                Preview preview = new Preview.Builder().build();
-                preview.setSurfaceProvider(((PreviewView) this.findViewById(R.id.camera_preview_view)).getSurfaceProvider());
-                try {
-                    cameraProviderFuture.get().unbindAll();
-                    cameraProviderFuture.get().bindToLifecycle(
-                            this,
-                            CameraSelector.DEFAULT_BACK_CAMERA,
-                            preview,
-                            imageAnalyzer
-                    );
-                } catch (ExecutionException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            },
-            ContextCompat.getMainExecutor(this)
+                () -> {
+                    Preview preview = new Preview.Builder().build();
+                    preview.setSurfaceProvider(((PreviewView) this.findViewById(R.id.camera_preview_view)).getSurfaceProvider());
+                    try {
+                        cameraProviderFuture.get().unbindAll();
+                        cameraProviderFuture.get().bindToLifecycle(
+                                this,
+                                CameraSelector.DEFAULT_BACK_CAMERA,
+                                preview,
+                                imageAnalyzer
+                        );
+                    } catch (ExecutionException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                },
+                ContextCompat.getMainExecutor(this)
         );
     }
 
@@ -124,7 +124,7 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        cameraExecutor.shutdown();
+        this.cameraExecutor.shutdown();
     }
 
     private boolean allPermissionsGranted() {
