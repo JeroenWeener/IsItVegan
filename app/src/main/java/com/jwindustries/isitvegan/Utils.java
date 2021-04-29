@@ -9,7 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Utils {
 
@@ -101,5 +105,22 @@ public class Utils {
                 .replace("ù", "u")
                 .replace("ÿ", "y")
                 .replace("ý", "y");
+    }
+
+    public static boolean isIngredientInString(Ingredient ingredient, String text) {
+        List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
+        // Consider keywords with text between '()' removed
+        List<String> strippedKeywords = unstrippedKeywords
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
+        List<String> keywords = new ArrayList<>();
+        keywords.addAll(unstrippedKeywords);
+        keywords.addAll(strippedKeywords);
+        if (ingredient.hasENumber()) {
+            keywords.add(ingredient.getENumber());
+        }
+        Stream<String> normalizedKeywordStream = keywords.stream().map(Utils::normalizeString);
+        return normalizedKeywordStream.distinct().anyMatch(text::contains);
     }
 }

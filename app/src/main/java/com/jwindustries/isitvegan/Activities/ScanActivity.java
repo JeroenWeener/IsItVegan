@@ -75,14 +75,9 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
 
     @Override
     public void onTextFound(String foundText) {
-        String normalizedFoundText = Utils.normalizeString(foundText);
         List<Ingredient> foundIngredients = ingredientList
                 .stream()
-                .filter(ingredient -> {
-                    boolean nameMatch = normalizedFoundText.contains(Utils.normalizeString(ingredient.getName())) ;
-                    boolean eNumberMath = (ingredient.hasENumber() && normalizedFoundText.contains(Utils.normalizeString(ingredient.getENumber())));
-                    return nameMatch || eNumberMath;
-                })
+                .filter(ingredient -> Utils.isIngredientInString(ingredient, Utils.normalizeString(foundText)))
                 .collect(Collectors.toList());
         int numberAdded = this.adapter.addIngredients(foundIngredients);
         if (numberAdded > 0) {
