@@ -13,9 +13,9 @@
         <item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>
 
         <!-- Font -->
-        <item name="android:fontFamily">@font/roboto_slab</item>
-        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textViewStyle">@style/PoppinsTextViewStyle</item>
+        <item name="android:buttonStyle">@style/PoppinsButtonStyle</item>
 
         <!-- Dialogs -->
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
@@ -31,11 +31,11 @@
     </style>
 
     <!-- Font -->
-    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
-        <item name="android:fontFamily">@font/roboto_slab</item>
+    <style name="PoppinsTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
-    <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
-        <item name="android:fontFamily">@font/roboto_slab</item>
+    <style name="PoppinsButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
 
 </resources>

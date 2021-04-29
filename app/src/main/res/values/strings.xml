@@ -20,7 +20,7 @@
     <string name="language_app_entries_system">System language</string>
     <string name="language_ingredients_entries_app">Use app language</string>
     <string name="about">About</string>
-    <string name="about_text">Hi! My name is Jeroen and I developed this app in the first weeks that I became vegan. I found it annoying to browse websites in the store to find out whether products were vegan or not. With this app, I hope to support others in their quest for an animal-friendly lifestyle. \n\nA list like this will never be finished nor flawless. If you miss information or find an error, please let me know by sending an email to contactisitvegan@gmail.com.</string>
+    <string name="about_text">Hi! My name is Jeroen and I developed this app during the first months after I decided that I wanted to adapt a vegan lifestyle. I found it annoying to browse websites in the store to find out whether products were vegan or not. With this app, I hope to support others in their quest for an animal-friendly lifestyle. \n\nA list like this will never be finished nor flawless. If you miss information or find an error, please let me know by sending an email to contactisitvegan@gmail.com.</string>
     <string name="title_scan">Scan</string>
     <string name="scan_hint">Point your device at the product\'s ingredient list</string>
     <string name="error_opening_browser">Error opening browser</string>
