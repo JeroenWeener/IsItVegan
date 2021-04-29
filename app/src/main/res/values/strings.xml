@@ -27,6 +27,7 @@
     <string name="title_search_online">Search online</string>
     <string name="share_message">Let me recommend you this application! 🌱</string>
     <string name="button_share">Share this app</string>
+    <string name="button_clear">Clear list</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agar-agar</string>

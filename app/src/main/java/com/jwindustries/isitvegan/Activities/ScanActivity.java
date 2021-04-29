@@ -3,6 +3,7 @@ package com.jwindustries.isitvegan.Activities;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ViewSwitcher;
 
 import androidx.camera.core.AspectRatio;
@@ -118,6 +119,11 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
             },
             ContextCompat.getMainExecutor(this)
         );
+    }
+
+    public void clearList(View view) {
+        this.adapter.clearList();
+        this.scanListContainer.showNext();
     }
 
     @Override

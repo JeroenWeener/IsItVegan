@@ -64,6 +64,11 @@ public class AdditiveIngredientAdapter
         return newIngredients.size();
     }
 
+    public void clearList() {
+        this.ingredientList.clear();
+        this.notifyDataSetChanged();
+    }
+
     @Override
     public Character getCharacterForElement(int position) {
         Ingredient ingredient = this.ingredientList.get(position);

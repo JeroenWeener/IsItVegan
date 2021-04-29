@@ -26,6 +26,7 @@
     <string name="title_search_online">Zoek online</string>
     <string name="share_message">Ik raad je deze app aan! 🌱</string>
     <string name="button_share">Deel deze app</string>
+    <string name="button_clear">Leeg lijst</string>
 
     <!-- Ingredients -->
     <string name="ingredient_agar">Agar, agaragar</string>
