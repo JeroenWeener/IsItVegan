@@ -73,12 +73,17 @@ public class Utils {
         return localizedContext.getResources();
     }
 
-    public static String normalizeString(String string) {
+    public static String normalizeString(String string, boolean removeSpacing) {
         return string
                 .toLowerCase()
+                .trim()
 
-                // Remove spaces
-                .replace(" ", "")
+                // Normalize whitespace characters
+                .replace("\t", " ")
+                .replace("\n", " ")
+
+                // Optionally remove whitespace
+                .replace(" ", removeSpacing ? "" : " ")
 
                 // Remove special characters
                 .replace("-", "")
@@ -107,7 +112,7 @@ public class Utils {
                 .replace("ý", "y");
     }
 
-    public static boolean isIngredientInString(Ingredient ingredient, String text) {
+    public static boolean isIngredientInText(Ingredient ingredient, String text) {
         List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedKeywords = unstrippedKeywords
@@ -120,7 +125,37 @@ public class Utils {
         if (ingredient.hasENumber()) {
             keywords.add(ingredient.getENumber());
         }
-        Stream<String> normalizedKeywordStream = keywords.stream().map(Utils::normalizeString);
-        return normalizedKeywordStream.distinct().anyMatch(text::contains);
+
+        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
+
+        return normalizedKeywordStream.distinct().anyMatch(keyword -> {
+            int index = text.indexOf(keyword);
+
+            if (index == -1) {
+                return false;
+            }
+
+            int keywordLength = keyword.length();
+            boolean isAtBeginOfText = index == 0;
+            boolean isAtEndOfText = text.length() == index + keywordLength;
+
+            // Text is within string
+            if (!isAtBeginOfText && !isAtEndOfText) {
+                char previousCharacter = text.charAt(index - 1);
+                char nextCharacter = text.charAt(index + keywordLength);
+                return previousCharacter == ' ' && nextCharacter == ' ';
+            // Text is string
+            } else if (isAtBeginOfText && isAtEndOfText) {
+                return true;
+            // Text is at start of string
+            } else if (isAtBeginOfText) {
+                char nextCharacter = text.charAt(index + keywordLength);
+                return nextCharacter == ' ';
+            // Text is at end of string
+            } else {
+                char previousCharacter = text.charAt(index - 1);
+                return previousCharacter == ' ';
+            }
+        });
     }
 }

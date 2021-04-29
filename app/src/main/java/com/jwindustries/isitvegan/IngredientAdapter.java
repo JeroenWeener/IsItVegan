@@ -44,10 +44,10 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     }
 
     public void filterItems(String query) {
-        final String normalizedQuery = Utils.normalizeString(query);
+        final String normalizedQuery = Utils.normalizeString(query, true);
         this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) -> {
-            boolean nameMatch = Utils.normalizeString(ingredient.getName()).contains(normalizedQuery);
-            boolean eNumberMatch = ingredient.hasENumber() && Utils.normalizeString(ingredient.getENumber()).contains(normalizedQuery);
+            boolean nameMatch = Utils.normalizeString(ingredient.getName(), true).contains(normalizedQuery);
+            boolean eNumberMatch = ingredient.hasENumber() && Utils.normalizeString(ingredient.getENumber(), true).contains(normalizedQuery);
             return nameMatch || eNumberMatch;
         }).collect(Collectors.toList());
 
