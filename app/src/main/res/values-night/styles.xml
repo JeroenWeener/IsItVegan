@@ -18,10 +18,10 @@
         <item name="android:buttonStyle">@style/PoppinsButtonStyle</item>
     </style>
 
+    <!-- Font -->
     <style name="PoppinsTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
-
     <style name="PoppinsButtonStyle" parent="android:Widget.Holo.Button">
         <item name="android:fontFamily">@font/poppins_regular</item>
     </style>

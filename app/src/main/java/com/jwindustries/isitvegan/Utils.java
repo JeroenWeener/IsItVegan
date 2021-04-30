@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 public class Utils {
 
     public static void handleTheme(Context context) {
+        context.setTheme(R.style.AppTheme);
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String themeSetting = preferences.getString("theme", "system");
         switch (themeSetting) {
