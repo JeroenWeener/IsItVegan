@@ -27,6 +27,7 @@
     <string name="share_message">Ik raad je deze app aan! 🌱</string>
     <string name="button_share">Deel deze app</string>
     <string name="button_clear">Leeg lijst</string>
+    <string name="error_no_camera_permission_granted">Functie vereist cameratoegang</string>
 
     <!-- Ingredients -->
     <string name="ingredient_potassium_inosinate">(Di)kaliuminosinaat</string>

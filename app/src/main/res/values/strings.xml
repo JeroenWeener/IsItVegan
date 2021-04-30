@@ -28,6 +28,7 @@
     <string name="share_message">Let me recommend you this application! 🌱</string>
     <string name="button_share">Share this app</string>
     <string name="button_clear">Clear list</string>
+    <string name="error_no_camera_permission_granted">Feature requires camera permission</string>
 
     <!-- Ingredients -->
     <string name="ingredient_potassium_inosinate">Potassium inosinate</string>

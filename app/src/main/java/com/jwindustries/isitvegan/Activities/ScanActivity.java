@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.camera.core.AspectRatio;
@@ -149,6 +150,7 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
             if (allPermissionsGranted()) {
                 startCamera();
             } else {
+                Toast.makeText(this, R.string.error_no_camera_permission_granted, Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
