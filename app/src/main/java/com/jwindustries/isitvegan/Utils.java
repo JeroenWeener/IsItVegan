@@ -113,17 +113,26 @@ public class Utils {
     }
 
     public static boolean isIngredientInText(Ingredient ingredient, String text) {
+        List<String> keywords = new ArrayList<>();
+
         List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedKeywords = unstrippedKeywords
                 .stream()
                 .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
                 .collect(Collectors.toList());
-        List<String> keywords = new ArrayList<>();
         keywords.addAll(unstrippedKeywords);
         keywords.addAll(strippedKeywords);
+
         if (ingredient.hasENumber()) {
-            keywords.add(ingredient.getENumber());
+            List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
+            // Consider e numbers with text between '()' removed
+            List<String> strippedENumbers = unstrippedENumbers
+                    .stream()
+                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                    .collect(Collectors.toList());
+            keywords.addAll(unstrippedENumbers);
+            keywords.addAll(strippedENumbers);
         }
 
         Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
