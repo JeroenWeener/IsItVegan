@@ -1,12 +1,15 @@
 <resources>
     <!-- Base application theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <!-- Colours -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:statusBarColor">@color/colorPrimary</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Status bar and action bar -->
+        <item name="android:statusBarColor">@color/colorApp</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
 
         <!-- Shared element transitions -->
         <item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
@@ -19,6 +22,11 @@
 
         <!-- Dialogs -->
         <item name="alertDialogTheme">@style/AppDialogTheme</item>
+    </style>
+
+    <!-- Action bar style -->
+    <style name="ActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/colorApp</item>
     </style>
 
     <!-- Splash screen theme -->
@@ -41,6 +49,7 @@
         <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
     <style name="PoppinsButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">@font/poppins_regular</item>
     </style>
 

@@ -6,7 +6,7 @@
     <string name="ingredient_e_number_placeholder" translatable="false">E123</string>
     <string name="ingredient_information_placeholder">Information</string>
     <string name="ingredient_information_empty">No information</string>
-    <string name="action_camera">Open camera</string>
+    <string name="action_camera">Scan product</string>
     <string name="action_settings">Settings</string>
     <string name="setting_theme">Theme</string>
     <string name="setting_language_app">App</string>

@@ -5,7 +5,7 @@
     <string name="ingredient_name_placeholder">Naam ingrediënt</string>
     <string name="ingredient_information_placeholder">Informatie</string>
     <string name="ingredient_information_empty">Geen informatie</string>
-    <string name="action_camera">Open camera</string>
+    <string name="action_camera">Scan product</string>
     <string name="action_settings">Instellingen</string>
     <string name="setting_theme">Thema</string>
     <string name="setting_language_app">App</string>

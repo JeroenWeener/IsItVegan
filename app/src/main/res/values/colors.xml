@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorLogo">#00A956</color>
+    <color name="colorApp">#00A956</color>
 
     <color name="colorPrimary">#EEEEEE</color>
     <color name="colorSecondary">#FFFFFF</color>

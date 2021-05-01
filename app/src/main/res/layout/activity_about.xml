@@ -25,7 +25,6 @@
         android:layout_marginTop="24sp"
         android:onClick="shareApp"
         android:text="@string/button_share"
-        android:textAllCaps="false"
         android:textSize="20sp"
         android:drawableStart="@drawable/ic_baseline_share_24"
         android:drawablePadding="12sp"

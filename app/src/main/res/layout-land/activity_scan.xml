@@ -68,7 +68,6 @@
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@color/colorAccent"
-                android:textAllCaps="false"
                 android:text="@string/button_clear"
                 android:onClick="clearList"
             />
