@@ -2,19 +2,28 @@ package com.jwindustries.isitvegan.Activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.camera.core.AspectRatio;
+import androidx.camera.core.Camera;
+import androidx.camera.core.CameraControl;
+import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
+import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,11 +49,14 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
     private final int PERMISSION_REQUEST_CODE = 10;
     private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
     private ImageAnalysis imageAnalyzer;
+    private Camera camera;
 
     private AdditiveIngredientAdapter adapter;
     private RecyclerView recyclerView;
     private ViewSwitcher scanListContainer;
     private LinearLayoutManager layoutManager;
+
+    private Menu menu;
 
     private List<Ingredient> ingredientList;
 
@@ -71,6 +83,54 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
             startCamera();
         } else {
             requestPermission();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.scan_actionbar_menu, menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finishAfterTransition();
+            return true;
+        } else if (item.getItemId() == R.id.action_toggle_torch) {
+            this.toggleTorch();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Turn torch on/off and update flash icon in action bar
+     * Show a toast to the user if there is no flash on the device
+     */
+    private void toggleTorch() {
+        CameraInfo cameraInfo = this.camera.getCameraInfo();
+        CameraControl cameraControl = this.camera.getCameraControl();
+        if (cameraInfo.hasFlashUnit()) {
+            LiveData<Integer> torchState = cameraInfo.getTorchState();
+            if (torchState.getValue() != null) {
+                Drawable flashIcon;
+                if (torchState.getValue() == TorchState.OFF) {
+                    cameraControl.enableTorch(true);
+                    flashIcon = ContextCompat.getDrawable(this, R.drawable.ic_baseline_flash_on_24);
+                } else {
+                    cameraControl.enableTorch(false);
+                    flashIcon = ContextCompat.getDrawable(this, R.drawable.ic_baseline_flash_off_24);
+                }
+                if (flashIcon != null) {
+                    flashIcon.setColorFilter(this.getResources().getColor(android.R.color.white, this.getTheme()), PorterDuff.Mode.SRC_IN);
+                    this.menu.getItem(0).setIcon(flashIcon);
+                }
+            }
+        } else {
+            Toast.makeText(this, R.string.error_no_flash_on_device, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -103,7 +163,7 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
                     preview.setSurfaceProvider(((PreviewView) this.findViewById(R.id.camera_preview_view)).getSurfaceProvider());
                     try {
                         cameraProviderFuture.get().unbindAll();
-                        cameraProviderFuture.get().bindToLifecycle(
+                        this.camera = cameraProviderFuture.get().bindToLifecycle(
                                 this,
                                 CameraSelector.DEFAULT_BACK_CAMERA,
                                 preview,
