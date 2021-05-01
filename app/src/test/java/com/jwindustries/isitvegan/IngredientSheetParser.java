@@ -21,7 +21,7 @@ public class IngredientSheetParser {
     private static final String INGREDIENT_LIST_PATH = System.getProperty("user.dir") + "/src/main/assets/generated/ingredient-list.txt";
 
     private static final String[] STRING_RESOURCE_TEMPLATE = new String[]{"<string name=\"ingredient_", "\">", "</string>"};
-    private static final String[] INGREDIENT_LIST_TEMPLATE = new String[]{"new Ingredient(context, resources, R.string.ingredient_", ", IngredientType.", ", R.string.ingredient_", "_info," , "),"};
+    private static final String[] INGREDIENT_LIST_TEMPLATE = new String[]{"new Ingredient(context, resources, englishResources, R.string.ingredient_", ", IngredientType.", ", R.string.ingredient_", "_info," , "),"};
 
     @Test
     public void parse() {

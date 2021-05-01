@@ -75,6 +75,16 @@ public class Utils {
         return localizedContext.getResources();
     }
 
+    @NonNull
+    public static Resources getEnglishResources(Context context) {
+        Locale desiredLocale = new Locale("en");
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration = new Configuration(configuration);
+        configuration.setLocale(desiredLocale);
+        Context localizedContext = context.createConfigurationContext(configuration);
+        return localizedContext.getResources();
+    }
+
     public static String normalizeString(String string, boolean removeSpacing) {
         return string
                 .toLowerCase()
@@ -114,9 +124,18 @@ public class Utils {
                 .replace("ý", "y");
     }
 
+    /**
+     * Checks whether text contains the ingredient. Ingredients are checked in both local language as in English
+     * @param ingredient ingredient to be possibly contained in the text
+     * @param text text that possibly contains the ingredient
+     * @return whether text contains ingredient
+     */
     public static boolean isIngredientInText(Ingredient ingredient, String text) {
         List<String> keywords = new ArrayList<>();
 
+        /*
+         * Localised name
+         */
         List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedKeywords = unstrippedKeywords
@@ -126,6 +145,21 @@ public class Utils {
         keywords.addAll(unstrippedKeywords);
         keywords.addAll(strippedKeywords);
 
+        /*
+         * English name
+         */
+        List<String> unstrippedEnglishKeywords = List.of(ingredient.getEnglishName().split(","));
+        // Consider keywords with text between '()' removed
+        List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
+        keywords.addAll(unstrippedEnglishKeywords);
+        keywords.addAll(strippedEnglishKeywords);
+
+        /*
+         * E numbers
+         */
         if (ingredient.hasENumber()) {
             List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
             // Consider e numbers with text between '()' removed
