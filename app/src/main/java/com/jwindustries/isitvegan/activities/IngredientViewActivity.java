@@ -1,4 +1,4 @@
-package com.jwindustries.isitvegan.Activities;
+package com.jwindustries.isitvegan.activities;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -27,7 +27,7 @@ public class IngredientViewActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredient_view);
 
-        this.ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.ingredient_key));
+        this.ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.key_ingredient));
         if (ingredient != null) {
             ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName());
             ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());

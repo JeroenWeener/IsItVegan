@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jwindustries.isitvegan.Activities.IngredientViewActivity;
+import com.jwindustries.isitvegan.activities.IngredientViewActivity;
 import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
 import java.util.ArrayList;
@@ -124,7 +124,7 @@ public class AdditiveIngredientAdapter
 
     private void viewIngredient(IngredientViewHolder holder, Ingredient ingredient) {
         Intent intent = new Intent(activity, IngredientViewActivity.class);
-        intent.putExtra(activity.getResources().getString(R.string.ingredient_key), ingredient);
+        intent.putExtra(activity.getResources().getString(R.string.key_ingredient), ingredient);
 
         View nameView = holder.ingredientNameView;
         nameView.setTransitionName("name");

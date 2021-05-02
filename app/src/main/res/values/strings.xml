@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Is it Vegan?</string>
     <string name="search_view_hint">Search ingredients</string>
-    <string name="ingredient_key" translatable="false">INGREDIENT_KEY</string>
+    <string name="key_ingredient" translatable="false">INGREDIENT_KEY</string>
     <string name="ingredient_name_placeholder">Ingredient name</string>
     <string name="ingredient_e_number_placeholder" translatable="false">E123</string>
     <string name="ingredient_information_placeholder">Information</string>
@@ -16,7 +16,10 @@
     <string name="preference_category_language">Language</string>
     <string name="preference_category_ui">Display</string>
     <string name="preference_category_info">Information</string>
+    <string name="preference_category_other">Other</string>
     <string name="setting_language_ingredients">Ingredient names</string>
+    <string name="setting_share_app">Share this app</string>
+    <string name="setting_open_introduction">Open introduction</string>
     <string name="language_app_entries_system">System language</string>
     <string name="language_ingredients_entries_app">Use app language</string>
     <string name="about">About</string>
@@ -26,11 +29,22 @@
     <string name="error_opening_browser">Error opening browser</string>
     <string name="title_search_online">Search online</string>
     <string name="share_message">Let me recommend you this application! 🌱</string>
-    <string name="button_share">Share this app</string>
     <string name="button_clear">Clear list</string>
     <string name="error_no_camera_permission_granted">Feature requires camera permission</string>
     <string name="title_toggle_torch">Torch</string>
     <string name="error_no_flash_on_device">Flash is not available</string>
+
+    <!-- Introduction -->
+    <string name="introduction_next">Next</string>
+    <string name="introduction_get_started">Get started</string>
+    <string name="introduction_title_search">Welcome!</string>
+    <string name="introduction_title_scan">Scan</string>
+    <string name="introduction_title_view">Discover</string>
+    <string name="introduction_title_share">Share</string>
+    <string name="introduction_text_search">Find out which ingredients are vegan</string>
+    <string name="introduction_text_scan">Scan products to find out what ingredients they contain</string>
+    <string name="introduction_text_view">View detailed information regarding specific ingredients such as their origin and usages</string>
+    <string name="introduction_text_share">Share the app with your friends so they know what to buy for you</string>
 
     <!-- Ingredients -->
     <string name="ingredient_potassium_inosinate">Potassium inosinate</string>

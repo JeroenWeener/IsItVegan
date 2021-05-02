@@ -43,4 +43,18 @@
         />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/preference_category_other">
+        <Preference
+            app:icon="@drawable/share"
+            app:title="@string/setting_share_app"
+            app:key="share_app_button"
+        />
+
+        <Preference
+            app:icon="@drawable/slideshow"
+            app:title="@string/setting_open_introduction"
+            app:key="introduction_button"
+        />
+    </PreferenceCategory>
+
 </PreferenceScreen>

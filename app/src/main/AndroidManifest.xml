@@ -5,6 +5,7 @@
 >
 
     <uses-feature android:name="android.hardware.camera.any" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -16,37 +17,45 @@
         android:theme="@style/AppTheme"
     >
 
-        <activity android:name=".Activities.BaseActivity" />
-
         <activity
-            android:name=".Activities.IngredientOverviewActivity"
+            android:name=".activities.IntroductionActivity"
             android:theme="@style/SplashScreen"
-            android:launchMode="singleTask">
+        >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".activities.BaseActivity" />
+
         <activity
-            android:name=".Activities.IngredientViewActivity"
-            android:parentActivityName=".Activities.IngredientOverviewActivity" />
+            android:name=".activities.IngredientOverviewActivity"
+            android:launchMode="singleTask" />
+
         <activity
-            android:name=".Activities.SettingsActivity"
+            android:name=".activities.IngredientViewActivity"
+            android:parentActivityName=".activities.IngredientOverviewActivity" />
+
+        <activity
+            android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".Activities.IngredientOverviewActivity" />
+            android:parentActivityName=".activities.IngredientOverviewActivity" />
+
         <activity
-            android:name=".Activities.AboutActivity"
+            android:name=".activities.AboutActivity"
             android:label="@string/about"
-            android:parentActivityName=".Activities.SettingsActivity" />
+            android:parentActivityName=".activities.SettingsActivity" />
+
         <activity
-            android:name=".Activities.ScanActivity"
+            android:name=".activities.ScanActivity"
             android:label="@string/title_scan"
-            android:parentActivityName=".Activities.IngredientOverviewActivity" />
+            android:parentActivityName=".activities.IngredientOverviewActivity" />
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="ocr" />
+
     </application>
 
 </manifest>

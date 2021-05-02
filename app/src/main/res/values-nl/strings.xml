@@ -15,7 +15,10 @@
     <string name="preference_category_language">Taal</string>
     <string name="preference_category_ui">Weergave</string>
     <string name="preference_category_info">Informatie</string>
+    <string name="preference_category_other">Overig</string>
     <string name="setting_language_ingredients">Ingrediëntnamen</string>
+    <string name="setting_share_app">Deel deze app</string>
+    <string name="setting_open_introduction">Open introductie</string>
     <string name="language_app_entries_system">Systeemtaal</string>
     <string name="language_ingredients_entries_app">Gebruik de taal van de app</string>
     <string name="about">Over</string>
@@ -25,11 +28,22 @@
     <string name="error_opening_browser">Error bij openenen van browser</string>
     <string name="title_search_online">Zoek online</string>
     <string name="share_message">Ik raad je deze app aan! 🌱</string>
-    <string name="button_share">Deel deze app</string>
     <string name="button_clear">Leeg lijst</string>
     <string name="error_no_camera_permission_granted">Functie vereist cameratoegang</string>
     <string name="title_toggle_torch">Flits</string>
     <string name="error_no_flash_on_device">Flits is niet beschikbaar</string>
+
+    <!-- Introduction -->
+    <string name="introduction_next">Volgende</string>
+    <string name="introduction_get_started">Aan de slag</string>
+    <string name="introduction_title_search">Welkom!</string>
+    <string name="introduction_title_scan">Scan</string>
+    <string name="introduction_title_view">Ontdek</string>
+    <string name="introduction_title_share">Deel</string>
+    <string name="introduction_text_search">Kom erachter welke ingrediënten vegan zijn</string>
+    <string name="introduction_text_scan">Scan producten om te zien welke ingrediënten ze bevatten</string>
+    <string name="introduction_text_view">Bekijk gedetailleerde informatie over ingrediënten zoals hun oorsprong en toepassingen</string>
+    <string name="introduction_text_share">Deel de app met vrienden zodat ze weten wat ze voor je kunnen halen</string>
 
     <!-- Ingredients -->
     <string name="ingredient_potassium_inosinate">(Di)kaliuminosinaat</string>

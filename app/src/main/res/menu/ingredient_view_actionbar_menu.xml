@@ -5,6 +5,6 @@
     <item
         app:showAsAction="always"
         android:id="@+id/action_search_online"
-        android:icon="@drawable/ic_baseline_public_24"
+        android:icon="@drawable/public_white"
         android:title="@string/title_search_online" />
 </menu>

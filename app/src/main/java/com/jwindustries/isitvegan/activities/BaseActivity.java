@@ -1,4 +1,4 @@
-package com.jwindustries.isitvegan.Activities;
+package com.jwindustries.isitvegan.activities;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;

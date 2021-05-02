@@ -1,9 +1,7 @@
-package com.jwindustries.isitvegan.Activities;
+package com.jwindustries.isitvegan.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -116,17 +114,12 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
         if (cameraInfo.hasFlashUnit()) {
             LiveData<Integer> torchState = cameraInfo.getTorchState();
             if (torchState.getValue() != null) {
-                Drawable flashIcon;
                 if (torchState.getValue() == TorchState.OFF) {
                     cameraControl.enableTorch(true);
-                    flashIcon = ContextCompat.getDrawable(this, R.drawable.ic_baseline_flash_on_24);
+                    this.menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.flash_on_white));
                 } else {
                     cameraControl.enableTorch(false);
-                    flashIcon = ContextCompat.getDrawable(this, R.drawable.ic_baseline_flash_off_24);
-                }
-                if (flashIcon != null) {
-                    flashIcon.setColorFilter(this.getResources().getColor(android.R.color.white, this.getTheme()), PorterDuff.Mode.SRC_IN);
-                    this.menu.getItem(0).setIcon(flashIcon);
+                    this.menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.flash_off_white));
                 }
             }
         } else {

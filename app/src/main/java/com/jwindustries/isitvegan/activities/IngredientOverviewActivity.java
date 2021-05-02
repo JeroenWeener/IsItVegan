@@ -1,4 +1,4 @@
-package com.jwindustries.isitvegan.Activities;
+package com.jwindustries.isitvegan.activities;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;

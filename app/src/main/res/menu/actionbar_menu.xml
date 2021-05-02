@@ -14,7 +14,7 @@
         android:id="@+id/action_camera"
         android:title="@string/action_camera"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_baseline_camera_alt_24" />
+        android:icon="@drawable/camera_alt_white" />
 
     <item
         android:id="@+id/action_settings"

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.ScanActivity">
+    tools:context=".activities.ScanActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_preview_view"
@@ -37,7 +37,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                tools:context=".Activities.IngredientOverviewActivity"
+                tools:context=".activities.IngredientOverviewActivity"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"

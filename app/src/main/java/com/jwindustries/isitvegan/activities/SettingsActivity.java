@@ -1,14 +1,16 @@
-package com.jwindustries.isitvegan.Activities;
+package com.jwindustries.isitvegan.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.jwindustries.isitvegan.BuildConfig;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 
@@ -41,10 +43,31 @@ public class SettingsActivity extends BaseActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-            Preference button = findPreference("about_button");
-            if (button != null) {
-                button.setOnPreferenceClickListener(preference -> {
+            // Handle about button click
+            Preference aboutButton = findPreference("about_button");
+            if (aboutButton != null) {
+                aboutButton.setOnPreferenceClickListener(preference -> {
                     this.startActivity(new Intent(this.getActivity(), AboutActivity.class));
+                    return true;
+                });
+            }
+
+            // Handle share app button click
+            Preference shareAppButton = findPreference("share_app_button");
+            if (shareAppButton != null) {
+                shareAppButton.setOnPreferenceClickListener(preference -> {
+                    this.shareApp();
+                    return true;
+                });
+            }
+
+            // Handle introduction button click
+            Preference introductionButton = findPreference("introduction_button");
+            if (introductionButton != null) {
+                introductionButton.setOnPreferenceClickListener(preference -> {
+                    Intent intent = new Intent(this.getActivity(), IntroductionActivity.class);
+                    intent.putExtra("force_intro", true);
+                    this.startActivity(intent);
                     return true;
                 });
             }
@@ -78,6 +101,20 @@ public class SettingsActivity extends BaseActivity {
                 case "language_ingredients":
                 default:
                     break;
+            }
+        }
+
+        private void shareApp() {
+            try {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                String shareMessage = this.getString(R.string.share_message) + "\n\n" +
+                        this.getString(R.string.app_name) +
+                        "\nhttps://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID;
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                startActivity(shareIntent);
+            } catch(Exception e) {
+                e.printStackTrace();
             }
         }
     }

@@ -5,6 +5,6 @@
     <item
         app:showAsAction="always"
         android:id="@+id/action_toggle_torch"
-        android:icon="@drawable/ic_baseline_flash_off_24"
+        android:icon="@drawable/flash_off_white"
         android:title="@string/title_toggle_torch" />
 </menu>

@@ -18,8 +18,6 @@ import java.util.stream.Stream;
 public class Utils {
 
     public static void handleTheme(Context context) {
-        context.setTheme(R.style.AppTheme);
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String themeSetting = preferences.getString("theme", "system");
         switch (themeSetting) {
@@ -83,6 +81,16 @@ public class Utils {
         configuration.setLocale(desiredLocale);
         Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
+    }
+
+    public static void storeTutorialFinished(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean("tutorial", true).apply();
+    }
+
+    public static boolean isTutorialFinished(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean("tutorial", false);
     }
 
     public static String normalizeString(String string, boolean removeSpacing) {
