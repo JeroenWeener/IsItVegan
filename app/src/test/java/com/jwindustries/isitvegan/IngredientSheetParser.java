@@ -34,9 +34,9 @@ public class IngredientSheetParser {
         List<String> ingredientTypes = data.stream().map(row -> row.get(3)).collect(Collectors.toList());
         List<String> eNumbers = data.stream().map(row -> row.get(4)).collect(Collectors.toList());
 
-        List<String> englishInfo = data.stream().map(row -> row.get(5)).collect(Collectors.toList());
-        List<String> dutchInfo = data.stream().map(row -> row.get(6)).collect(Collectors.toList());
-        List<String> germanInfo = data.stream().map(row -> row.get(7)).collect(Collectors.toList());
+        List<String> englishInfo = data.stream().map(row -> row.size() >= 6 ? row.get(5) : "").collect(Collectors.toList());
+        List<String> dutchInfo = data.stream().map(row -> row.size() >= 7 ? row.get(6) : "").collect(Collectors.toList());
+        List<String> germanInfo = data.stream().map(row -> row.size() >= 8 ? row.get(7) : "").collect(Collectors.toList());
 
         List<String> stringResourceIdentifiers = this.generateStringResourceIdentifiers(englishNames);
 
@@ -56,7 +56,7 @@ public class IngredientSheetParser {
         String dutchResourceFile = String.join("\n", dutchResources);
         String germanResourceFile = String.join("\n", germanResources);
 
-        List<String> ingredientList = this.generateIngredientList(stringResourceIdentifiers, ingredientTypes, eNumbers);
+        List<String> ingredientList = this.generateIngredientList(stringResourceIdentifiers, englishInfoStringResources, ingredientTypes, eNumbers);
         String ingredientListFile = String.join("\n", ingredientList);
 
         // Remove trailing comma
@@ -175,7 +175,7 @@ public class IngredientSheetParser {
         return stringResources;
     }
 
-    private List<String> generateIngredientList(List<String> stringResourceIdentifiers, List<String> ingredientTypes, List<String> eNumbers) {
+    private List<String> generateIngredientList(List<String> stringResourceIdentifiers, List<String> infoStringResources, List<String> ingredientTypes, List<String> eNumbers) {
         List<String> stringResources = new ArrayList<>();
 
         for (int index = 0; index < stringResourceIdentifiers.size(); index++) {
@@ -197,8 +197,7 @@ public class IngredientSheetParser {
                             .replace("Yes", "VEGAN")
                             .replace("Depends", "DEPENDS") +
                     INGREDIENT_LIST_TEMPLATE[2] +
-                    identifier +
-                    INGREDIENT_LIST_TEMPLATE[3] +
+                    (infoStringResources.get(index).contains("><") ? "information_empty, " : identifier + INGREDIENT_LIST_TEMPLATE[3]) +
                     eNumber +
                     INGREDIENT_LIST_TEMPLATE[4]
             ;
