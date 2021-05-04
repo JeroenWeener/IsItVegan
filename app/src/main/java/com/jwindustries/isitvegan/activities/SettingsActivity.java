@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.Preference;
@@ -13,6 +12,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.jwindustries.isitvegan.BuildConfig;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
+import com.jwindustries.isitvegan.introduction.IntroductionActivity;
 
 public class SettingsActivity extends BaseActivity {
 

@@ -24,14 +24,20 @@
     <string name="about">Over</string>
     <string name="about_text">Hoi! Mijn naam is Jeroen en ik heb deze app ontwikkeld in de eerste maanden nadat ik had besloten om veganistisch te leven. Ik vond het vervelend om in de winkel websites af te struinen om uit te vinden of producten nou wel of niet vegan waren. Met deze app hoop ik naast mezelf ook anderen te ondersteunen in hun zoektocht naar een diervriendelijke leefstijl.\n\nEen lijst als deze zal nooit helemaal compleet of foutloos zijn. Mocht je informatie missen of een foutje vinden, laat het me dan vooral weten door een mailtje te sturen naar contactisitvegan@gmail.com.</string>
     <string name="title_scan">Scan product</string>
-    <string name="scan_hint">Richt de camera op de ingrediëntenlijst van het product</string>
+    <string name="scan_hint">Richt de camera op de barcode of ingrediëntenlijst van het product</string>
     <string name="error_opening_browser">Error bij openenen van browser</string>
     <string name="title_search_online">Zoek online</string>
     <string name="share_message">Ik raad je deze app aan! 🌱</string>
-    <string name="button_clear">Leeg lijst</string>
+    <string name="button_clear">Lijst wissen</string>
     <string name="error_no_camera_permission_granted">Functie vereist cameratoegang</string>
     <string name="title_toggle_torch">Flits</string>
     <string name="error_no_flash_on_device">Flits is niet beschikbaar</string>
+    <string name="message_scan_barcode_success">Ingrediënten geladen voor</string>
+    <string name="message_scan_barcode_success_no_ingredients">Geen ingrediënten gevonden voor</string>
+    <string name="message_scan_barcode_no_info">Geen online info voor</string>
+    <string name="message_scan_barcode_error">Error laden ingrediënten voor</string>
+    <string name="snackbar_action_dismiss">Dismiss</string>
+    <string name="message_scan_barcode_already_scanned">is al gescand</string>
 
     <!-- Introduction -->
     <string name="introduction_next">Volgende</string>

@@ -1,8 +1,11 @@
-package com.jwindustries.isitvegan.activities;
+package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,18 +28,26 @@ import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jwindustries.isitvegan.AdditiveIngredientAdapter;
-import com.jwindustries.isitvegan.BarcodeFoundListener;
 import com.jwindustries.isitvegan.Ingredient;
 import com.jwindustries.isitvegan.IngredientList;
 import com.jwindustries.isitvegan.R;
-import com.jwindustries.isitvegan.TextFoundListener;
-import com.jwindustries.isitvegan.ImageAnalyzer;
 import com.jwindustries.isitvegan.Utils;
+import com.jwindustries.isitvegan.activities.BaseActivity;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -44,18 +55,34 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class ScanActivity extends BaseActivity implements BarcodeFoundListener, TextFoundListener {
+
+    /*
+     * Camera
+     */
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
     private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
 
+    /*
+     * Barcode requests
+     */
+    private static final String OPEN_FOOD_FACTS_API_URL = "https://en.openfoodfacts.org/api/v0/product/";
+    private static final String BARCODE_REQUEST_TAG = "BarcodeRequestTag";
+    private RequestQueue barcodeRequestQueue;
+    private List<String> requestedBarcodes;
+    private List<String> handledBarcodes;
+    private List<String> queuedMessages;
+
+    /*
+     * UI
+     */
     private AdditiveIngredientAdapter adapter;
     private RecyclerView recyclerView;
     private ViewSwitcher scanListContainer;
     private LinearLayoutManager layoutManager;
-
-    private Menu menu;
+    private Menu optionsMenu;
 
     private List<Ingredient> ingredientList;
 
@@ -70,13 +97,17 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.recyclerView = this.findViewById(R.id.ingredient_view);
         this.recyclerView.setLayoutManager(this.layoutManager);
         this.recyclerView.setAdapter(this.adapter);
-
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
 
         this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
         this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this, this));
 
         this.ingredientList = IngredientList.getIngredientList(this);
+
+        this.barcodeRequestQueue = Volley.newRequestQueue(this);
+        this.requestedBarcodes = new ArrayList<>();
+        this.handledBarcodes = new ArrayList<>();
+        this.queuedMessages = new ArrayList<>();
 
         if (allPermissionsGranted()) {
             startCamera();
@@ -86,9 +117,15 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        this.barcodeRequestQueue.cancelAll(BARCODE_REQUEST_TAG);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.getMenuInflater().inflate(R.menu.scan_actionbar_menu, menu);
-        this.menu = menu;
+        this.optionsMenu = menu;
         return true;
     }
 
@@ -117,14 +154,71 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             if (torchState.getValue() != null) {
                 if (torchState.getValue() == TorchState.OFF) {
                     cameraControl.enableTorch(true);
-                    this.menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.flash_on_white));
+                    this.optionsMenu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.flash_on_white));
                 } else {
                     cameraControl.enableTorch(false);
-                    this.menu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.flash_off_white));
+                    this.optionsMenu.getItem(0).setIcon(ContextCompat.getDrawable(this, R.drawable.flash_off_white));
                 }
             }
         } else {
             Toast.makeText(this, R.string.error_no_flash_on_device, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onBarcodeFound(String barcode) {
+        if (!this.handledBarcodes.contains(barcode) && !this.requestedBarcodes.contains(barcode)) {
+            this.requestedBarcodes.add(barcode);
+
+            JsonObjectRequest barcodeRequest = new JsonObjectRequest(
+                    Request.Method.GET,
+                    OPEN_FOOD_FACTS_API_URL + barcode + ".json",
+                    null,
+                    (Response.Listener<JSONObject>) response -> {
+                        try {
+                            boolean productExists = response.get("status").toString().equals("1");
+                            if (productExists) {
+                                JSONArray ingredientsJson = (JSONArray) ((JSONObject) response.get("product")).get("ingredients");
+                                boolean areIngredientsFound = false;
+                                for (int ingredientIndex = 0; ingredientIndex < ingredientsJson.length(); ingredientIndex++) {
+                                    String ingredientText = ((JSONObject) ingredientsJson.get(ingredientIndex)).getString("text");
+                                    List<Ingredient> foundIngredients = this.ingredientList
+                                            .stream()
+                                            .filter(ingredient -> Utils.isIngredientInText(ingredient, ingredientText))
+                                            .collect(Collectors.toList());
+                                    this.addIngredients(foundIngredients);
+                                    areIngredientsFound = areIngredientsFound || foundIngredients.size() > 0;
+                                }
+
+                                if (areIngredientsFound) {
+                                    this.createSnackbar(this.getString(R.string.message_scan_barcode_success) + ' ' + barcode, barcode);
+                                } else {
+                                    this.createSnackbar(this.getString(R.string.message_scan_barcode_success_no_ingredients) + ' ' + barcode, barcode);
+                                }
+                            } else {
+                                this.createSnackbar(this.getString(R.string.message_scan_barcode_no_info) + ' ' + barcode, barcode);
+                            }
+
+                            this.requestedBarcodes.remove(barcode);
+                            this.handledBarcodes.add(barcode);
+
+                        } catch (JSONException e) {
+                            this.requestedBarcodes.remove(barcode);
+                            this.createSnackbar(this.getString(R.string.message_scan_barcode_error) + ' ' + barcode, barcode);
+                            e.printStackTrace();
+                        }
+                    },
+                    (Response.ErrorListener) error -> {
+                        this.requestedBarcodes.remove(barcode);
+                        this.createSnackbar(this.getString(R.string.message_scan_barcode_error) + ' ' + barcode, barcode);
+                        error.printStackTrace();
+                    });
+
+            barcodeRequest.setTag(BARCODE_REQUEST_TAG);
+            this.barcodeRequestQueue.add(barcodeRequest);
+
+        } else if (handledBarcodes.contains(barcode)) {
+            this.createSnackbar(barcode + ' ' + this.getString(R.string.message_scan_barcode_already_scanned), barcode);
         }
     }
 
@@ -134,7 +228,11 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                 .stream()
                 .filter(ingredient -> Utils.isIngredientInText(ingredient, Utils.normalizeString(foundText, false)))
                 .collect(Collectors.toList());
-        int numberAdded = this.adapter.addIngredients(foundIngredients);
+        this.addIngredients(foundIngredients);
+    }
+
+    private void addIngredients(List<Ingredient> ingredients) {
+        int numberAdded = this.adapter.addIngredients(ingredients);
         if (numberAdded > 0) {
             // Switch empty label for list view
             if (this.scanListContainer.getCurrentView().getId() != R.id.inner_scan_list_container) {
@@ -147,11 +245,6 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                 this.recyclerView.scrollToPosition(0);
             }
         }
-    }
-
-    @Override
-    public void onBarcodeFound(String barcode) {
-        Toast.makeText(this, barcode, Toast.LENGTH_SHORT).show();
     }
 
     private void startCamera() {
@@ -179,6 +272,9 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     public void clearList(View view) {
         this.adapter.clearList();
         this.scanListContainer.showNext();
+        this.requestedBarcodes.clear();
+        this.handledBarcodes.clear();
+        this.queuedMessages.clear();
     }
 
     @Override
@@ -212,6 +308,30 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                 Toast.makeText(this, R.string.error_no_camera_permission_granted, Toast.LENGTH_SHORT).show();
                 finish();
             }
+        }
+    }
+
+    /**
+     * Show a snackbar with specified message
+     *
+     * If a snackbar with given tag is already displayed, do not show a new one
+     * Tags are considered again after a 2 second countdown
+     *
+     * @param message the message displayed in the snackbar
+     * @param tag tag used for distinguishing between snackbars
+     */
+    private void createSnackbar(String message, String tag) {
+        if (!this.queuedMessages.contains(tag)) {
+            this.queuedMessages.add(tag);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> this.queuedMessages.remove(tag), 2000);
+
+            Snackbar snackbar = Snackbar.make(this.findViewById(R.id.scan_root), message, Snackbar.LENGTH_SHORT);
+            snackbar
+                    .setAction(R.string.snackbar_action_dismiss, view -> {
+                        snackbar.dismiss();
+                        this.queuedMessages.remove(tag);
+                    })
+                    .show();
         }
     }
 }

@@ -166,11 +166,11 @@ public class Utils {
         keywords.addAll(strippedEnglishKeywords);
 
         /*
-         * E numbers
+         * E-numbers
          */
         if (ingredient.hasENumber()) {
             List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
-            // Consider e numbers with text between '()' removed
+            // Consider E-numbers with text between '()' removed
             List<String> strippedENumbers = unstrippedENumbers
                     .stream()
                     .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))

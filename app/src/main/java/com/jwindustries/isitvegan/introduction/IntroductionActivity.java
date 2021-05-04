@@ -1,4 +1,4 @@
-package com.jwindustries.isitvegan.activities;
+package com.jwindustries.isitvegan.introduction;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +16,7 @@ import android.widget.Button;
 import com.google.android.material.tabs.TabLayout;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
+import com.jwindustries.isitvegan.activities.IngredientOverviewActivity;
 import com.jwindustries.isitvegan.introduction.SliderPagerAdapter;
 
 public class IntroductionActivity extends AppCompatActivity {

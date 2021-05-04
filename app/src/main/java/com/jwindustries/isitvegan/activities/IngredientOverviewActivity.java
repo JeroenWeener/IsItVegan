@@ -16,6 +16,7 @@ import android.widget.SearchView;
 import com.jwindustries.isitvegan.IngredientAdapter;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
+import com.jwindustries.isitvegan.scanning.ScanActivity;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
