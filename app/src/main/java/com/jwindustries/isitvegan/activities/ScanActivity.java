@@ -27,11 +27,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jwindustries.isitvegan.AdditiveIngredientAdapter;
+import com.jwindustries.isitvegan.BarcodeFoundListener;
 import com.jwindustries.isitvegan.Ingredient;
 import com.jwindustries.isitvegan.IngredientList;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.TextFoundListener;
-import com.jwindustries.isitvegan.TextReadAnalyzer;
+import com.jwindustries.isitvegan.ImageAnalyzer;
 import com.jwindustries.isitvegan.Utils;
 
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class ScanActivity extends BaseActivity implements TextFoundListener {
+public class ScanActivity extends BaseActivity implements BarcodeFoundListener, TextFoundListener {
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
     private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
@@ -73,7 +74,7 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
 
         this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
-        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new TextReadAnalyzer(this));
+        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this, this));
 
         this.ingredientList = IngredientList.getIngredientList(this);
 
@@ -146,6 +147,11 @@ public class ScanActivity extends BaseActivity implements TextFoundListener {
                 this.recyclerView.scrollToPosition(0);
             }
         }
+    }
+
+    @Override
+    public void onBarcodeFound(String barcode) {
+        Toast.makeText(this, barcode, Toast.LENGTH_SHORT).show();
     }
 
     private void startCamera() {
