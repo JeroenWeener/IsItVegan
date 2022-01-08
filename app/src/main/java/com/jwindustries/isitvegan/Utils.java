@@ -132,6 +132,52 @@ public class Utils {
                 .replace("ý", "y");
     }
 
+    public static boolean isTextIngredient(String text, Ingredient ingredient) {
+        List<String> keywords = new ArrayList<>();
+
+        /*
+         * Localised name
+         */
+        List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
+        // Consider keywords with text between '()' removed
+        List<String> strippedKeywords = unstrippedKeywords
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
+        keywords.addAll(unstrippedKeywords);
+        keywords.addAll(strippedKeywords);
+
+        /*
+         * English name
+         */
+        List<String> unstrippedEnglishKeywords = List.of(ingredient.getEnglishName().split(","));
+        // Consider keywords with text between '()' removed
+        List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
+        keywords.addAll(unstrippedEnglishKeywords);
+        keywords.addAll(strippedEnglishKeywords);
+
+        /*
+         * E-numbers
+         */
+        if (ingredient.hasENumber()) {
+            List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
+            // Consider E-numbers with text between '()' removed
+            List<String> strippedENumbers = unstrippedENumbers
+                    .stream()
+                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                    .collect(Collectors.toList());
+            keywords.addAll(unstrippedENumbers);
+            keywords.addAll(strippedENumbers);
+        }
+
+        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
+
+        return normalizedKeywordStream.anyMatch(keyword -> keyword.equals(Utils.normalizeString(text, false)));
+    }
+
     /**
      * Checks whether text contains the ingredient. Ingredients are checked in both local language as in English
      * @param ingredient ingredient to be possibly contained in the text

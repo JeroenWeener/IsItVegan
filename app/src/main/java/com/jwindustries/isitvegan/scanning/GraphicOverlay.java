@@ -2,16 +2,10 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.hardware.camera2.CameraCharacteristics;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-
-import androidx.camera.core.ImageProxy;
-import androidx.camera.view.PreviewView;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -171,6 +165,10 @@ public class GraphicOverlay extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        Log.d("IMGSIZ", "Canvas size");
+        Log.d("IMGSIZ", String.valueOf(canvas.getWidth()));
+        Log.d("IMGSIZ", String.valueOf(canvas.getHeight()));
 
         synchronized (lock) {
             if ((previewWidth != 0) && (previewHeight != 0)) {

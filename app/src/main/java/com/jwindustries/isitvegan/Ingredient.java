@@ -47,16 +47,20 @@ public class Ingredient implements Serializable {
         return this.type;
     }
 
-    public String getInformation() {
-        return this.information;
-    }
-
     public String getENumber() {
         return this.eNumber;
     }
 
     public boolean hasENumber() {
         return this.eNumber != null && this.eNumber.length() > 0;
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Ingredient)) {
+            return false;
+        }
+        Ingredient ingredient = (Ingredient) obj;
+        return ingredient.getName().equals(this.getName());
     }
 }
 

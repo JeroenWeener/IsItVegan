@@ -3,6 +3,7 @@ package com.jwindustries.isitvegan;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,8 +59,8 @@ public class AdditiveIngredientAdapter
      */
     public boolean addIngredient(Ingredient ingredient) {
         boolean shouldAdd = !this.ingredientList.contains(ingredient);
-        if (!shouldAdd) {
-            this.ingredientList.add(ingredient);
+        if (shouldAdd) {
+            this.ingredientList.add(0, ingredient);
             this.notifyItemInserted(0);
         }
         return shouldAdd;

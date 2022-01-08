@@ -24,16 +24,17 @@ import java.util.List;
 import java.util.Optional;
 
 public class ImageAnalyzer implements ImageAnalysis.Analyzer {
+    private final List<Ingredient> ingredientList;
     private final BarcodeFoundListener barcodeFoundListener;
     private final BarcodeScannerOptions barcodeOptions;
     private final IngredientsFoundListener ingredientsFoundListener;
-    private final List<Ingredient> ingredientList;
 
     public ImageAnalyzer(
+            List<Ingredient> ingredientList,
             BarcodeFoundListener barcodeFoundListener,
-            IngredientsFoundListener ingredientsFoundListener,
-            List<Ingredient> ingredientList
+            IngredientsFoundListener ingredientsFoundListener
     ) {
+        this.ingredientList = ingredientList;
         this.barcodeFoundListener = barcodeFoundListener;
         this.barcodeOptions = new BarcodeScannerOptions.Builder()
                 .setBarcodeFormats(
@@ -42,9 +43,7 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
                         Barcode.FORMAT_EAN_8,
                         Barcode.FORMAT_EAN_13
                 ).build();
-
         this.ingredientsFoundListener = ingredientsFoundListener;
-        this.ingredientList = ingredientList;
     }
 
     @Override
@@ -79,6 +78,9 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     }
 
     private Task<Text> readTextFromImage(InputImage image) {
+        Log.d("IMGSIZ", "Image size");
+        Log.d("IMGSIZ", String.valueOf(image.getWidth()));
+        Log.d("IMGSIZ", String.valueOf(image.getHeight()));
         return TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                 .process(image)
                 .addOnSuccessListener(this::processTextFromImage);
@@ -93,21 +95,17 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
         for (Text.TextBlock block : visionText.getTextBlocks()) {
             for (Text.Line line : block.getLines()) {
                 for (Text.Element element : line.getElements()) {
-//                    Optional<Ingredient> potentialIngredient = this.ingredientList
-//                            .stream()
-//                            .filter(ingredient -> Utils.isIngredientInText(ingredient, Utils.normalizeString(element.getText(), false)))
-//                            .findFirst();
-//                    if (potentialIngredient.isPresent()) {
-//                        Ingredient ingredient = potentialIngredient.get();
-//                        Log.d("TEST", element.getText());
-//                        ingredientElements.add(new IngredientElement(ingredient, element));
-//                    }
-                    if (Utils.normalizeString(element.getText(), true).equals("ingredienten")) {
-                        this.ingredientsFoundListener.printText("Ingrediënten", element);
+                    Optional<Ingredient> ingredientOptional = this.ingredientList
+                            .stream()
+                            .filter(ingredient -> Utils.isTextIngredient(element.getText(), ingredient))
+                            .findAny();
+                    if (ingredientOptional.isPresent()) {
+                        Ingredient ingredient = ingredientOptional.get();
+                        ingredientElements.add(new IngredientElement(ingredient, element));
                     }
                 }
             }
         }
-//        this.ingredientsFoundListener.onIngredientsFound(ingredientElements);
+        ingredientsFoundListener.onIngredientsFound(ingredientElements);
     }
 }

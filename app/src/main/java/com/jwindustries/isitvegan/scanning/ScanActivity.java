@@ -2,14 +2,9 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Matrix;
-import android.graphics.Rect;
-import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.util.Rational;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,11 +17,8 @@ import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.core.TorchState;
-import androidx.camera.core.UseCaseGroup;
-import androidx.camera.core.ViewPort;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
@@ -114,7 +106,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
 
         this.ingredientList = IngredientList.getIngredientList(this);
-        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this, this, ingredientList));
+        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this.ingredientList, this, this));
 
         this.barcodeRequestQueue = Volley.newRequestQueue(this);
         this.requestedBarcodes = new ArrayList<>();
@@ -243,24 +235,38 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.addIngredients(foundIngredients);
     }
 
+//    @Override
+//    public void onIngredientsFound(List<IngredientElement> ingredientElements) {
+//        this.graphicOverlay.clear();
+//        for (IngredientElement ingredientElement : ingredientElements) {
+//            Text.Element element = ingredientElement.getElement();
+//            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
+//            graphicOverlay.add(textGraphic);
+//
+//            Ingredient ingredient = ingredientElement.getIngredient();
+//            this.addIngredient(ingredient);
+//        }
+//    }
+//
+//    @Override
+//    public void printText(String text, Text.Element element) {
+//        this.graphicOverlay.clear();
+//        GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
+//        graphicOverlay.add(textGraphic);
+//    }
+
     @Override
     public void onIngredientsFound(List<IngredientElement> ingredientElements) {
         this.graphicOverlay.clear();
-        for (IngredientElement ingredientElement : ingredientElements) {
-            Text.Element element = ingredientElement.getElement();
-            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
-            graphicOverlay.add(textGraphic);
 
+        for (IngredientElement ingredientElement : ingredientElements) {
             Ingredient ingredient = ingredientElement.getIngredient();
             this.addIngredient(ingredient);
-        }
-    }
 
-    @Override
-    public void printText(String text, Text.Element element) {
-        this.graphicOverlay.clear();
-        GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
-        graphicOverlay.add(textGraphic);
+            Text.Element element = ingredientElement.getElement();
+            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
+            this.graphicOverlay.add(textGraphic);
+        }
     }
 
     private void addIngredient(Ingredient ingredient) {

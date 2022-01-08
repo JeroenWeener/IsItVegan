@@ -30,7 +30,6 @@ public class IngredientViewActivity extends BaseActivity {
         this.ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.key_ingredient));
         if (ingredient != null) {
             ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName());
-            ((TextView) this.findViewById(R.id.ingredient_information_view)).setText(ingredient.getInformation());
 
             TextView eNumberView = this.findViewById(R.id.ingredient_e_number_view);
             if (ingredient.hasENumber()) {
