@@ -51,9 +51,24 @@ public class AdditiveIngredientAdapter
     }
 
     /**
+     * Adds provided ingredient to ingredient list
+     * Only adds the ingredient if it is not already in the list
+     * @param ingredient the ingredient to be added to the ingredient list
+     * @return whether the ingredient has been added to the ingredient list
+     */
+    public boolean addIngredient(Ingredient ingredient) {
+        boolean shouldAdd = !this.ingredientList.contains(ingredient);
+        if (!shouldAdd) {
+            this.ingredientList.add(ingredient);
+            this.notifyItemInserted(0);
+        }
+        return shouldAdd;
+    }
+
+    /**
      * Adds provided ingredients to ingredient list
      * Only adds ingredients that are not already in the list
-     * @param ingredients the ingredients to be add to the ingredient list
+     * @param ingredients the ingredients to be added to the ingredient list
      * @return the number of ingredients added to the list
      */
     public int addIngredients(List<Ingredient> ingredients) {

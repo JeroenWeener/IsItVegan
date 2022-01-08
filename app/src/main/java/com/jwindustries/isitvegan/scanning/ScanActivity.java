@@ -2,9 +2,14 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+import android.util.Rational;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,8 +22,11 @@ import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.core.TorchState;
+import androidx.camera.core.UseCaseGroup;
+import androidx.camera.core.ViewPort;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
@@ -34,6 +42,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.text.Text;
 import com.jwindustries.isitvegan.AdditiveIngredientAdapter;
 import com.jwindustries.isitvegan.Ingredient;
 import com.jwindustries.isitvegan.IngredientList;
@@ -53,7 +62,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class ScanActivity extends BaseActivity implements BarcodeFoundListener, TextFoundListener {
+public class ScanActivity extends BaseActivity implements BarcodeFoundListener, IngredientsFoundListener {
 
     /*
      * Camera
@@ -82,6 +91,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private ViewSwitcher scanListContainer;
     private LinearLayoutManager layoutManager;
     private Menu optionsMenu;
+    private GraphicOverlay graphicOverlay;
+    private PreviewView cameraPreviewView;
 
     private List<Ingredient> ingredientList;
 
@@ -97,11 +108,13 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.recyclerView.setLayoutManager(this.layoutManager);
         this.recyclerView.setAdapter(this.adapter);
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
+        this.graphicOverlay = this.findViewById(R.id.graphic_overlay);
+        this.cameraPreviewView = this.findViewById(R.id.camera_preview_view);
 
         this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
-        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this, this));
 
         this.ingredientList = IngredientList.getIngredientList(this);
+        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this, this, ingredientList));
 
         this.barcodeRequestQueue = Volley.newRequestQueue(this);
         this.requestedBarcodes = new ArrayList<>();
@@ -221,7 +234,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         }
     }
 
-    @Override
+//    @Override
     public void onTextFound(String foundText) {
         List<Ingredient> foundIngredients = this.ingredientList
                 .stream()
@@ -230,19 +243,50 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.addIngredients(foundIngredients);
     }
 
+    @Override
+    public void onIngredientsFound(List<IngredientElement> ingredientElements) {
+        this.graphicOverlay.clear();
+        for (IngredientElement ingredientElement : ingredientElements) {
+            Text.Element element = ingredientElement.getElement();
+            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
+            graphicOverlay.add(textGraphic);
+
+            Ingredient ingredient = ingredientElement.getIngredient();
+            this.addIngredient(ingredient);
+        }
+    }
+
+    @Override
+    public void printText(String text, Text.Element element) {
+        this.graphicOverlay.clear();
+        GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
+        graphicOverlay.add(textGraphic);
+    }
+
+    private void addIngredient(Ingredient ingredient) {
+        boolean isAdded = this.adapter.addIngredient(ingredient);
+        if (isAdded) {
+            updateScanList();
+        }
+    }
+
     private void addIngredients(List<Ingredient> ingredients) {
         int numberAdded = this.adapter.addIngredients(ingredients);
         if (numberAdded > 0) {
-            // Switch empty label for list view
-            if (this.scanListContainer.getCurrentView().getId() != R.id.inner_scan_list_container) {
-                this.scanListContainer.showNext();
-            }
+            updateScanList();
+        }
+    }
 
-            // Maintain location at top of the list but do not jump there if the user is scrolling
-            int scrollPosition = this.layoutManager.findFirstVisibleItemPosition();
-            if (scrollPosition == 0) {
-                this.recyclerView.scrollToPosition(0);
-            }
+    private void updateScanList() {
+        // Switch empty label for list view
+        if (this.scanListContainer.getCurrentView().getId() != R.id.inner_scan_list_container) {
+            this.scanListContainer.showNext();
+        }
+
+        // Maintain location at top of the list but do not jump there if the user is scrolling
+        int scrollPosition = this.layoutManager.findFirstVisibleItemPosition();
+        if (scrollPosition == 0) {
+            this.recyclerView.scrollToPosition(0);
         }
     }
 
@@ -251,7 +295,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         cameraProviderFuture.addListener(
                 () -> {
                     Preview preview = new Preview.Builder().build();
-                    preview.setSurfaceProvider(((PreviewView) this.findViewById(R.id.camera_preview_view)).getSurfaceProvider());
+                    preview.setSurfaceProvider(cameraPreviewView.getSurfaceProvider());
+
                     try {
                         cameraProviderFuture.get().unbindAll();
                         this.camera = cameraProviderFuture.get().bindToLifecycle(

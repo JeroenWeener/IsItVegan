@@ -1,6 +1,7 @@
 package com.jwindustries.isitvegan.scanning;
 
 import android.media.Image;
+import android.util.Log;
 
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
@@ -13,19 +14,25 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+import com.jwindustries.isitvegan.Ingredient;
+import com.jwindustries.isitvegan.Utils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     private final BarcodeFoundListener barcodeFoundListener;
     private final BarcodeScannerOptions barcodeOptions;
-    private final TextFoundListener textFoundListener;
+    private final IngredientsFoundListener ingredientsFoundListener;
+    private final List<Ingredient> ingredientList;
 
     public ImageAnalyzer(
             BarcodeFoundListener barcodeFoundListener,
-            TextFoundListener textFoundListener
+            IngredientsFoundListener ingredientsFoundListener,
+            List<Ingredient> ingredientList
     ) {
         this.barcodeFoundListener = barcodeFoundListener;
         this.barcodeOptions = new BarcodeScannerOptions.Builder()
@@ -36,7 +43,8 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
                         Barcode.FORMAT_EAN_13
                 ).build();
 
-        this.textFoundListener = textFoundListener;
+        this.ingredientsFoundListener = ingredientsFoundListener;
+        this.ingredientList = ingredientList;
     }
 
     @Override
@@ -50,6 +58,9 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
 
     private void process(Image image, ImageProxy imageProxy) {
         int rotation = imageProxy.getImageInfo().getRotationDegrees();
+        Log.d("IMGROT", String.valueOf(rotation));
+        Log.d("SIZE", String.valueOf(image.getWidth()));
+        Log.d("SIZE", String.valueOf(image.getHeight()));
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
 
         readBarcodeFromImage(inputImage)
@@ -78,6 +89,25 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     }
 
     private void processTextFromImage(Text visionText) {
-        this.textFoundListener.onTextFound(visionText.getText());
+        List<IngredientElement> ingredientElements = new ArrayList<>();
+        for (Text.TextBlock block : visionText.getTextBlocks()) {
+            for (Text.Line line : block.getLines()) {
+                for (Text.Element element : line.getElements()) {
+//                    Optional<Ingredient> potentialIngredient = this.ingredientList
+//                            .stream()
+//                            .filter(ingredient -> Utils.isIngredientInText(ingredient, Utils.normalizeString(element.getText(), false)))
+//                            .findFirst();
+//                    if (potentialIngredient.isPresent()) {
+//                        Ingredient ingredient = potentialIngredient.get();
+//                        Log.d("TEST", element.getText());
+//                        ingredientElements.add(new IngredientElement(ingredient, element));
+//                    }
+                    if (Utils.normalizeString(element.getText(), true).equals("ingredienten")) {
+                        this.ingredientsFoundListener.printText("Ingrediënten", element);
+                    }
+                }
+            }
+        }
+//        this.ingredientsFoundListener.onIngredientsFound(ingredientElements);
     }
 }
