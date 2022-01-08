@@ -6,12 +6,13 @@ import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 
 import com.google.android.gms.tasks.Task;
-import com.google.mlkit.vision.barcode.Barcode;
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +68,7 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     }
 
     private Task<Text> readTextFromImage(InputImage image) {
-        return TextRecognition.getClient()
+        return TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                 .process(image)
                 .addOnSuccessListener(this::processTextFromImage);
     }

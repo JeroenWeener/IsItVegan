@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -301,6 +300,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             @NotNull String[] permissions,
             @NotNull int[] grantResults
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (allPermissionsGranted()) {
                 startCamera();

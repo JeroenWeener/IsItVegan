@@ -3,21 +3,25 @@ package com.jwindustries.isitvegan.introduction;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.Lifecycle;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-public class SliderPagerAdapter extends FragmentPagerAdapter {
-    public SliderPagerAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
+import org.jetbrains.annotations.NotNull;
+
+public class SliderPagerAdapter extends FragmentStateAdapter {
+    public SliderPagerAdapter(@NonNull @NotNull FragmentManager fragmentManager, @NonNull @NotNull Lifecycle lifecycle) {
+        super(fragmentManager, lifecycle);
     }
 
     @NonNull
+    @NotNull
     @Override
-    public Fragment getItem(int position) {
+    public Fragment createFragment(int position) {
         return SliderItemFragment.newInstance(position);
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return 4;
     }
 }

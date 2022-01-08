@@ -2,8 +2,7 @@ package com.jwindustries.isitvegan.introduction;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,13 +13,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 import com.jwindustries.isitvegan.activities.IngredientOverviewActivity;
-import com.jwindustries.isitvegan.introduction.SliderPagerAdapter;
 
 public class IntroductionActivity extends AppCompatActivity {
-    private ViewPager viewPager;
+    private ViewPager2 viewPager;
     private Button advanceButton;
     private SliderPagerAdapter adapter;
 
@@ -56,15 +55,15 @@ public class IntroductionActivity extends AppCompatActivity {
 
         // Init slider pager adapter
         this.adapter = new SliderPagerAdapter(this.getSupportFragmentManager(),
-                FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+                this.getLifecycle());
         // Set adapter
         this.viewPager.setAdapter(this.adapter);
         // Set dot indicators
-        tabLayout.setupWithViewPager(this.viewPager);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText("OBJECT " + (position + 1))).attach();
         // Make status bar transparent
         this.changeStatusBarColor();
         this.advanceButton.setOnClickListener(view -> {
-            if (this.viewPager.getCurrentItem() < this.adapter.getCount() - 1) {
+            if (this.viewPager.getCurrentItem() < this.adapter.getItemCount() - 1) {
                 this.viewPager.setCurrentItem(this.viewPager.getCurrentItem() + 1);
             } else {
                 Utils.storeTutorialFinished(this);
@@ -76,13 +75,13 @@ public class IntroductionActivity extends AppCompatActivity {
          * Add a listener that will be invoked whenever the page changes
          * or is incrementally scrolled
          */
-        this.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        this.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
-                if (position == adapter.getCount() - 1) {
+                if (position == adapter.getItemCount() - 1) {
                     advanceButton.setText(R.string.introduction_get_started);
                 } else {
                     advanceButton.setText(R.string.introduction_next);

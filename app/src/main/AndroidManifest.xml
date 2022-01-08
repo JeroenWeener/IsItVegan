@@ -21,6 +21,7 @@
         <activity
             android:name=".introduction.IntroductionActivity"
             android:theme="@style/SplashScreenTheme"
+            android:exported="false"
         >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
