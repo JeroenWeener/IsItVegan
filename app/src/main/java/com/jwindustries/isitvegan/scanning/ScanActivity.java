@@ -2,9 +2,11 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,10 +104,17 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
         this.graphicOverlay = this.findViewById(R.id.graphic_overlay);
         this.cameraPreviewView = this.findViewById(R.id.camera_preview_view);
-
-        this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
+        this.graphicOverlay.setCameraInfo(
+                this.cameraPreviewView.getWidth(),
+                this.cameraPreviewView.getHeight(),
+                CameraCharacteristics.LENS_FACING_BACK
+        );
 
         this.ingredientList = IngredientList.getIngredientList(this);
+        this.imageAnalyzer = new ImageAnalysis.Builder()
+                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build();
         this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this.ingredientList, this, this));
 
         this.barcodeRequestQueue = Volley.newRequestQueue(this);
@@ -178,7 +187,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                     Request.Method.GET,
                     OPEN_FOOD_FACTS_API_URL + barcode + ".json",
                     null,
-                    (Response.Listener<JSONObject>) response -> {
+                    response -> {
                         try {
                             boolean productExists = response.get("status").toString().equals("1");
                             if (productExists) {
@@ -212,7 +221,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                             e.printStackTrace();
                         }
                     },
-                    (Response.ErrorListener) error -> {
+                    error -> {
                         this.requestedBarcodes.remove(barcode);
                         this.createSnackbar(this.getString(R.string.message_scan_barcode_error) + ' ' + barcode, barcode);
                         error.printStackTrace();
