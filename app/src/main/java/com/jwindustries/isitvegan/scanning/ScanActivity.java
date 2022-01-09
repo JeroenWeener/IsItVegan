@@ -12,12 +12,14 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
+import androidx.camera.core.ResolutionInfo;
 import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -54,14 +56,12 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class ScanActivity extends BaseActivity implements BarcodeFoundListener, IngredientsFoundListener {
-
     /*
      * Camera
      */
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
     private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
-    private final Size CAMERA_RESOLUTION = new Size(480, 640); // 4:3
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
 
@@ -105,7 +105,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
 
         this.ingredientList = IngredientList.getIngredientList(this);
         this.imageAnalyzer = new ImageAnalysis.Builder()
-                .setTargetResolution(CAMERA_RESOLUTION)
+                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
         this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this.ingredientList, this, this));
@@ -232,12 +232,27 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     public void onIngredientsFound(List<IngredientElement> ingredientElements) {
         this.graphicOverlay.clear();
 
+        ResolutionInfo resolutionInfo = imageAnalyzer.getResolutionInfo();
+        if (resolutionInfo == null) {
+            return;
+        }
+
+        Size cameraResolution = resolutionInfo.getResolution();
+        int rotation = imageAnalyzer.getResolutionInfo().getRotationDegrees();
+        if (rotation == 90 || rotation == 270) {
+            cameraResolution = new Size(cameraResolution.getHeight(), cameraResolution.getWidth());
+        }
+
+        Utils.debug(this, "Camera resolution");
+        Utils.debug(this, String.valueOf(cameraResolution.getWidth()));
+        Utils.debug(this, String.valueOf(cameraResolution.getHeight()));
+
         for (IngredientElement ingredientElement : ingredientElements) {
             Ingredient ingredient = ingredientElement.getIngredient();
             this.addIngredient(ingredient);
 
             Text.Element element = ingredientElement.getElement();
-            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element, CAMERA_RESOLUTION);
+            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element, cameraResolution);
             this.graphicOverlay.add(textGraphic);
         }
     }
