@@ -2,18 +2,16 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.hardware.camera2.CameraCharacteristics;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraInfo;
@@ -31,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
@@ -64,6 +61,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
     private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
+    private final Size CAMERA_RESOLUTION = new Size(480, 640); // 4:3
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
 
@@ -104,15 +102,10 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
         this.graphicOverlay = this.findViewById(R.id.graphic_overlay);
         this.cameraPreviewView = this.findViewById(R.id.camera_preview_view);
-        this.graphicOverlay.setCameraInfo(
-                this.cameraPreviewView.getWidth(),
-                this.cameraPreviewView.getHeight(),
-                CameraCharacteristics.LENS_FACING_BACK
-        );
 
         this.ingredientList = IngredientList.getIngredientList(this);
         this.imageAnalyzer = new ImageAnalysis.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                .setTargetResolution(CAMERA_RESOLUTION)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
         this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this.ingredientList, this, this));
@@ -235,35 +228,6 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         }
     }
 
-//    @Override
-    public void onTextFound(String foundText) {
-        List<Ingredient> foundIngredients = this.ingredientList
-                .stream()
-                .filter(ingredient -> Utils.isIngredientInText(ingredient, Utils.normalizeString(foundText, false)))
-                .collect(Collectors.toList());
-        this.addIngredients(foundIngredients);
-    }
-
-//    @Override
-//    public void onIngredientsFound(List<IngredientElement> ingredientElements) {
-//        this.graphicOverlay.clear();
-//        for (IngredientElement ingredientElement : ingredientElements) {
-//            Text.Element element = ingredientElement.getElement();
-//            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
-//            graphicOverlay.add(textGraphic);
-//
-//            Ingredient ingredient = ingredientElement.getIngredient();
-//            this.addIngredient(ingredient);
-//        }
-//    }
-//
-//    @Override
-//    public void printText(String text, Text.Element element) {
-//        this.graphicOverlay.clear();
-//        GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
-//        graphicOverlay.add(textGraphic);
-//    }
-
     @Override
     public void onIngredientsFound(List<IngredientElement> ingredientElements) {
         this.graphicOverlay.clear();
@@ -273,7 +237,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             this.addIngredient(ingredient);
 
             Text.Element element = ingredientElement.getElement();
-            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element);
+            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element, CAMERA_RESOLUTION);
             this.graphicOverlay.add(textGraphic);
         }
     }

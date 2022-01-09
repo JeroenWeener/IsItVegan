@@ -2,46 +2,25 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.hardware.camera2.CameraCharacteristics;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * A view which renders a series of custom graphics to be overlayed on top of an associated preview
- * (i.e., the camera preview). The creator can add graphics objects, update the objects, and remove
- * them, triggering the appropriate drawing and invalidation within the view.
- * <p>
- * <p>Supports scaling and mirroring of the graphics relative the camera's preview properties. The
- * idea is that detection items are expressed in terms of a preview size, but need to be scaled up
- * to the full view size, and also mirrored in the case of the front-facing camera.
- * <p>
- * <p>Associated {@link Graphic} items should use the following methods to convert to view
- * coordinates for the graphics that are drawn:
- * <p>
- * <ol>
- * <li>{@link Graphic#scaleX(float)} and {@link Graphic#scaleY(float)} adjust the size of the
- * supplied value from the preview scale to the view scale.
- * <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
- * coordinate from the preview's coordinate system to the view coordinate system.
- * </ol>
- */
 public class GraphicOverlay extends View {
     private final Object lock = new Object();
-    private int previewWidth;
-    private float widthScaleFactor = 1.0f;
-    private int previewHeight;
-    private float heightScaleFactor = 1.0f;
-    private int facing = CameraCharacteristics.LENS_FACING_BACK;
     private final Set<Graphic> graphics = new HashSet<>();
 
-    /**
-     * Base class for a custom graphics object to be rendered within the graphic overlay. Subclass
-     * this and implement the {@link Graphic#draw(Canvas)} method to define the graphics element. Add
-     * instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
-     */
+    // Debugging
+    private final static boolean DRAW_MARKERS = true;
+    private final static int MARKER_SIZE = 10;
+    private final static int MARKER_COLOR = Color.GREEN;
+
     public abstract static class Graphic {
         private final GraphicOverlay overlay;
 
@@ -49,59 +28,7 @@ public class GraphicOverlay extends View {
             this.overlay = overlay;
         }
 
-        /**
-         * Draw the graphic on the supplied canvas. Drawing should use the following methods to convert
-         * to view coordinates for the graphics that are drawn:
-         * <p>
-         * <ol>
-         * <li>{@link Graphic#scaleX(float)} and {@link Graphic#scaleY(float)} adjust the size of the
-         * supplied value from the preview scale to the view scale.
-         * <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
-         * coordinate from the preview's coordinate system to the view coordinate system.
-         * </ol>
-         *
-         * @param canvas drawing canvas
-         */
         public abstract void draw(Canvas canvas);
-
-        /**
-         * Adjusts a horizontal value of the supplied value from the preview scale to the view scale.
-         */
-        public float scaleX(float horizontal) {
-            return horizontal * overlay.widthScaleFactor;
-        }
-
-        /**
-         * Adjusts a vertical value of the supplied value from the preview scale to the view scale.
-         */
-        public float scaleY(float vertical) {
-            return vertical * overlay.heightScaleFactor;
-        }
-
-        /**
-         * Returns the application context of the app.
-         */
-        public Context getApplicationContext() {
-            return overlay.getContext().getApplicationContext();
-        }
-
-        /**
-         * Adjusts the x coordinate from the preview's coordinate system to the view coordinate system.
-         */
-        public float translateX(float x) {
-            if (overlay.facing == CameraCharacteristics.LENS_FACING_FRONT) {
-                return overlay.getWidth() - scaleX(x);
-            } else {
-                return scaleX(x);
-            }
-        }
-
-        /**
-         * Adjusts the y coordinate from the preview's coordinate system to the view coordinate system.
-         */
-        public float translateY(float y) {
-            return scaleY(y);
-        }
 
         public void postInvalidate() {
             overlay.postInvalidate();
@@ -112,9 +39,6 @@ public class GraphicOverlay extends View {
         super(context, attrs);
     }
 
-    /**
-     * Removes all graphics from the overlay.
-     */
     public void clear() {
         synchronized (lock) {
             graphics.clear();
@@ -122,9 +46,6 @@ public class GraphicOverlay extends View {
         postInvalidate();
     }
 
-    /**
-     * Adds a graphic to the overlay.
-     */
     public void add(Graphic graphic) {
         synchronized (lock) {
             graphics.add(graphic);
@@ -132,9 +53,6 @@ public class GraphicOverlay extends View {
         postInvalidate();
     }
 
-    /**
-     * Removes a graphic from the overlay.
-     */
     public void remove(Graphic graphic) {
         synchronized (lock) {
             graphics.remove(graphic);
@@ -142,43 +60,53 @@ public class GraphicOverlay extends View {
         postInvalidate();
     }
 
-    /**
-     * Sets the camera attributes for size and facing direction, which informs how to transform image
-     * coordinates later.
-     */
-    public void setCameraInfo(int previewWidth, int previewHeight, int facing) {
-        Log.d("PREVIEW", String.valueOf(previewWidth));
-        Log.d("PREVIEW", String.valueOf(previewHeight));
-        Log.d("PREVIEW", String.valueOf(facing));
-
-        synchronized (lock) {
-            this.previewWidth = previewWidth;
-            this.previewHeight = previewHeight;
-            this.facing = facing;
-        }
-        postInvalidate();
-    }
-
-    /**
-     * Draws the overlay with its associated graphic objects.
-     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Log.d("IMGSIZ", "Canvas size");
-        Log.d("IMGSIZ", String.valueOf(canvas.getWidth()));
-        Log.d("IMGSIZ", String.valueOf(canvas.getHeight()));
+        if (DRAW_MARKERS) {
+            drawMarkers(canvas);
+        }
 
         synchronized (lock) {
-            if ((previewWidth != 0) && (previewHeight != 0)) {
-                widthScaleFactor = (float) canvas.getWidth() / (float) previewWidth;
-                heightScaleFactor = (float) canvas.getHeight() / (float) previewHeight;
-            }
-
             for (Graphic graphic : graphics) {
                 graphic.draw(canvas);
             }
         }
+    }
+
+    private void drawMarkers(Canvas canvas) {
+        Paint markerPaint = new Paint();
+        markerPaint.setColor(MARKER_COLOR);
+        markerPaint.setStyle(Paint.Style.FILL);
+
+        RectF topLeftMarker = new RectF(new Rect(
+                0,
+                0,
+                MARKER_SIZE,
+                MARKER_SIZE
+        ));
+        RectF topRightMarker = new RectF(new Rect(
+                canvas.getWidth() - MARKER_SIZE,
+                0,
+                canvas.getWidth(),
+                MARKER_SIZE
+        ));
+        RectF bottomLeftMarker = new RectF(new Rect(
+                0,
+                canvas.getHeight() - MARKER_SIZE,
+                MARKER_SIZE,
+                canvas.getHeight()
+        ));
+        RectF bottomRightMarker = new RectF(new Rect(
+                canvas.getWidth() - MARKER_SIZE,
+                canvas.getHeight() - MARKER_SIZE,
+                canvas.getWidth(),
+                canvas.getHeight()
+        ));
+        canvas.drawRect(topLeftMarker, markerPaint);
+        canvas.drawRect(topRightMarker, markerPaint);
+        canvas.drawRect(bottomLeftMarker, markerPaint);
+        canvas.drawRect(bottomRightMarker, markerPaint);
     }
 }

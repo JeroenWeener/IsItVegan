@@ -1,7 +1,6 @@
 package com.jwindustries.isitvegan.scanning;
 
 import android.media.Image;
-import android.util.Log;
 
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
@@ -57,9 +56,6 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
 
     private void process(Image image, ImageProxy imageProxy) {
         int rotation = imageProxy.getImageInfo().getRotationDegrees();
-        Log.d("IMGROT", String.valueOf(rotation));
-        Log.d("SIZE", String.valueOf(image.getWidth()));
-        Log.d("SIZE", String.valueOf(image.getHeight()));
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
 
         readBarcodeFromImage(inputImage)
@@ -78,9 +74,6 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     }
 
     private Task<Text> readTextFromImage(InputImage image) {
-        Log.d("IMGSIZ", "Image size");
-        Log.d("IMGSIZ", String.valueOf(image.getWidth()));
-        Log.d("IMGSIZ", String.valueOf(image.getHeight()));
         return TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                 .process(image)
                 .addOnSuccessListener(this::processTextFromImage);
