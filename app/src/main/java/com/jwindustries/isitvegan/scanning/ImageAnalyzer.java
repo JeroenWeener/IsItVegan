@@ -58,6 +58,10 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
         int rotation = imageProxy.getImageInfo().getRotationDegrees();
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
 
+        Utils.debug(this, "Image size");
+        Utils.debug(this, String.valueOf(inputImage.getWidth()));
+        Utils.debug(this, String.valueOf(inputImage.getHeight()));
+
         readBarcodeFromImage(inputImage)
                 .continueWithTask(result -> readTextFromImage(inputImage))
                 .addOnCompleteListener(complete -> imageProxy.close());

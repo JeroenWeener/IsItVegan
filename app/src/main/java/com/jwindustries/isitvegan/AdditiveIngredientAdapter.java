@@ -3,7 +3,6 @@ package com.jwindustries.isitvegan;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;

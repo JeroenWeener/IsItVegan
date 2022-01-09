@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -16,6 +17,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Utils {
+    /*
+     * Debugging
+     */
+    public static final boolean DEBUG = true;
+    private static final String TAG = "DEBUG";
+    public static void debug(Object object, String message) {
+        if (DEBUG) {
+            Log.d(TAG + ": " + object.getClass().getSimpleName() + "\t", message);
+        }
+    }
 
     public static void handleTheme(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);

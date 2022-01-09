@@ -4,10 +4,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.jwindustries.isitvegan.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +18,6 @@ public class GraphicOverlay extends View {
     private final Set<Graphic> graphics = new HashSet<>();
 
     // Debugging
-    private final static boolean DRAW_MARKERS = true;
     private final static int MARKER_SIZE = 10;
     private final static int MARKER_COLOR = Color.GREEN;
 
@@ -64,7 +64,7 @@ public class GraphicOverlay extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (DRAW_MARKERS) {
+        if (Utils.DEBUG) {
             drawMarkers(canvas);
         }
 
@@ -80,30 +80,30 @@ public class GraphicOverlay extends View {
         markerPaint.setColor(MARKER_COLOR);
         markerPaint.setStyle(Paint.Style.FILL);
 
-        RectF topLeftMarker = new RectF(new Rect(
+        RectF topLeftMarker = new RectF(
                 0,
                 0,
                 MARKER_SIZE,
                 MARKER_SIZE
-        ));
-        RectF topRightMarker = new RectF(new Rect(
+        );
+        RectF topRightMarker = new RectF(
                 canvas.getWidth() - MARKER_SIZE,
                 0,
                 canvas.getWidth(),
                 MARKER_SIZE
-        ));
-        RectF bottomLeftMarker = new RectF(new Rect(
+        );
+        RectF bottomLeftMarker = new RectF(
                 0,
                 canvas.getHeight() - MARKER_SIZE,
                 MARKER_SIZE,
                 canvas.getHeight()
-        ));
-        RectF bottomRightMarker = new RectF(new Rect(
+        );
+        RectF bottomRightMarker = new RectF(
                 canvas.getWidth() - MARKER_SIZE,
                 canvas.getHeight() - MARKER_SIZE,
                 canvas.getWidth(),
                 canvas.getHeight()
-        ));
+        );
         canvas.drawRect(topLeftMarker, markerPaint);
         canvas.drawRect(topRightMarker, markerPaint);
         canvas.drawRect(bottomLeftMarker, markerPaint);

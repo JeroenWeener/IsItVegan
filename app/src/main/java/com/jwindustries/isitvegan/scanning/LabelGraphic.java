@@ -3,7 +3,7 @@ package com.jwindustries.isitvegan.scanning;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.text.TextPaint;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class LabelGraphic extends GraphicOverlay.Graphic {
     private void drawTextWithBackground(String text, float x, float y, TextPaint paint,
                                         Paint bgPaint, Canvas canvas) {
         Paint.FontMetrics fontMetrics = paint.getFontMetrics();
-        canvas.drawRect(new Rect((int) (x), (int) (y + fontMetrics.top),
+        canvas.drawRect(new RectF((int) (x), (int) (y + fontMetrics.top),
                 (int) (x + paint.measureText(text)), (int) (y + fontMetrics.bottom)), bgPaint);
         canvas.drawText(text, x, y, textPaint);
     }

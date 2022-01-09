@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.util.Size;
 
 import com.google.mlkit.vision.text.Text;
+import com.jwindustries.isitvegan.Utils;
 
 /**
  * Graphic instance for rendering TextBlock position, size, and ID within an associated graphic
@@ -59,13 +60,16 @@ public class TextGraphic extends GraphicOverlay.Graphic {
 
     @Override
     public void draw(Canvas canvas) {
+        Utils.debug(this, "Canvas size");
+        Utils.debug(this, String.valueOf(canvas.getWidth()));
+        Utils.debug(this, String.valueOf(canvas.getHeight()));
+
         if (element == null || element.getBoundingBox() == null) {
             throw new IllegalStateException("Attempting to draw an invalid element");
         }
 
         // Draw bounding box
-        RectF elementBoundingBox = new RectF(element.getBoundingBox());
-        RectF translatedElementBoundingBox = translateCamera2Canvas(canvas, elementBoundingBox);
+        RectF translatedElementBoundingBox = translateCamera2Canvas(canvas, new RectF(element.getBoundingBox()));
         canvas.drawRect(translatedElementBoundingBox, rectPaint);
 
         // Draw text
