@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.Preference;
@@ -68,6 +69,16 @@ public class SettingsActivity extends BaseActivity {
                     Intent intent = new Intent(this.getActivity(), IntroductionActivity.class);
                     intent.putExtra("force_intro", true);
                     this.startActivity(intent);
+                    return true;
+                });
+            }
+
+            // Handle build version click
+            Preference buildVersionButton = findPreference("build_version_button");
+            if (buildVersionButton != null) {
+                buildVersionButton.setOnPreferenceClickListener(test -> {
+                    Utils.DEBUG = !Utils.DEBUG;
+                    Toast.makeText(this.getContext(), Utils.DEBUG ? R.string.message_debug_enabled : R.string.message_debug_disabled, Toast.LENGTH_SHORT).show();
                     return true;
                 });
             }

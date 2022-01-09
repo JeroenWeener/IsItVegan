@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ public class Utils {
     /*
      * Debugging
      */
-    public static final boolean DEBUG = true;
+    public static boolean DEBUG = false;
     private static final String TAG = "DEBUG";
     public static void debug(Object object, String message) {
         if (DEBUG) {
@@ -149,7 +150,7 @@ public class Utils {
         /*
          * Localised name
          */
-        List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
+        List<String> unstrippedKeywords = Arrays.asList(ingredient.getName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedKeywords = unstrippedKeywords
                 .stream()
@@ -161,7 +162,7 @@ public class Utils {
         /*
          * English name
          */
-        List<String> unstrippedEnglishKeywords = List.of(ingredient.getEnglishName().split(","));
+        List<String> unstrippedEnglishKeywords = Arrays.asList(ingredient.getEnglishName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
                 .stream()
@@ -174,7 +175,7 @@ public class Utils {
          * E-numbers
          */
         if (ingredient.hasENumber()) {
-            List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
+            List<String> unstrippedENumbers = Arrays.asList(ingredient.getENumber().split(","));
             // Consider E-numbers with text between '()' removed
             List<String> strippedENumbers = unstrippedENumbers
                     .stream()
@@ -201,7 +202,7 @@ public class Utils {
         /*
          * Localised name
          */
-        List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
+        List<String> unstrippedKeywords = Arrays.asList(ingredient.getName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedKeywords = unstrippedKeywords
                 .stream()
@@ -213,7 +214,7 @@ public class Utils {
         /*
          * English name
          */
-        List<String> unstrippedEnglishKeywords = List.of(ingredient.getEnglishName().split(","));
+        List<String> unstrippedEnglishKeywords = Arrays.asList(ingredient.getEnglishName().split(","));
         // Consider keywords with text between '()' removed
         List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
                 .stream()
@@ -226,7 +227,7 @@ public class Utils {
          * E-numbers
          */
         if (ingredient.hasENumber()) {
-            List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
+            List<String> unstrippedENumbers = Arrays.asList(ingredient.getENumber().split(","));
             // Consider E-numbers with text between '()' removed
             List<String> strippedENumbers = unstrippedENumbers
                     .stream()
