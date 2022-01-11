@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Ingredient implements Serializable {
     private final String name;
     private final String englishName;
     private final IngredientType type;
-    private final String information;
     private final String eNumber;
+    private final List<String> matchers;
 
 
     public Ingredient(Context context, Resources resources, Resources englishResources, int nameResourceId, IngredientType type) {
@@ -30,9 +35,57 @@ public class Ingredient implements Serializable {
         this.name = resources.getString(nameResourceId);
         this.englishName = englishResources.getString(nameResourceId);
         this.type = type;
-        // Get information in the app's locale
-        this.information = context.getString(informationResourceId);
         this.eNumber = eNumber;
+
+
+        List<String> keywords = new ArrayList<>();
+
+        /*
+         * Localised name
+         */
+        List<String> unstrippedKeywords = Arrays.asList(this.name.split(","));
+        // Consider keywords with text between '()' removed
+        List<String> strippedKeywords = unstrippedKeywords
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
+        keywords.addAll(unstrippedKeywords);
+        keywords.addAll(strippedKeywords);
+
+        /*
+         * English name
+         */
+        List<String> unstrippedEnglishKeywords = Arrays.asList(this.englishName.split(","));
+        // Consider keywords with text between '()' removed
+        List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
+        keywords.addAll(unstrippedEnglishKeywords);
+        keywords.addAll(strippedEnglishKeywords);
+
+        /*
+         * E-numbers
+         */
+        if (this.hasENumber()) {
+            List<String> unstrippedENumbers = Arrays.asList(this.eNumber.split(","));
+            // Consider E-numbers with text between '()' removed
+            List<String> strippedENumbers = unstrippedENumbers
+                    .stream()
+                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                    .collect(Collectors.toList());
+            keywords.addAll(unstrippedENumbers);
+            keywords.addAll(strippedENumbers);
+        }
+
+        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
+        this.matchers = normalizedKeywordStream.collect(Collectors.toList());
+    }
+
+    public boolean matches(String normalizedText) {
+        return this.matchers
+                .stream()
+                .anyMatch(matcher -> matcher.equals(normalizedText));
     }
 
     public String getName() {

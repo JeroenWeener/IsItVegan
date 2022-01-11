@@ -92,9 +92,10 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
         for (Text.TextBlock block : visionText.getTextBlocks()) {
             for (Text.Line line : block.getLines()) {
                 for (Text.Element element : line.getElements()) {
+                    String normalizedText = Utils.normalizeString(element.getText(), false);
                     Optional<Ingredient> ingredientOptional = this.ingredientList
                             .stream()
-                            .filter(ingredient -> Utils.isTextIngredient(element.getText(), ingredient))
+                            .filter(ingredient -> ingredient.matches(normalizedText))
                             .findAny();
                     if (ingredientOptional.isPresent()) {
                         Ingredient ingredient = ingredientOptional.get();
