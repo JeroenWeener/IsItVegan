@@ -39,6 +39,9 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
+    private final static int DEBUG_THRESHOLD = 10;
+    private static int debugTriggers = 0;
+
     public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -76,9 +79,12 @@ public class SettingsActivity extends BaseActivity {
             // Handle build version click
             Preference buildVersionButton = findPreference("build_version_button");
             if (buildVersionButton != null) {
-                buildVersionButton.setOnPreferenceClickListener(test -> {
-                    Utils.DEBUG = !Utils.DEBUG;
-                    Toast.makeText(this.getContext(), Utils.DEBUG ? R.string.message_debug_enabled : R.string.message_debug_disabled, Toast.LENGTH_SHORT).show();
+                buildVersionButton.setOnPreferenceClickListener(v -> {
+                    debugTriggers++;
+                    if (debugTriggers >= DEBUG_THRESHOLD) {
+                        Utils.DEBUG = !Utils.DEBUG;
+                        Toast.makeText(this.getContext(), Utils.DEBUG ? R.string.message_debug_enabled : R.string.message_debug_disabled, Toast.LENGTH_SHORT).show();
+                    }
                     return true;
                 });
             }

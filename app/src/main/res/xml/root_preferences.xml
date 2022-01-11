@@ -58,7 +58,6 @@
     </PreferenceCategory>
 
     <Preference
-        app:icon="@drawable/slideshow"
         app:title="@string/setting_build_version"
         app:key="build_version_button"
     />

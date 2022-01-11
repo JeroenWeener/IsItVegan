@@ -20,7 +20,7 @@
     <string name="setting_language_ingredients">Ingredient names</string>
     <string name="setting_share_app">Share this app</string>
     <string name="setting_open_introduction">Open introduction</string>
-    <string name="setting_build_version">App version</string>
+    <string name="setting_build_version" translatable="false">v1.0</string>
     <string name="language_app_entries_system">System language</string>
     <string name="language_ingredients_entries_app">Use app language</string>
     <string name="title_scan">Scan product</string>
