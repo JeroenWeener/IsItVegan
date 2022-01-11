@@ -190,7 +190,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                                     String ingredientText = ((JSONObject) ingredientsJson.get(ingredientIndex)).getString("text");
                                     List<Ingredient> foundIngredients = this.ingredientList
                                             .stream()
-                                            .filter(ingredient -> Utils.isIngredientInText(ingredient, ingredientText))
+                                            .filter(ingredient -> ingredient.isContainedIn(ingredientText))
                                             .collect(Collectors.toList());
                                     this.addIngredients(foundIngredients);
                                     areIngredientsFound = areIngredientsFound || foundIngredients.size() > 0;

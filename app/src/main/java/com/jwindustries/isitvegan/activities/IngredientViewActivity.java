@@ -29,7 +29,7 @@ public class IngredientViewActivity extends BaseActivity {
 
         this.ingredient = (Ingredient) this.getIntent().getSerializableExtra(this.getResources().getString(R.string.key_ingredient));
         if (ingredient != null) {
-            ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName());
+            ((TextView) this.findViewById(R.id.ingredient_name_view)).setText(ingredient.getName(this.getApplicationContext()));
 
             TextView eNumberView = this.findViewById(R.id.ingredient_e_number_view);
             if (ingredient.hasENumber()) {
@@ -62,7 +62,7 @@ public class IngredientViewActivity extends BaseActivity {
     }
 
     public void searchOnline() {
-        String url = "https://duckduckgo.com/?q=" + this.ingredient.getName() + "+vegan";
+        String url = "https://duckduckgo.com/?q=" + this.ingredient.getName(this.getApplicationContext()) + "+vegan";
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         try {

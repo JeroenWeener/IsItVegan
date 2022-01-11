@@ -10,12 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Utils {
     /*
@@ -76,21 +71,22 @@ public class Utils {
     }
 
     @NonNull
-    public static Resources getLocalizedResources(Context context) {
-        Locale desiredLocale = new Locale(getIngredientLocale(context));
-        Configuration configuration = context.getResources().getConfiguration();
-        configuration = new Configuration(configuration);
-        configuration.setLocale(desiredLocale);
-        Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
+    public static Resources getDutchResources(Context context) {
+        Locale desiredLocale = new Locale("nl");
+        return getResources(context, desiredLocale);
     }
 
     @NonNull
     public static Resources getEnglishResources(Context context) {
         Locale desiredLocale = new Locale("en");
+        return getResources(context, desiredLocale);
+    }
+
+    @NonNull
+    private static Resources getResources(Context context, Locale locale) {
         Configuration configuration = context.getResources().getConfiguration();
         configuration = new Configuration(configuration);
-        configuration.setLocale(desiredLocale);
+        configuration.setLocale(locale);
         Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
     }
@@ -142,131 +138,5 @@ public class Utils {
                 .replace("ù", "u")
                 .replace("ÿ", "y")
                 .replace("ý", "y");
-    }
-
-    public static boolean isTextIngredient(String text, Ingredient ingredient) {
-        List<String> keywords = new ArrayList<>();
-
-        /*
-         * Localised name
-         */
-        List<String> unstrippedKeywords = Arrays.asList(ingredient.getName().split(","));
-        // Consider keywords with text between '()' removed
-        List<String> strippedKeywords = unstrippedKeywords
-                .stream()
-                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                .collect(Collectors.toList());
-        keywords.addAll(unstrippedKeywords);
-        keywords.addAll(strippedKeywords);
-
-        /*
-         * English name
-         */
-        List<String> unstrippedEnglishKeywords = Arrays.asList(ingredient.getEnglishName().split(","));
-        // Consider keywords with text between '()' removed
-        List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
-                .stream()
-                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                .collect(Collectors.toList());
-        keywords.addAll(unstrippedEnglishKeywords);
-        keywords.addAll(strippedEnglishKeywords);
-
-        /*
-         * E-numbers
-         */
-        if (ingredient.hasENumber()) {
-            List<String> unstrippedENumbers = Arrays.asList(ingredient.getENumber().split(","));
-            // Consider E-numbers with text between '()' removed
-            List<String> strippedENumbers = unstrippedENumbers
-                    .stream()
-                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                    .collect(Collectors.toList());
-            keywords.addAll(unstrippedENumbers);
-            keywords.addAll(strippedENumbers);
-        }
-
-        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
-
-        return normalizedKeywordStream.anyMatch(keyword -> keyword.equals(Utils.normalizeString(text, false)));
-    }
-
-    /**
-     * Checks whether text contains the ingredient. Ingredients are checked in both local language as in English
-     * @param ingredient ingredient to be possibly contained in the text
-     * @param text text that possibly contains the ingredient
-     * @return whether text contains ingredient
-     */
-    public static boolean isIngredientInText(Ingredient ingredient, String text) {
-        List<String> keywords = new ArrayList<>();
-
-        /*
-         * Localised name
-         */
-        List<String> unstrippedKeywords = Arrays.asList(ingredient.getName().split(","));
-        // Consider keywords with text between '()' removed
-        List<String> strippedKeywords = unstrippedKeywords
-                .stream()
-                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                .collect(Collectors.toList());
-        keywords.addAll(unstrippedKeywords);
-        keywords.addAll(strippedKeywords);
-
-        /*
-         * English name
-         */
-        List<String> unstrippedEnglishKeywords = Arrays.asList(ingredient.getEnglishName().split(","));
-        // Consider keywords with text between '()' removed
-        List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
-                .stream()
-                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                .collect(Collectors.toList());
-        keywords.addAll(unstrippedEnglishKeywords);
-        keywords.addAll(strippedEnglishKeywords);
-
-        /*
-         * E-numbers
-         */
-        if (ingredient.hasENumber()) {
-            List<String> unstrippedENumbers = Arrays.asList(ingredient.getENumber().split(","));
-            // Consider E-numbers with text between '()' removed
-            List<String> strippedENumbers = unstrippedENumbers
-                    .stream()
-                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                    .collect(Collectors.toList());
-            keywords.addAll(unstrippedENumbers);
-            keywords.addAll(strippedENumbers);
-        }
-
-        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
-
-        return normalizedKeywordStream.distinct().anyMatch(keyword -> {
-            int index = text.indexOf(keyword);
-
-            if (index == -1) {
-                return false;
-            }
-
-            int keywordLength = keyword.length();
-            boolean isAtBeginOfText = index == 0;
-            boolean isAtEndOfText = text.length() == index + keywordLength;
-
-            // Text is within string
-            if (!isAtBeginOfText && !isAtEndOfText) {
-                char previousCharacter = text.charAt(index - 1);
-                char nextCharacter = text.charAt(index + keywordLength);
-                return previousCharacter == ' ' && nextCharacter == ' ';
-            // Text is string
-            } else if (isAtBeginOfText && isAtEndOfText) {
-                return true;
-            // Text is at start of string
-            } else if (isAtBeginOfText) {
-                char nextCharacter = text.charAt(index + keywordLength);
-                return nextCharacter == ' ';
-            // Text is at end of string
-            } else {
-                char previousCharacter = text.charAt(index - 1);
-                return previousCharacter == ' ';
-            }
-        });
     }
 }

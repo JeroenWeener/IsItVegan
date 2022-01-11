@@ -58,9 +58,9 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
         int rotation = imageProxy.getImageInfo().getRotationDegrees();
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
 
-        Utils.debug(this, "Image size");
-        Utils.debug(this, String.valueOf(inputImage.getWidth()));
-        Utils.debug(this, String.valueOf(inputImage.getHeight()));
+//        Utils.debug(this, "Image size");
+//        Utils.debug(this, String.valueOf(inputImage.getWidth()));
+//        Utils.debug(this, String.valueOf(inputImage.getHeight()));
 
         readBarcodeFromImage(inputImage)
                 .continueWithTask(result -> readTextFromImage(inputImage))
@@ -99,6 +99,7 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
                             .findAny();
                     if (ingredientOptional.isPresent()) {
                         Ingredient ingredient = ingredientOptional.get();
+                        Utils.debug(this, "Ingredient found in image: " + ingredient.getEnglishName());
                         ingredientElements.add(new IngredientElement(ingredient, element));
                     }
                 }

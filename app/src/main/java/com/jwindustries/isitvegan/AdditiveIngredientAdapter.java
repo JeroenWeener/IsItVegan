@@ -87,7 +87,7 @@ public class AdditiveIngredientAdapter
     @Override
     public Character getCharacterForElement(int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        char character =  ingredient.getName().replace("(", "").charAt(0);
+        char character =  ingredient.getName(this.activity).replace("(", "").charAt(0);
         if (Character.isDigit(character)) {
             character = '#';
         }
@@ -105,7 +105,7 @@ public class AdditiveIngredientAdapter
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        holder.ingredientNameView.setText(ingredient.getName());
+        holder.ingredientNameView.setText(ingredient.getName(this.activity));
 
         if (ingredient.hasENumber()) {
             holder.ingredientENumberView.setVisibility(View.VISIBLE);

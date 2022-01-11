@@ -1,7 +1,6 @@
 package com.jwindustries.isitvegan;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,46 +10,39 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Ingredient implements Serializable {
-    private final String name;
+    private final String dutchName;
     private final String englishName;
     private final IngredientType type;
     private final String eNumber;
-    private final List<String> matchers;
+    private final List<String> keywords;
 
 
-    public Ingredient(Context context, Resources resources, Resources englishResources, int nameResourceId, IngredientType type) {
-        this(context, resources, englishResources, nameResourceId, type, R.string.ingredient_information_empty, null);
+    public Ingredient(String dutchName, String englishName, IngredientType type) {
+        this(dutchName, englishName, type, null);
     }
 
-    public Ingredient(Context context, Resources resources, Resources englishResources, int nameResourceId, IngredientType type, int informationResourceId) {
-        this(context, resources, englishResources, nameResourceId, type, informationResourceId, null);
-    }
-
-    public Ingredient(Context context, Resources resources, Resources englishResources, int nameResourceId, IngredientType type, String eNumber) {
-        this(context, resources, englishResources, nameResourceId, type, R.string.ingredient_information_empty, eNumber);
-    }
-
-    public Ingredient(Context context, Resources resources, Resources englishResources, int nameResourceId, IngredientType type, int informationResourceId, String eNumber) {
-        // Get name in the ingredient's locale
-        this.name = resources.getString(nameResourceId);
-        this.englishName = englishResources.getString(nameResourceId);
+    public Ingredient(String dutchName, String englishName, IngredientType type, String eNumber) {
+        this.dutchName = dutchName;
+        this.englishName = englishName;
         this.type = type;
         this.eNumber = eNumber;
 
 
-        List<String> keywords = new ArrayList<>();
+        /*
+         * ---
+         * Precompute matching keywords
+         * ---
+         */
 
         /*
-         * Localised name
+         * Dutch name
          */
-        List<String> unstrippedKeywords = Arrays.asList(this.name.split(","));
+        List<String> unstrippedDutchKeywords = Arrays.asList(this.dutchName.split(","));
         // Consider keywords with text between '()' removed
-        List<String> strippedKeywords = unstrippedKeywords
+        List<String> strippedDutchKeywords = unstrippedDutchKeywords
                 .stream()
                 .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
                 .collect(Collectors.toList());
-        keywords.addAll(unstrippedKeywords);
-        keywords.addAll(strippedKeywords);
 
         /*
          * English name
@@ -61,35 +53,87 @@ public class Ingredient implements Serializable {
                 .stream()
                 .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
                 .collect(Collectors.toList());
-        keywords.addAll(unstrippedEnglishKeywords);
-        keywords.addAll(strippedEnglishKeywords);
 
         /*
          * E-numbers
          */
-        if (this.hasENumber()) {
-            List<String> unstrippedENumbers = Arrays.asList(this.eNumber.split(","));
-            // Consider E-numbers with text between '()' removed
-            List<String> strippedENumbers = unstrippedENumbers
-                    .stream()
-                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                    .collect(Collectors.toList());
-            keywords.addAll(unstrippedENumbers);
-            keywords.addAll(strippedENumbers);
-        }
+        List<String> unstrippedENumbers = this.hasENumber()
+                ? Arrays.asList(this.eNumber.split(","))
+                : new ArrayList<>();
+        List<String> strippedENumbers = unstrippedENumbers
+                .stream()
+                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
+                .collect(Collectors.toList());
 
-        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
-        this.matchers = normalizedKeywordStream.collect(Collectors.toList());
+        this.keywords = Stream.of(
+                    unstrippedDutchKeywords,
+                    strippedDutchKeywords,
+                    unstrippedEnglishKeywords,
+                    strippedEnglishKeywords,
+                    unstrippedENumbers,
+                    strippedENumbers
+                )
+                .flatMap(List::stream)
+                .map(keyword -> Utils.normalizeString(keyword, false))
+                .collect(Collectors.toList());
     }
 
     public boolean matches(String normalizedText) {
-        return this.matchers
-                .stream()
-                .anyMatch(matcher -> matcher.equals(normalizedText));
+        return this.keywords.stream().anyMatch(matcher -> matcher.equals(normalizedText));
     }
 
-    public String getName() {
-        return this.name;
+    /**
+     * Checks whether this ingredient is mentioned in the text.
+     *
+     * @param searchString text that possibly contains this ingredient
+     * @return whether text contains this ingredient
+     */
+    public boolean isContainedIn(String searchString) {
+        return keywords.stream().anyMatch(keyword -> {
+            int index = searchString.indexOf(keyword);
+
+            if (index == -1) {
+                return false;
+            }
+
+            int keywordLength = keyword.length();
+            boolean isAtBeginOfText = index == 0;
+            boolean isAtEndOfText = searchString.length() == index + keywordLength;
+
+            // Text is within string
+            if (!isAtBeginOfText && !isAtEndOfText) {
+                char previousCharacter = searchString.charAt(index - 1);
+                char nextCharacter = searchString.charAt(index + keywordLength);
+                return previousCharacter == ' ' && nextCharacter == ' ';
+                // Text is string
+            } else if (isAtBeginOfText && isAtEndOfText) {
+                return true;
+                // Text is at start of string
+            } else if (isAtBeginOfText) {
+                char nextCharacter = searchString.charAt(index + keywordLength);
+                return nextCharacter == ' ';
+                // Text is at end of string
+            } else {
+                char previousCharacter = searchString.charAt(index - 1);
+                return previousCharacter == ' ';
+            }
+        });
+    }
+
+    public String getName(Context context) {
+        return this.getName(Utils.getIngredientLocale(context));
+    }
+
+    public String getName(String locale) {
+        if (locale.equals("nl")) {
+            return getDutchName();
+        } else {
+            return getEnglishName();
+        }
+    }
+
+    public String getDutchName() {
+        return this.dutchName;
     }
 
     public String getEnglishName() {
@@ -113,7 +157,7 @@ public class Ingredient implements Serializable {
             return false;
         }
         Ingredient ingredient = (Ingredient) obj;
-        return ingredient.getName().equals(this.getName());
+        return ingredient.getDutchName().equals(this.getDutchName());
     }
 }
 
