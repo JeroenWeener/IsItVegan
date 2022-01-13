@@ -13,6 +13,9 @@ import com.jwindustries.isitvegan.Utils;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Code inspired by https://c1ctech.com/recognize-text-in-images-with-ml-kit-on-android/
+ */
 public class GraphicOverlay extends View {
     private final Object lock = new Object();
     private final Set<Graphic> graphics = new HashSet<>();

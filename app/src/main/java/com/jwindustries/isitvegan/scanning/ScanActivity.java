@@ -61,7 +61,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
      */
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
-    private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
+    private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
 
@@ -252,7 +252,13 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             this.addIngredient(ingredient);
 
             Text.Element element = ingredientElement.getElement();
-            GraphicOverlay.Graphic textGraphic = new TextGraphic(graphicOverlay, element, cameraResolution);
+            GraphicOverlay.Graphic textGraphic = new IngredientTypeGraphic(
+                    this,
+                    graphicOverlay,
+                    element,
+                    cameraResolution,
+                    ingredient.getIngredientType()
+            );
             this.graphicOverlay.add(textGraphic);
         }
     }
@@ -357,7 +363,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
      * Tags are considered again after a 2 second countdown
      *
      * @param message the message displayed in the snackbar
-     * @param tag tag used for distinguishing between snackbars
+     * @param tag     tag used for distinguishing between snackbars
      */
     private void createSnackbar(String message, String tag) {
         if (!this.queuedMessages.contains(tag)) {
