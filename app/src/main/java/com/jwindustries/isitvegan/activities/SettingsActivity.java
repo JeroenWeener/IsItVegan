@@ -39,10 +39,11 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
-    private final static int DEBUG_THRESHOLD = 10;
-    private static int debugTriggers = 0;
 
     public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+        private final int DEBUG_THRESHOLD = 10;
+        private int debugTriggers = 0;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -82,8 +83,17 @@ public class SettingsActivity extends BaseActivity {
                 buildVersionButton.setOnPreferenceClickListener(v -> {
                     debugTriggers++;
                     if (debugTriggers >= DEBUG_THRESHOLD) {
-                        Utils.DEBUG = !Utils.DEBUG;
-                        Toast.makeText(this.getContext(), Utils.DEBUG ? R.string.message_debug_enabled : R.string.message_debug_disabled, Toast.LENGTH_SHORT).show();
+                        debugTriggers = 0;
+                        boolean debugging = Utils.toggleDebugging(getContext());
+                        Toast
+                                .makeText(
+                                        this.getContext(),
+                                        debugging
+                                                ? R.string.message_debug_enabled
+                                                : R.string.message_debug_disabled,
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show();
                     }
                     return true;
                 });
@@ -130,7 +140,7 @@ public class SettingsActivity extends BaseActivity {
                         "\nhttps://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID;
                 shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                 startActivity(shareIntent);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

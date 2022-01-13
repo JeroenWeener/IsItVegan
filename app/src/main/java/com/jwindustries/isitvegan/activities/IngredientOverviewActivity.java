@@ -34,6 +34,9 @@ public class IngredientOverviewActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         Utils.handleTheme(this);
 
+        // Trigger update of DEBUG variable in Utils
+        Utils.isDebugging(this);
+
         this.appLocale = Utils.handleAppLocale(this);
         this.ingredientsLocale = Utils.getIngredientLocale(this);
         // Reset title as locale may have changed

@@ -16,7 +16,7 @@ public class Utils {
     /*
      * Debugging
      */
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = false; // Do not update outside of this file
     private static final String TAG = "DEBUG";
     public static void debug(Object object, String message) {
         if (DEBUG) {
@@ -99,6 +99,26 @@ public class Utils {
     public static boolean isTutorialFinished(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getBoolean("tutorial", false);
+    }
+
+    public static void setDebugging(Context context, boolean debugging) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean("debug", debugging).apply();
+        DEBUG = debugging;
+    }
+
+    public static boolean toggleDebugging(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean debugging = !preferences.getBoolean("debug", false);
+        setDebugging(context, debugging);
+        return debugging;
+    }
+
+    public static boolean isDebugging(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean debugging = preferences.getBoolean("debug", false);
+        DEBUG = debugging;
+        return debugging;
     }
 
     public static String normalizeString(String string, boolean removeSpacing) {
