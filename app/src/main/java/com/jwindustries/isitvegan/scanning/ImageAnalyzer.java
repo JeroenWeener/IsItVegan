@@ -1,5 +1,7 @@
 package com.jwindustries.isitvegan.scanning;
 
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.Image;
 
 import androidx.camera.core.ImageAnalysis;
@@ -19,8 +21,10 @@ import com.jwindustries.isitvegan.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     private final List<Ingredient> ingredientList;
@@ -87,24 +91,40 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
         this.barcodeFoundListener.onBarcodeFound(barcode.getDisplayValue());
     }
 
+    /**
+     * Finds all ingredients in the text and reports (Element, Ingredient) pairs and the average height of the elements
+     *
+     * @param visionText the text to analyze for ingredients
+     */
     private void processTextFromImage(Text visionText) {
         List<IngredientElement> ingredientElements = new ArrayList<>();
+        List<Integer> elementHeights = new ArrayList<>();
         for (Text.TextBlock block : visionText.getTextBlocks()) {
             for (Text.Line line : block.getLines()) {
                 for (Text.Element element : line.getElements()) {
                     String normalizedText = Utils.normalizeString(element.getText(), false);
+
                     Optional<Ingredient> ingredientOptional = this.ingredientList
                             .stream()
                             .filter(ingredient -> ingredient.matches(normalizedText))
                             .findAny();
+
                     if (ingredientOptional.isPresent()) {
                         Ingredient ingredient = ingredientOptional.get();
-                        Utils.debug(this, "Ingredient found in image: " + ingredient.getEnglishName());
                         ingredientElements.add(new IngredientElement(ingredient, element));
+
+                        Rect boundingBox = element.getBoundingBox();
+                        if (boundingBox != null) {
+                            elementHeights.add(boundingBox.height());
+                        }
+
+                        Utils.debug(this, "Ingredient found in image: " + ingredient.getEnglishName());
                     }
                 }
             }
         }
-        ingredientsFoundListener.onIngredientsFound(ingredientElements);
+
+        double averageElementHeight = elementHeights.stream().mapToDouble(a -> a).average().orElse(0);
+        ingredientsFoundListener.onIngredientsFound(ingredientElements, averageElementHeight);
     }
 }

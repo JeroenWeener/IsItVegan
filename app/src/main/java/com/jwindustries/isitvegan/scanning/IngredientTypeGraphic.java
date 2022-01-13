@@ -16,24 +16,34 @@ import com.jwindustries.isitvegan.IngredientType;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Graphic instance for rendering ingredient type badges
  */
 public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
-    private static final int MIN_BADE_SIZE = 30;
+    private static final List<Integer> BADGE_SIZES = Arrays
+            .stream(new int[]{20, 60, 100})
+            .boxed()
+            .collect(Collectors.toList());
     private static final int BADGE_SIZE_THRESHOLD = 60; // Size of badge to change between normal and small version
 
     private final Context context;
     private final Text.Element element;
     private final Size cameraResolution;
     private final IngredientType ingredientType;
+    private final double proposedBadgeSize;
 
     IngredientTypeGraphic(
             Context context,
             GraphicOverlay overlay,
             Text.Element element,
             Size cameraResolution,
-            IngredientType ingredientType
+            IngredientType ingredientType,
+            double proposedBadgeSize
     ) {
         super(overlay);
 
@@ -41,6 +51,7 @@ public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
         this.element = element;
         this.cameraResolution = cameraResolution;
         this.ingredientType = ingredientType;
+        this.proposedBadgeSize = proposedBadgeSize;
 
         // Redraw the overlay, as this graphic has been added
         postInvalidate();
@@ -73,8 +84,7 @@ public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
         }
 
         RectF translatedElementBoundingBox = translateCamera2Canvas(canvas, new RectF(element.getBoundingBox()));
-        int badgeSize = (int) (translatedElementBoundingBox.bottom - translatedElementBoundingBox.top);
-        badgeSize = Math.max(badgeSize, MIN_BADE_SIZE);
+        int badgeSize = getSize(this.proposedBadgeSize);
         Drawable drawableBadge = ContextCompat.getDrawable(context, getBadgeResource(ingredientType, badgeSize < BADGE_SIZE_THRESHOLD));
         if (drawableBadge == null) {
             return;
@@ -102,6 +112,10 @@ public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    private static int getSize(double proposedSize) {
+        return BADGE_SIZES.stream().min(Comparator.comparingInt(size -> Math.abs(size - (int) proposedSize))).orElse(0);
     }
 
     private static int getBadgeResource(IngredientType ingredientType, boolean isSmall) {

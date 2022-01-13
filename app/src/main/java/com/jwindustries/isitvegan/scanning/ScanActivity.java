@@ -229,7 +229,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     }
 
     @Override
-    public void onIngredientsFound(List<IngredientElement> ingredientElements) {
+    public void onIngredientsFound(List<IngredientElement> ingredientElements, double averageElementHeight) {
         this.graphicOverlay.clear();
 
         ResolutionInfo resolutionInfo = imageAnalyzer.getResolutionInfo();
@@ -257,7 +257,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                     graphicOverlay,
                     element,
                     cameraResolution,
-                    ingredient.getIngredientType()
+                    ingredient.getIngredientType(),
+                    2 * averageElementHeight
             );
             this.graphicOverlay.add(textGraphic);
         }
