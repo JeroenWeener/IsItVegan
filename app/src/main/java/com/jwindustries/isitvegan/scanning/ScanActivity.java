@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Vibrator;
 import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,7 +66,6 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
-    private OverlayManager overlayManager;
 
     /*
      * Barcode requests
@@ -86,7 +86,9 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private LinearLayoutManager layoutManager;
     private Menu optionsMenu;
     private PreviewView cameraPreviewView;
+    private OverlayManager overlayManager;
 
+    private static final int VIBRATION_DURATION = 70;
     private List<Ingredient> ingredientList;
 
     @Override
@@ -123,43 +125,6 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             requestPermission();
         }
     }
-
-//    private void test() {
-//        OverlayManager overlayManager = new OverlayManager();
-//
-//        // Find 1 and 2
-//        Map<Ingredient, Rect> ingredientElementMap = new HashMap<>();
-//        Ingredient ingredient1 = new Ingredient("Melk", "Milk", IngredientType.NOT_VEGAN);
-//        Ingredient ingredient2 = new Ingredient("Agar", "Agar", IngredientType.VEGAN);
-//        Rect rect1 = new Rect(0,0,10,10);
-//        Rect rect2 = new Rect(10,10,20,20);
-//        ingredientElementMap.put(ingredient1, rect1);
-//        ingredientElementMap.put(ingredient2, rect2);
-//        overlayManager.ingredientsFound(ingredientElementMap);
-//
-//        // Find 1
-//        Rect rect3 = new Rect(10,10, 30, 30);
-//        ingredientElementMap.clear();
-//        ingredientElementMap.put(ingredient1, rect3);
-//        overlayManager.ingredientsFound(ingredientElementMap);
-//
-//        // Find 2
-//        Rect rect4 = new Rect(10, 10, 30, 30);
-//        ingredientElementMap.clear();
-//        ingredientElementMap.put(ingredient2, rect4);
-//        overlayManager.ingredientsFound(ingredientElementMap);
-//
-//        // Find 2 and 3
-//        Ingredient ingredient3 = new Ingredient("Test", "Test", IngredientType.DEPENDS);
-//        Rect rect5 = new Rect(0, 0, 50, 50);
-//        ingredientElementMap.put(ingredient2, rect4);
-//        ingredientElementMap.put(ingredient3, rect5);
-//        overlayManager.ingredientsFound(ingredientElementMap);
-//
-//        // Find nothing
-//        ingredientElementMap.clear();
-//        overlayManager.ingredientsFound(ingredientElementMap);
-//    }
 
     @Override
     public void onStop() {
@@ -288,6 +253,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private void addIngredients(Collection<Ingredient> ingredients) {
         int numberAdded = this.adapter.addIngredients(ingredients);
         if (numberAdded > 0) {
+            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            vibrator.vibrate(VIBRATION_DURATION);
             updateScanList();
         }
     }
