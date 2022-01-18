@@ -16,9 +16,10 @@
     <string name="preference_category_language">Language</string>
     <string name="preference_category_ui">Display</string>
     <string name="preference_category_info">Information</string>
-    <string name="preference_category_other">Other</string>
+    <string name="preference_category_social">Social</string>
     <string name="setting_language_ingredients">Ingredient names</string>
     <string name="setting_share_app">Share this app</string>
+    <string name="setting_suggest_ingredient">Suggest ingredients</string>
     <string name="setting_open_introduction">Open introduction</string>
     <string name="setting_build_version" translatable="false">v1.0</string>
     <string name="language_app_entries_system">System language</string>
@@ -46,6 +47,12 @@
     <string name="about_text_ingredients">All ingredient information has been manually constructed by searching the internet. A list like this will never be finished nor flawless. If you miss information or find an error, please let me know by sending an email to contactisitvegan@gmail.com.</string>
     <string name="about_title_barcode">Barcodes</string>
     <string name="about_text_barcode">When scanning barcodes, the online database of Open Food Facts is queried for the product\'s ingredient list. Open Food Facts is a food products database made by everyone, for everyone. Be aware that data might be incomplete or incorrect. For more information, visit <a href="https://world.openfoodfacts.org">openfoodfacts.org</a>.</string>
+
+    <!-- Suggestion email -->
+    <string name="suggestion_mail_chooser_label">Send email…</string>
+    <string name="suggestion_mail_address" translatable="false">contactisitvegan@gmail.com</string>
+    <string name="suggestion_mail_subject">Suggestion for ingredient(s)</string>
+    <string name="suggestion_mail_body">Hi!\n\nI would like to suggest the following ingredients for the app:\n\n-\n-\n-</string>
 
     <!-- Introduction -->
     <string name="introduction_next">Next</string>

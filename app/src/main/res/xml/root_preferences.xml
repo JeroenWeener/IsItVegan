@@ -35,21 +35,26 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/preference_category_info">
-        <Preference
-            app:icon="@drawable/info"
-            app:title="@string/title_about"
-            app:key="about_button"
-        />
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="@string/preference_category_other">
+    <PreferenceCategory app:title="@string/preference_category_social">
         <Preference
             app:icon="@drawable/share"
             app:title="@string/setting_share_app"
             app:key="share_app_button"
         />
 
+        <Preference
+            app:icon="@drawable/add"
+            app:title="@string/setting_suggest_ingredient"
+            app:key="suggest_ingredient_button"
+        />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/preference_category_info">
+        <Preference
+            app:icon="@drawable/info"
+            app:title="@string/title_about"
+            app:key="about_button"
+        />
         <Preference
             app:icon="@drawable/slideshow"
             app:title="@string/setting_open_introduction"
