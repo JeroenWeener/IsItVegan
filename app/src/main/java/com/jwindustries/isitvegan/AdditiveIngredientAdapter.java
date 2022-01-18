@@ -17,6 +17,7 @@ import com.jwindustries.isitvegan.activities.IngredientViewActivity;
 import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public class AdditiveIngredientAdapter
      * @param ingredients the ingredients to be added to the ingredient list
      * @return the number of ingredients added to the list
      */
-    public int addIngredients(List<Ingredient> ingredients) {
+    public int addIngredients(Collection<Ingredient> ingredients) {
         List<Ingredient> newIngredients = ingredients.stream().filter(ingredient ->
                 !this.ingredientList.contains(ingredient)).collect(Collectors.toList());
         this.ingredientList.addAll(0, newIngredients);

@@ -17,7 +17,7 @@
 
     <com.jwindustries.isitvegan.scanning.GraphicOverlay
         android:id="@+id/graphic_overlay"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@id/camera_preview_view"
         app:layout_constraintLeft_toLeftOf="@id/camera_preview_view"

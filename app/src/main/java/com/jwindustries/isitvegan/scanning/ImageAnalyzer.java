@@ -1,7 +1,6 @@
 package com.jwindustries.isitvegan.scanning;
 
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.media.Image;
 
 import androidx.camera.core.ImageAnalysis;
@@ -20,11 +19,10 @@ import com.jwindustries.isitvegan.Utils;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 public class ImageAnalyzer implements ImageAnalysis.Analyzer {
     private final List<Ingredient> ingredientList;
@@ -97,11 +95,18 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
      * @param visionText the text to analyze for ingredients
      */
     private void processTextFromImage(Text visionText) {
-        List<IngredientElement> ingredientElements = new ArrayList<>();
-        List<Integer> elementHeights = new ArrayList<>();
+        // TODO match multi word ingredients and ingredient split between lines
+        Map<Ingredient, Rect> ingredientLocations = new HashMap<>();
         for (Text.TextBlock block : visionText.getTextBlocks()) {
             for (Text.Line line : block.getLines()) {
+//                Log.d("TEST", "---");
+//                Log.d("TEST", line.getText());
                 for (Text.Element element : line.getElements()) {
+                    Utils.debug(this, element.getText());
+//                    if (element.getText().equals("MILK")) {
+//                        ingredientElements.add(new IngredientElement(new Ingredient("Melk", "Milk", IngredientType.NOT_VEGAN), element));
+//                        elementHeights.add(element.getBoundingBox().height());
+//                    }
                     String normalizedText = Utils.normalizeString(element.getText(), false);
 
                     Optional<Ingredient> ingredientOptional = this.ingredientList
@@ -111,12 +116,7 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
 
                     if (ingredientOptional.isPresent()) {
                         Ingredient ingredient = ingredientOptional.get();
-                        ingredientElements.add(new IngredientElement(ingredient, element));
-
-                        Rect boundingBox = element.getBoundingBox();
-                        if (boundingBox != null) {
-                            elementHeights.add(boundingBox.height());
-                        }
+                        ingredientLocations.put(ingredient, element.getBoundingBox());
 
                         Utils.debug(this, "Ingredient found in image: " + ingredient.getEnglishName());
                     }
@@ -124,7 +124,6 @@ public class ImageAnalyzer implements ImageAnalysis.Analyzer {
             }
         }
 
-        double averageElementHeight = elementHeights.stream().mapToDouble(a -> a).average().orElse(0);
-        ingredientsFoundListener.onIngredientsFound(ingredientElements, averageElementHeight);
+        ingredientsFoundListener.onIngredientsFound(ingredientLocations);
     }
 }

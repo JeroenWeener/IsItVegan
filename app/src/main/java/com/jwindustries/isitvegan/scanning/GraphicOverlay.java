@@ -11,6 +11,7 @@ import android.view.View;
 import com.jwindustries.isitvegan.Utils;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -52,6 +53,13 @@ public class GraphicOverlay extends View {
     public void add(Graphic graphic) {
         synchronized (lock) {
             graphics.add(graphic);
+        }
+        postInvalidate();
+    }
+
+    public void addAll(List<Graphic> graphics) {
+        synchronized (lock) {
+            this.graphics.addAll(graphics);
         }
         postInvalidate();
     }

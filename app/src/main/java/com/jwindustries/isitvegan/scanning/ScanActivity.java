@@ -2,6 +2,7 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,12 +36,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.mlkit.vision.text.Text;
 import com.jwindustries.isitvegan.AdditiveIngredientAdapter;
 import com.jwindustries.isitvegan.Ingredient;
 import com.jwindustries.isitvegan.IngredientList;
 import com.jwindustries.isitvegan.R;
-import com.jwindustries.isitvegan.Utils;
 import com.jwindustries.isitvegan.activities.BaseActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +48,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,6 +65,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
+    private OverlayManager overlayManager;
 
     /*
      * Barcode requests
@@ -83,7 +85,6 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private ViewSwitcher scanListContainer;
     private LinearLayoutManager layoutManager;
     private Menu optionsMenu;
-    private GraphicOverlay graphicOverlay;
     private PreviewView cameraPreviewView;
 
     private List<Ingredient> ingredientList;
@@ -100,7 +101,6 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.recyclerView.setLayoutManager(this.layoutManager);
         this.recyclerView.setAdapter(this.adapter);
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
-        this.graphicOverlay = this.findViewById(R.id.graphic_overlay);
         this.cameraPreviewView = this.findViewById(R.id.camera_preview_view);
 
         this.ingredientList = IngredientList.getIngredientList(this);
@@ -109,6 +109,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
         this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this.ingredientList, this, this));
+        GraphicOverlay graphicOverlay = this.findViewById(R.id.graphic_overlay);
+        this.overlayManager = new OverlayManager(this, graphicOverlay);
 
         this.barcodeRequestQueue = Volley.newRequestQueue(this);
         this.requestedBarcodes = new ArrayList<>();
@@ -121,6 +123,43 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             requestPermission();
         }
     }
+
+//    private void test() {
+//        OverlayManager overlayManager = new OverlayManager();
+//
+//        // Find 1 and 2
+//        Map<Ingredient, Rect> ingredientElementMap = new HashMap<>();
+//        Ingredient ingredient1 = new Ingredient("Melk", "Milk", IngredientType.NOT_VEGAN);
+//        Ingredient ingredient2 = new Ingredient("Agar", "Agar", IngredientType.VEGAN);
+//        Rect rect1 = new Rect(0,0,10,10);
+//        Rect rect2 = new Rect(10,10,20,20);
+//        ingredientElementMap.put(ingredient1, rect1);
+//        ingredientElementMap.put(ingredient2, rect2);
+//        overlayManager.ingredientsFound(ingredientElementMap);
+//
+//        // Find 1
+//        Rect rect3 = new Rect(10,10, 30, 30);
+//        ingredientElementMap.clear();
+//        ingredientElementMap.put(ingredient1, rect3);
+//        overlayManager.ingredientsFound(ingredientElementMap);
+//
+//        // Find 2
+//        Rect rect4 = new Rect(10, 10, 30, 30);
+//        ingredientElementMap.clear();
+//        ingredientElementMap.put(ingredient2, rect4);
+//        overlayManager.ingredientsFound(ingredientElementMap);
+//
+//        // Find 2 and 3
+//        Ingredient ingredient3 = new Ingredient("Test", "Test", IngredientType.DEPENDS);
+//        Rect rect5 = new Rect(0, 0, 50, 50);
+//        ingredientElementMap.put(ingredient2, rect4);
+//        ingredientElementMap.put(ingredient3, rect5);
+//        overlayManager.ingredientsFound(ingredientElementMap);
+//
+//        // Find nothing
+//        ingredientElementMap.clear();
+//        overlayManager.ingredientsFound(ingredientElementMap);
+//    }
 
     @Override
     public void onStop() {
@@ -229,9 +268,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     }
 
     @Override
-    public void onIngredientsFound(List<IngredientElement> ingredientElements, double averageElementHeight) {
-        this.graphicOverlay.clear();
-
+    public void onIngredientsFound(Map<Ingredient, Rect> ingredientLocations) {
+        // TODO fetch resolution earlier and only once
         ResolutionInfo resolutionInfo = imageAnalyzer.getResolutionInfo();
         if (resolutionInfo == null) {
             return;
@@ -243,35 +281,11 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
             cameraResolution = new Size(cameraResolution.getHeight(), cameraResolution.getWidth());
         }
 
-        Utils.debug(this, "Camera resolution");
-        Utils.debug(this, String.valueOf(cameraResolution.getWidth()));
-        Utils.debug(this, String.valueOf(cameraResolution.getHeight()));
-
-        for (IngredientElement ingredientElement : ingredientElements) {
-            Ingredient ingredient = ingredientElement.getIngredient();
-            this.addIngredient(ingredient);
-
-            Text.Element element = ingredientElement.getElement();
-            GraphicOverlay.Graphic textGraphic = new IngredientTypeGraphic(
-                    this,
-                    graphicOverlay,
-                    element,
-                    cameraResolution,
-                    ingredient.getIngredientType(),
-                    2 * averageElementHeight
-            );
-            this.graphicOverlay.add(textGraphic);
-        }
+        this.addIngredients(ingredientLocations.keySet());
+        this.overlayManager.updateIngredients(ingredientLocations, cameraResolution);
     }
 
-    private void addIngredient(Ingredient ingredient) {
-        boolean isAdded = this.adapter.addIngredient(ingredient);
-        if (isAdded) {
-            updateScanList();
-        }
-    }
-
-    private void addIngredients(List<Ingredient> ingredients) {
+    private void addIngredients(Collection<Ingredient> ingredients) {
         int numberAdded = this.adapter.addIngredients(ingredients);
         if (numberAdded > 0) {
             updateScanList();
@@ -359,7 +373,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
 
     /**
      * Show a snackbar with specified message
-     *
+     * <p>
      * If a snackbar with given tag is already displayed, do not show a new one
      * Tags are considered again after a 2 second countdown
      *

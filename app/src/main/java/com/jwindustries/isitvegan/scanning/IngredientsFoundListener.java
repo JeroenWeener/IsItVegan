@@ -1,7 +1,11 @@
 package com.jwindustries.isitvegan.scanning;
 
-import java.util.List;
+import android.graphics.Rect;
+
+import com.jwindustries.isitvegan.Ingredient;
+
+import java.util.Map;
 
 public interface IngredientsFoundListener {
-    void onIngredientsFound(List<IngredientElement> ingredientElements, double averageElementHeight);
+    void onIngredientsFound(Map<Ingredient, Rect> ingredientLocations);
 }
