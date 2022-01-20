@@ -4,18 +4,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Utils {
+    /*
+     * Debugging
+     */
+    public static boolean DEBUG = false; // Do not update outside of this file
+    private static final String TAG = "DEBUG";
+    public static void debug(Object object, String message) {
+        if (DEBUG) {
+            Log.d(TAG + ": " + object.getClass().getSimpleName() + "\t", message);
+        }
+    }
 
     public static void handleTheme(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -64,21 +71,22 @@ public class Utils {
     }
 
     @NonNull
-    public static Resources getLocalizedResources(Context context) {
-        Locale desiredLocale = new Locale(getIngredientLocale(context));
-        Configuration configuration = context.getResources().getConfiguration();
-        configuration = new Configuration(configuration);
-        configuration.setLocale(desiredLocale);
-        Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
+    public static Resources getDutchResources(Context context) {
+        Locale desiredLocale = new Locale("nl");
+        return getResources(context, desiredLocale);
     }
 
     @NonNull
     public static Resources getEnglishResources(Context context) {
         Locale desiredLocale = new Locale("en");
+        return getResources(context, desiredLocale);
+    }
+
+    @NonNull
+    private static Resources getResources(Context context, Locale locale) {
         Configuration configuration = context.getResources().getConfiguration();
         configuration = new Configuration(configuration);
-        configuration.setLocale(desiredLocale);
+        configuration.setLocale(locale);
         Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
     }
@@ -91,6 +99,26 @@ public class Utils {
     public static boolean isTutorialFinished(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         return preferences.getBoolean("tutorial", false);
+    }
+
+    public static void setDebugging(Context context, boolean debugging) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean("debug", debugging).apply();
+        DEBUG = debugging;
+    }
+
+    public static boolean toggleDebugging(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean debugging = !preferences.getBoolean("debug", false);
+        setDebugging(context, debugging);
+        return debugging;
+    }
+
+    public static boolean isDebugging(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean debugging = preferences.getBoolean("debug", false);
+        DEBUG = debugging;
+        return debugging;
     }
 
     public static String normalizeString(String string, boolean removeSpacing) {
@@ -107,7 +135,10 @@ public class Utils {
 
                 // Remove special characters
                 .replace("-", "")
-                .replace("," , "")
+                .replace(",", "")
+                .replace(".", "")
+                .replace(";", "")
+                .replace(":", "")
                 .replace("'", "")
                 .replace("(", "")
                 .replace(")", "")
@@ -130,85 +161,5 @@ public class Utils {
                 .replace("ù", "u")
                 .replace("ÿ", "y")
                 .replace("ý", "y");
-    }
-
-    /**
-     * Checks whether text contains the ingredient. Ingredients are checked in both local language as in English
-     * @param ingredient ingredient to be possibly contained in the text
-     * @param text text that possibly contains the ingredient
-     * @return whether text contains ingredient
-     */
-    public static boolean isIngredientInText(Ingredient ingredient, String text) {
-        List<String> keywords = new ArrayList<>();
-
-        /*
-         * Localised name
-         */
-        List<String> unstrippedKeywords = List.of(ingredient.getName().split(","));
-        // Consider keywords with text between '()' removed
-        List<String> strippedKeywords = unstrippedKeywords
-                .stream()
-                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                .collect(Collectors.toList());
-        keywords.addAll(unstrippedKeywords);
-        keywords.addAll(strippedKeywords);
-
-        /*
-         * English name
-         */
-        List<String> unstrippedEnglishKeywords = List.of(ingredient.getEnglishName().split(","));
-        // Consider keywords with text between '()' removed
-        List<String> strippedEnglishKeywords = unstrippedEnglishKeywords
-                .stream()
-                .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                .collect(Collectors.toList());
-        keywords.addAll(unstrippedEnglishKeywords);
-        keywords.addAll(strippedEnglishKeywords);
-
-        /*
-         * E-numbers
-         */
-        if (ingredient.hasENumber()) {
-            List<String> unstrippedENumbers = List.of(ingredient.getENumber().split(","));
-            // Consider E-numbers with text between '()' removed
-            List<String> strippedENumbers = unstrippedENumbers
-                    .stream()
-                    .map(keyword -> keyword.replaceAll("\\(.*\\)", ""))
-                    .collect(Collectors.toList());
-            keywords.addAll(unstrippedENumbers);
-            keywords.addAll(strippedENumbers);
-        }
-
-        Stream<String> normalizedKeywordStream = keywords.stream().map(keyword -> Utils.normalizeString(keyword, false));
-
-        return normalizedKeywordStream.distinct().anyMatch(keyword -> {
-            int index = text.indexOf(keyword);
-
-            if (index == -1) {
-                return false;
-            }
-
-            int keywordLength = keyword.length();
-            boolean isAtBeginOfText = index == 0;
-            boolean isAtEndOfText = text.length() == index + keywordLength;
-
-            // Text is within string
-            if (!isAtBeginOfText && !isAtEndOfText) {
-                char previousCharacter = text.charAt(index - 1);
-                char nextCharacter = text.charAt(index + keywordLength);
-                return previousCharacter == ' ' && nextCharacter == ' ';
-            // Text is string
-            } else if (isAtBeginOfText && isAtEndOfText) {
-                return true;
-            // Text is at start of string
-            } else if (isAtBeginOfText) {
-                char nextCharacter = text.charAt(index + keywordLength);
-                return nextCharacter == ' ';
-            // Text is at end of string
-            } else {
-                char previousCharacter = text.charAt(index - 1);
-                return previousCharacter == ' ';
-            }
-        });
     }
 }

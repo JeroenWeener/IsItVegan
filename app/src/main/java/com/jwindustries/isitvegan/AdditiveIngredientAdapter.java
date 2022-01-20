@@ -17,6 +17,7 @@ import com.jwindustries.isitvegan.activities.IngredientViewActivity;
 import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,12 +52,27 @@ public class AdditiveIngredientAdapter
     }
 
     /**
+     * Adds provided ingredient to ingredient list
+     * Only adds the ingredient if it is not already in the list
+     * @param ingredient the ingredient to be added to the ingredient list
+     * @return whether the ingredient has been added to the ingredient list
+     */
+    public boolean addIngredient(Ingredient ingredient) {
+        boolean shouldAdd = !this.ingredientList.contains(ingredient);
+        if (shouldAdd) {
+            this.ingredientList.add(0, ingredient);
+            this.notifyItemInserted(0);
+        }
+        return shouldAdd;
+    }
+
+    /**
      * Adds provided ingredients to ingredient list
      * Only adds ingredients that are not already in the list
-     * @param ingredients the ingredients to be add to the ingredient list
+     * @param ingredients the ingredients to be added to the ingredient list
      * @return the number of ingredients added to the list
      */
-    public int addIngredients(List<Ingredient> ingredients) {
+    public int addIngredients(Collection<Ingredient> ingredients) {
         List<Ingredient> newIngredients = ingredients.stream().filter(ingredient ->
                 !this.ingredientList.contains(ingredient)).collect(Collectors.toList());
         this.ingredientList.addAll(0, newIngredients);
@@ -72,7 +88,7 @@ public class AdditiveIngredientAdapter
     @Override
     public Character getCharacterForElement(int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        char character =  ingredient.getName().replace("(", "").charAt(0);
+        char character =  ingredient.getName(this.activity).replace("(", "").charAt(0);
         if (Character.isDigit(character)) {
             character = '#';
         }
@@ -90,7 +106,7 @@ public class AdditiveIngredientAdapter
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        holder.ingredientNameView.setText(ingredient.getName());
+        holder.ingredientNameView.setText(ingredient.getName(this.activity));
 
         if (ingredient.hasENumber()) {
             holder.ingredientENumberView.setVisibility(View.VISIBLE);

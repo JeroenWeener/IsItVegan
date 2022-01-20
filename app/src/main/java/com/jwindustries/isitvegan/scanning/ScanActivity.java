@@ -2,9 +2,12 @@ package com.jwindustries.isitvegan.scanning;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Vibrator;
+import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +21,7 @@ import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
+import androidx.camera.core.ResolutionInfo;
 import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -29,7 +33,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
@@ -38,7 +41,6 @@ import com.jwindustries.isitvegan.AdditiveIngredientAdapter;
 import com.jwindustries.isitvegan.Ingredient;
 import com.jwindustries.isitvegan.IngredientList;
 import com.jwindustries.isitvegan.R;
-import com.jwindustries.isitvegan.Utils;
 import com.jwindustries.isitvegan.activities.BaseActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -47,20 +49,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-public class ScanActivity extends BaseActivity implements BarcodeFoundListener, TextFoundListener {
-
+public class ScanActivity extends BaseActivity implements BarcodeFoundListener, IngredientsFoundListener {
     /*
      * Camera
      */
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
-    private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
+    private final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
 
@@ -82,7 +85,10 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     private ViewSwitcher scanListContainer;
     private LinearLayoutManager layoutManager;
     private Menu optionsMenu;
+    private PreviewView cameraPreviewView;
+    private OverlayManager overlayManager;
 
+    private static final int VIBRATION_DURATION = 70;
     private List<Ingredient> ingredientList;
 
     @Override
@@ -97,11 +103,16 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         this.recyclerView.setLayoutManager(this.layoutManager);
         this.recyclerView.setAdapter(this.adapter);
         this.scanListContainer = this.findViewById(R.id.outer_scan_list_container);
-
-        this.imageAnalyzer = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
-        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this, this));
+        this.cameraPreviewView = this.findViewById(R.id.camera_preview_view);
 
         this.ingredientList = IngredientList.getIngredientList(this);
+        this.imageAnalyzer = new ImageAnalysis.Builder()
+                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build();
+        this.imageAnalyzer.setAnalyzer(this.cameraExecutor, new ImageAnalyzer(this.ingredientList, this, this));
+        GraphicOverlay graphicOverlay = this.findViewById(R.id.graphic_overlay);
+        this.overlayManager = new OverlayManager(this, graphicOverlay);
 
         this.barcodeRequestQueue = Volley.newRequestQueue(this);
         this.requestedBarcodes = new ArrayList<>();
@@ -173,7 +184,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                     Request.Method.GET,
                     OPEN_FOOD_FACTS_API_URL + barcode + ".json",
                     null,
-                    (Response.Listener<JSONObject>) response -> {
+                    response -> {
                         try {
                             boolean productExists = response.get("status").toString().equals("1");
                             if (productExists) {
@@ -183,7 +194,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                                     String ingredientText = ((JSONObject) ingredientsJson.get(ingredientIndex)).getString("text");
                                     List<Ingredient> foundIngredients = this.ingredientList
                                             .stream()
-                                            .filter(ingredient -> Utils.isIngredientInText(ingredient, ingredientText))
+                                            .filter(ingredient -> ingredient.isContainedIn(ingredientText))
                                             .collect(Collectors.toList());
                                     this.addIngredients(foundIngredients);
                                     areIngredientsFound = areIngredientsFound || foundIngredients.size() > 0;
@@ -207,7 +218,7 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
                             e.printStackTrace();
                         }
                     },
-                    (Response.ErrorListener) error -> {
+                    error -> {
                         this.requestedBarcodes.remove(barcode);
                         this.createSnackbar(this.getString(R.string.message_scan_barcode_error) + ' ' + barcode, barcode);
                         error.printStackTrace();
@@ -222,27 +233,42 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
     }
 
     @Override
-    public void onTextFound(String foundText) {
-        List<Ingredient> foundIngredients = this.ingredientList
-                .stream()
-                .filter(ingredient -> Utils.isIngredientInText(ingredient, Utils.normalizeString(foundText, false)))
-                .collect(Collectors.toList());
-        this.addIngredients(foundIngredients);
+    public void onIngredientsFound(Map<Ingredient, Rect> ingredientLocations) {
+        // TODO fetch resolution earlier and only once
+        ResolutionInfo resolutionInfo = imageAnalyzer.getResolutionInfo();
+        if (resolutionInfo == null) {
+            return;
+        }
+
+        Size cameraResolution = resolutionInfo.getResolution();
+        int rotation = imageAnalyzer.getResolutionInfo().getRotationDegrees();
+        if (rotation == 90 || rotation == 270) {
+            cameraResolution = new Size(cameraResolution.getHeight(), cameraResolution.getWidth());
+        }
+
+        this.addIngredients(ingredientLocations.keySet());
+        this.overlayManager.updateIngredients(ingredientLocations, cameraResolution);
     }
 
-    private void addIngredients(List<Ingredient> ingredients) {
+    private void addIngredients(Collection<Ingredient> ingredients) {
         int numberAdded = this.adapter.addIngredients(ingredients);
         if (numberAdded > 0) {
-            // Switch empty label for list view
-            if (this.scanListContainer.getCurrentView().getId() != R.id.inner_scan_list_container) {
-                this.scanListContainer.showNext();
-            }
+            Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            vibrator.vibrate(VIBRATION_DURATION);
+            updateScanList();
+        }
+    }
 
-            // Maintain location at top of the list but do not jump there if the user is scrolling
-            int scrollPosition = this.layoutManager.findFirstVisibleItemPosition();
-            if (scrollPosition == 0) {
-                this.recyclerView.scrollToPosition(0);
-            }
+    private void updateScanList() {
+        // Switch empty label for list view
+        if (this.scanListContainer.getCurrentView().getId() != R.id.inner_scan_list_container) {
+            this.scanListContainer.showNext();
+        }
+
+        // Maintain location at top of the list but do not jump there if the user is scrolling
+        int scrollPosition = this.layoutManager.findFirstVisibleItemPosition();
+        if (scrollPosition == 0) {
+            this.recyclerView.scrollToPosition(0);
         }
     }
 
@@ -251,7 +277,8 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
         cameraProviderFuture.addListener(
                 () -> {
                     Preview preview = new Preview.Builder().build();
-                    preview.setSurfaceProvider(((PreviewView) this.findViewById(R.id.camera_preview_view)).getSurfaceProvider());
+                    preview.setSurfaceProvider(cameraPreviewView.getSurfaceProvider());
+
                     try {
                         cameraProviderFuture.get().unbindAll();
                         this.camera = cameraProviderFuture.get().bindToLifecycle(
@@ -313,12 +340,12 @@ public class ScanActivity extends BaseActivity implements BarcodeFoundListener, 
 
     /**
      * Show a snackbar with specified message
-     *
+     * <p>
      * If a snackbar with given tag is already displayed, do not show a new one
      * Tags are considered again after a 2 second countdown
      *
      * @param message the message displayed in the snackbar
-     * @param tag tag used for distinguishing between snackbars
+     * @param tag     tag used for distinguishing between snackbars
      */
     private void createSnackbar(String message, String tag) {
         if (!this.queuedMessages.contains(tag)) {

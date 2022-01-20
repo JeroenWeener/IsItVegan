@@ -5,10 +5,5 @@
             <solid android:color="@color/colorSuccess" />
         </shape>
     </item>
-    <item
-        android:drawable="@drawable/check_white"
-        android:bottom="5dp"
-        android:left="5dp"
-        android:right="5dp"
-        android:top="5dp" />
+    <item android:drawable="@drawable/check_white" />
 </layer-list>

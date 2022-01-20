@@ -46,7 +46,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     public void filterItems(String query) {
         final String normalizedQuery = Utils.normalizeString(query, true);
         this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) -> {
-            boolean nameMatch = Utils.normalizeString(ingredient.getName(), true).contains(normalizedQuery);
+            boolean nameMatch = Utils.normalizeString(ingredient.getName(this.activity), true).contains(normalizedQuery);
             boolean eNumberMatch = ingredient.hasENumber() && Utils.normalizeString(ingredient.getENumber(), true).contains(normalizedQuery);
             return nameMatch || eNumberMatch;
         }).collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     @Override
     public Character getCharacterForElement(int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        char character =  ingredient.getName().replace("(", "").charAt(0);
+        char character =  ingredient.getName(this.activity).replace("(", "").charAt(0);
         if(Character.isDigit(character)) {
             character = '#';
         }
@@ -75,7 +75,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     @Override
     public void onBindViewHolder(@NonNull IngredientViewHolder holder, int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        holder.ingredientNameView.setText(ingredient.getName());
+        holder.ingredientNameView.setText(ingredient.getName(this.activity));
 
         if (ingredient.hasENumber()) {
             holder.ingredientENumberView.setVisibility(View.VISIBLE);

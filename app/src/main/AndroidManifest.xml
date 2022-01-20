@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -21,7 +22,7 @@
         <activity
             android:name=".introduction.IntroductionActivity"
             android:theme="@style/SplashScreenTheme"
-            android:exported="false"
+            android:exported="true"
         >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -3,7 +3,9 @@ package com.jwindustries.isitvegan.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.preference.Preference;
@@ -38,7 +40,11 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
+
     public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+        private final int DEBUG_THRESHOLD = 10;
+        private int debugTriggers = 0;
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -68,6 +74,46 @@ public class SettingsActivity extends BaseActivity {
                     Intent intent = new Intent(this.getActivity(), IntroductionActivity.class);
                     intent.putExtra("force_intro", true);
                     this.startActivity(intent);
+                    return true;
+                });
+            }
+
+            // Handle ingredient suggestion button click
+            Preference ingredientSuggestionButton = findPreference("suggest_ingredient_button");
+            if (ingredientSuggestionButton != null) {
+                ingredientSuggestionButton.setOnPreferenceClickListener(preference -> {
+                    Intent selectorIntent = new Intent(Intent.ACTION_SENDTO);
+                    selectorIntent.setData(Uri.parse("mailto:"));
+
+                    final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.suggestion_mail_address)});
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.suggestion_mail_subject));
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.suggestion_mail_body));
+                    emailIntent.setSelector(selectorIntent);
+
+                    this.startActivity(Intent.createChooser(emailIntent, getString(R.string.suggestion_mail_chooser_label)));
+                    return true;
+                });
+            }
+
+            // Handle build version click
+            Preference buildVersionButton = findPreference("build_version_button");
+            if (buildVersionButton != null) {
+                buildVersionButton.setOnPreferenceClickListener(v -> {
+                    debugTriggers++;
+                    if (debugTriggers >= DEBUG_THRESHOLD) {
+                        debugTriggers = 0;
+                        boolean debugging = Utils.toggleDebugging(getContext());
+                        Toast
+                                .makeText(
+                                        this.getContext(),
+                                        debugging
+                                                ? R.string.message_debug_enabled
+                                                : R.string.message_debug_disabled,
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show();
+                    }
                     return true;
                 });
             }
@@ -113,7 +159,7 @@ public class SettingsActivity extends BaseActivity {
                         "\nhttps://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID;
                 shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
                 startActivity(shareIntent);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
