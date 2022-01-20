@@ -85,14 +85,14 @@ public class OverlayManager {
             IngredientType ingredientType = ingredientLocation.getKey().getIngredientType();
             Bitmap badgeBitmap = getBitmap(badgeSize, ingredientType);
             Rect boundingBox = ingredientLocation.getValue();
-            IngredientTypeGraphic ingredientTypeGraphic = new IngredientTypeGraphic(
+            IngredientIndicatorGraphic ingredientIndicatorGraphic = new IngredientIndicatorGraphic(
                     overlay,
                     badgeBitmap,
                     getLineColor(ingredientType),
                     boundingBox,
                     cameraResolution
             );
-            ingredientTypeGraphics.add(ingredientTypeGraphic);
+            ingredientTypeGraphics.add(ingredientIndicatorGraphic);
         }
         overlay.addAll(ingredientTypeGraphics);
     }

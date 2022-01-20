@@ -5,22 +5,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Size;
 
 import com.jwindustries.isitvegan.Utils;
 
 /**
- * Graphic instance for rendering ingredient type badges
+ * Graphic instance for rendering ingredient indicators
  */
-public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
+public class IngredientIndicatorGraphic extends GraphicOverlay.Graphic {
     private final Bitmap badgeBitmap;
     private final Rect boundingBox;
     private final Size cameraResolution;
-    private final Paint linePaint;
+    private final Paint paint;
 
     private static final float LINE_STROKE_WIDTH = 2f;
+    private static final int INDICATOR_ALPHA = 0x40;
 
-    IngredientTypeGraphic(
+    IngredientIndicatorGraphic(
             GraphicOverlay overlay,
             Bitmap badgeBitmap,
             int lineColor,
@@ -31,9 +33,10 @@ public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
 
         this.badgeBitmap = badgeBitmap;
 
-        this.linePaint = new Paint();
-        linePaint.setStrokeWidth(LINE_STROKE_WIDTH);
-        linePaint.setColor(lineColor);
+        this.paint = new Paint();
+        paint.setColor(lineColor);
+        paint.setStrokeWidth(LINE_STROKE_WIDTH);
+        paint.setAlpha(INDICATOR_ALPHA);
 
         this.boundingBox = boundingBox;
         this.cameraResolution = cameraResolution;
@@ -52,31 +55,54 @@ public class IngredientTypeGraphic extends GraphicOverlay.Graphic {
      */
     private Rect translateCamera2Canvas(Canvas canvas, Rect boundingBox) {
         boundingBox.left *= (double) canvas.getWidth() / cameraResolution.getWidth();
-        boundingBox.right *= (double) canvas.getWidth() / cameraResolution.getWidth();
         boundingBox.top *= (double) canvas.getHeight() / cameraResolution.getHeight();
+        boundingBox.right *= (double) canvas.getWidth() / cameraResolution.getWidth();
         boundingBox.bottom *= (double) canvas.getHeight() / cameraResolution.getHeight();
         return boundingBox;
     }
 
+    /**
+     * Draws an indicator around the ingredient.
+     * The left side of the indicator aligns with the left side of the ingredient. The right side of
+     * the indicator ends a badge's length from the right side of the text as to not overlap with it.
+     *
+     * @param canvas - The canvas object the graphics will be drawn on.
+     */
     @Override
     public void draw(Canvas canvas) {
         Rect translatedElementBoundingBox = translateCamera2Canvas(canvas, this.boundingBox);
 
-        canvas.drawLine(
-                translatedElementBoundingBox.left,
-                translatedElementBoundingBox.bottom,
-                translatedElementBoundingBox.right,
-                translatedElementBoundingBox.bottom,
-                linePaint
+        int badgeSize = this.badgeBitmap.getHeight();
+
+        int textHeight = translatedElementBoundingBox.bottom - translatedElementBoundingBox.top;
+        int textMiddle = translatedElementBoundingBox.top + textHeight / 2;
+
+        int indicatorLeft = translatedElementBoundingBox.left;
+        int indicatorTop = textMiddle - badgeSize / 2;
+        int indicatorRight = translatedElementBoundingBox.right + badgeSize;
+        int indicatorBottom = textMiddle + badgeSize / 2;
+
+        // Draw indicator
+        RectF roundedRectangleBounds = new RectF(
+                indicatorLeft,
+                indicatorTop,
+                indicatorRight,
+                indicatorBottom
+        );
+        canvas.drawRoundRect(
+                roundedRectangleBounds,
+                badgeSize / 2f,
+                badgeSize / 2f,
+                paint
         );
 
+        // Draw badge
         canvas.drawBitmap(
                 this.badgeBitmap,
-                translatedElementBoundingBox.right - (int) (.5 * this.badgeBitmap.getWidth()),
-                translatedElementBoundingBox.bottom - (int) (.5 * this.badgeBitmap.getHeight()),
+                indicatorRight - badgeSize,
+                indicatorTop,
                 null
         );
-
 
         if (Utils.DEBUG) {
             Paint paint = new Paint();

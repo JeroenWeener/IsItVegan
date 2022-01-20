@@ -136,6 +136,7 @@ public class Utils {
                 // Remove special characters
                 .replace("-", "")
                 .replace(",", "")
+                .replace(".", "")
                 .replace(";", "")
                 .replace(":", "")
                 .replace("'", "")
