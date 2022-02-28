@@ -17,6 +17,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 import com.jwindustries.isitvegan.activities.IngredientOverviewActivity;
+import com.jwindustries.isitvegan.activities.MainActivity;
 
 public class IntroductionActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
@@ -37,8 +38,7 @@ public class IntroductionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Make activity fullscreen
-        this.getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         this.setContentView(R.layout.activity_introduction);
 

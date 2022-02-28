@@ -16,7 +16,6 @@ import android.widget.SearchView;
 import com.jwindustries.isitvegan.IngredientAdapter;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
-import com.jwindustries.isitvegan.scanning.ScanActivity;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
@@ -121,7 +120,7 @@ public class IngredientOverviewActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_camera) {
-            this.startActivity(new Intent(this, ScanActivity.class));
+            this.startActivity(new Intent(this, ARScanActivity.class));
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
             this.startActivity(new Intent(this, SettingsActivity.class));
