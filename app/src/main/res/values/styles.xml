@@ -37,6 +37,12 @@
         <item name="android:textViewStyle">@style/PoppinsTextViewStyle</item>
     </style>
 
+    <!-- Theme used by the ARScanActivity. By setting a transparent window background, the user will
+    see the leftovers from the PreviewView, making for a more seamless transition -->
+    <style name="Theme.AppCompat.Translucent" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
     <!-- Dialog -->
     <style name="AppDialogTheme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>

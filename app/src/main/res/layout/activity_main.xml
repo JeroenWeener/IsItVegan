@@ -4,29 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     tools:context=".activities.MainActivity">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/preview_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:layout_height="200dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:id="@+id/haze_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#AAFFFFFF"
+        android:background="#60FFFFFF"
         app:layout_constraintTop_toTopOf="@id/preview_view"
         app:layout_constraintStart_toStartOf="@id/preview_view"
         app:layout_constraintBottom_toBottomOf="@id/preview_view"
         app:layout_constraintEnd_toEndOf="@id/preview_view"/>
-
-    <View
-        android:id="@+id/filler"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:background="#FF000000"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

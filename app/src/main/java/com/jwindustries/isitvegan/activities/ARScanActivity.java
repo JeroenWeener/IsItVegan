@@ -7,6 +7,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,7 +23,6 @@ import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.InstantPlacementPoint;
-import com.google.ar.core.PointCloud;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;
@@ -43,7 +44,6 @@ import com.jwindustries.isitvegan.graphics.Framebuffer;
 import com.jwindustries.isitvegan.graphics.Mesh;
 import com.jwindustries.isitvegan.graphics.Render;
 import com.jwindustries.isitvegan.graphics.Shader;
-import com.jwindustries.isitvegan.graphics.VertexBuffer;
 import com.jwindustries.isitvegan.helpers.BoundingBoxHelper;
 import com.jwindustries.isitvegan.helpers.CameraPermissionHelper;
 import com.jwindustries.isitvegan.helpers.DisplayRotationHelper;
@@ -79,6 +79,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
     private BackgroundRenderer backgroundRenderer;
     private Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
+    private boolean hasRenderedFirstFrame = false;
 
     // Assumed distance from the device camera to the surface on which user will try to place objects.
     // This value affects the apparent scale of objects while the tracking method of the
@@ -88,14 +89,6 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
     // camera. Use larger values for experiences where the user will likely be standing and trying to
     // place an object on the ground or floor in front of them.
     private static final float APPROXIMATE_DISTANCE_METERS = .2f;
-
-    // Point Cloud
-    private VertexBuffer pointCloudVertexBuffer;
-    private Mesh pointCloudMesh;
-    private Shader pointCloudShader;
-    // Keep track of the last point cloud rendered to avoid updating the VBO if point cloud
-    // was not changed.  Do this using the timestamp since we can't compare PointCloud objects.
-    private long lastPointCloudTimestamp = 0;
 
     private Shader labelShader;
 
@@ -110,9 +103,14 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Disable layout transition to make the transition more seamless
+        overridePendingTransition(0, 0);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ar_scan);
+
         surfaceView = findViewById(R.id.surface_view);
+
         displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
 
         tapHelper = new TapHelper(/*context=*/ this);
@@ -180,7 +178,6 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         }
 
         try {
-            configureSession();
             session.resume();
         } catch (CameraNotAvailableException e) {
             messageSnackbarHelper.showError(this, "Camera not available. Try restarting the app.");
@@ -223,24 +220,13 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
 
     @Override
     public void onSurfaceCreated(Render render) {
-        // Re-set session configuration as somehow this sets camera focus to AUTO
-        session.configure(session.getConfig());
+        configureSession();
 
         // Prepare the rendering objects. This involves reading shaders and 3D model files, so may throw
         // an IOException.
         try {
             backgroundRenderer = new BackgroundRenderer(render);
             virtualSceneFramebuffer = new Framebuffer(/*width=*/ 1, /*height=*/ 1);
-
-            // Point cloud
-            pointCloudShader = Shader
-                    .createFromAssets(render, "shaders/point_cloud.vert", "shaders/point_cloud.frag")
-                    .setVec4("u_Color", new float[]{31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f})
-                    .setFloat("u_PointSize", 5.0f);
-            // four entries per vertex: X, Y, Z, confidence
-            pointCloudVertexBuffer = new VertexBuffer(/*numberOfEntriesPerVertex=*/ 4, /*entries=*/ null);
-            final VertexBuffer[] pointCloudVertexBuffers = {pointCloudVertexBuffer};
-            pointCloudMesh = new Mesh(Mesh.PrimitiveMode.POINTS, pointCloudVertexBuffers);
 
             labelShader = Shader
                     .createFromAssets(render, "shaders/rectangle.vert", "shaders/rectangle.frag")
@@ -258,10 +244,6 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
 
     @Override
     public void onDrawFrame(Render render) {
-        if (session == null) {
-            return;
-        }
-
         // Texture names should only be set once on a GL thread unless they change. This is done during
         // onDrawFrame rather than onSurfaceCreated since the session is not guaranteed to have been
         // initialized during the execution of onSurfaceCreated.
@@ -329,11 +311,16 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         }
 
         // -- Draw background
-
         if (frame.getTimestamp() != 0) {
             // Suppress rendering if the camera did not produce the first frame yet. This is to avoid
             // drawing possible leftover data from previous sessions if the texture is reused.
             backgroundRenderer.drawBackground(render);
+
+            // Only after the first rendered frame, show the surface view
+            if (!hasRenderedFirstFrame) {
+                hasRenderedFirstFrame = true;
+                showSurfaceView();
+            }
         }
 
         // If not tracking, don't draw 3D objects.
@@ -349,17 +336,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         // Get camera matrix and draw.
         camera.getViewMatrix(viewMatrix, 0);
 
-        // Visualize tracked points.
-        // Use try-with-resources to automatically release the point cloud.
-        try (PointCloud pointCloud = frame.acquirePointCloud()) {
-            if (pointCloud.getTimestamp() > lastPointCloudTimestamp) {
-                pointCloudVertexBuffer.set(pointCloud.getPoints());
-                lastPointCloudTimestamp = pointCloud.getTimestamp();
-            }
-            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-            pointCloudShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
-            render.draw(pointCloudMesh, pointCloudShader);
-        }
+        Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         // -- Draw occluded virtual objects
 
@@ -479,20 +456,22 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
                                 }
                             }
                         }
-//                        Log.d("TREST", "---");
-//                        Log.d("TREST", String.valueOf(resultRect.top));
-//                        Log.d("TREST", String.valueOf(resultRect.right));
-//                        Log.d("TREST", String.valueOf(resultRect.bottom));
-//                        Log.d("TREST", String.valueOf(resultRect.left));
-//                        int imageWidth = inputImage.getWidth();
-//                        int imageHeight = inputImage.getHeight();
-//                        resultRect.left = imageWidth - resultRect.left;
-//                        resultRect.right = imageWidth - resultRect.right;
-//                        resultRect.top = imageHeight - resultRect.top;
-//                        resultRect.bottom = imageHeight - resultRect.bottom;
                         boundingBoxHelper.add(resultRect);
                     }
                 }));
+    }
+
+    /**
+     * The surface view is 'hidden' at first, to avoid showing a black screen to the user. In order
+     * to still trigger its methods responsible for drawing etc, we set its dimensions to 1 dp. This
+     * method changes the dimensions of the surface view to make it visible to the user.
+     */
+    private void showSurfaceView() {
+        ViewGroup.LayoutParams layoutParams = surfaceView.getLayoutParams();
+        View container = findViewById(R.id.container);
+        layoutParams.height = container.getMeasuredHeight();
+        layoutParams.width = container.getMeasuredWidth();
+        runOnUiThread(() -> surfaceView.setLayoutParams(layoutParams));
     }
 
     private void configureSession() {

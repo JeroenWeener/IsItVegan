@@ -16,7 +16,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
-import com.jwindustries.isitvegan.activities.IngredientOverviewActivity;
 import com.jwindustries.isitvegan.activities.MainActivity;
 
 public class IntroductionActivity extends AppCompatActivity {
@@ -31,7 +30,7 @@ public class IntroductionActivity extends AppCompatActivity {
             // If the tutorial has already been finished skip it and move to overview
             boolean isTutorialFinished = Utils.isTutorialFinished(this);
             if (isTutorialFinished) {
-                this.navigateToOverview();
+                this.navigateToMainActivity();
             }
         }
 
@@ -67,7 +66,7 @@ public class IntroductionActivity extends AppCompatActivity {
                 this.viewPager.setCurrentItem(this.viewPager.getCurrentItem() + 1);
             } else {
                 Utils.storeTutorialFinished(this);
-                this.navigateToOverview();
+                this.navigateToMainActivity();
             }
         });
 
@@ -99,8 +98,8 @@ public class IntroductionActivity extends AppCompatActivity {
         window.setStatusBarColor(Color.TRANSPARENT);
     }
 
-    private void navigateToOverview() {
-        this.startActivity(new Intent(this, IngredientOverviewActivity.class));
+    private void navigateToMainActivity() {
+        this.startActivity(new Intent(this, MainActivity.class));
         this.finish();
     }
 }

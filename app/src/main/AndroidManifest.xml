@@ -31,6 +31,7 @@
         <activity
             android:name=".activities.ARScanActivity"
             android:label="@string/title_scan"
+            android:theme="@style/Theme.AppCompat.Translucent"
             android:parentActivityName=".activities.IngredientOverviewActivity" />
         <activity
             android:name=".activities.IngredientOverviewActivity"
