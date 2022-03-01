@@ -45,6 +45,8 @@
     <string name="about_text_ingredients">Alle ingrediëntinformatie is handmatig opgezocht op het internet. Een lijst als deze zal nooit helemaal compleet of foutloos zijn. Mocht je informatie missen of een foutje vinden, laat het me dan vooral weten door een mailtje te sturen naar contactisitvegan@gmail.com.</string>
     <string name="about_title_barcode">Barcodes</string>
     <string name="about_text_barcode">Bij het scannen van barcodes wordt de online database van Open Food Facts gebruikt voor het opvragen van de ingrediëntenlijst van het product. Open Food Facts is een voedselproductdatabank voor iedereen, door iedereen. Let op dat data incompleet of foutief kan zijn. Voor meer informatie, ga naar <a href="https://nl.openfoodfacts.org">openfoodfacts.org</a>.</string>
+    <string name="title_overview">Ingrediënten</string>
+    <string name="button_tap_to_scan">Tik om te scannen</string>
 
     <!-- Suggestion email -->
     <string name="suggestion_mail_chooser_label">Verstuur email…</string>
@@ -62,5 +64,4 @@
     <string name="introduction_text_scan">Scan producten om te zien welke ingrediënten ze bevatten</string>
     <string name="introduction_text_view">Bekijk gedetailleerde informatie over ingrediënten zoals hun oorsprong en toepassingen</string>
     <string name="introduction_text_share">Deel de app met vrienden zodat ze weten wat ze voor je kunnen halen</string>
-    <string name="title_overview">Ingrediënten</string>
 </resources>

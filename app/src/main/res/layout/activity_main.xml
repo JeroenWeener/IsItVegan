@@ -23,11 +23,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <View
+        <TextView
             android:id="@+id/haze_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#40FFFFFF" />
+            android:gravity="center"
+            android:background="#40FFFFFF"
+            android:text="@string/button_tap_to_scan"
+            android:textSize="30sp"
+        />
+
 
     </androidx.cardview.widget.CardView>
 
