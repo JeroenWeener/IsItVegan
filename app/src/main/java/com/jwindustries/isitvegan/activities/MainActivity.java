@@ -49,6 +49,9 @@ public class MainActivity extends BaseActivity {
                 .get(CameraXViewModel.class)
                 .getProcessCameraProvider()
                 .observe(this, this::bindPreviewUseCase);
+
+        findViewById(R.id.settings_button).setOnClickListener(view -> startActivity(new Intent(this, SettingsActivity.class)));
+        findViewById(R.id.ingredient_list_button).setOnClickListener(view -> startActivity(new Intent(this, IngredientOverviewActivity.class)));
     }
 
     @Override

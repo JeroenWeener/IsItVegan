@@ -31,4 +31,22 @@
 
     </androidx.cardview.widget.CardView>
 
+    <Button
+        android:id="@+id/ingredient_list_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ingredient list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/preview_container"
+    />
+
+    <Button
+        android:id="@+id/settings_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/preview_container"
+    />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

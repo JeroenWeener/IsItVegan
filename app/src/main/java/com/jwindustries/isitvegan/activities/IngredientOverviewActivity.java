@@ -1,17 +1,16 @@
 package com.jwindustries.isitvegan.activities;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.jwindustries.isitvegan.IngredientAdapter;
 import com.jwindustries.isitvegan.R;
@@ -38,8 +37,6 @@ public class IngredientOverviewActivity extends BaseActivity {
 
         this.appLocale = Utils.handleAppLocale(this);
         this.ingredientsLocale = Utils.getIngredientLocale(this);
-        // Reset title as locale may have changed
-        this.setTitle(R.string.app_name);
 
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_overview);
@@ -120,10 +117,10 @@ public class IngredientOverviewActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_camera) {
-            this.startActivity(new Intent(this, ARScanActivity.class));
+//            this.startActivity(new Intent(this, ARScanActivity.class));
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
-            this.startActivity(new Intent(this, SettingsActivity.class));
+//            this.startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else {
             return super.onOptionsItemSelected(item);

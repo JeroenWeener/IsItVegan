@@ -62,4 +62,5 @@
     <string name="introduction_text_scan">Scan producten om te zien welke ingrediënten ze bevatten</string>
     <string name="introduction_text_view">Bekijk gedetailleerde informatie over ingrediënten zoals hun oorsprong en toepassingen</string>
     <string name="introduction_text_share">Deel de app met vrienden zodat ze weten wat ze voor je kunnen halen</string>
+    <string name="title_overview">Ingrediënten</string>
 </resources>
