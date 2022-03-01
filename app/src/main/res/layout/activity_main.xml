@@ -2,25 +2,33 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
     tools:context=".activities.MainActivity">
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/preview_view"
+    <!--
+    Hide top corners by offsetting vertically with the same dimension
+    -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/preview_container"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="-30dp"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <View
-        android:id="@+id/haze_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#60FFFFFF"
-        app:layout_constraintTop_toTopOf="@id/preview_view"
-        app:layout_constraintStart_toStartOf="@id/preview_view"
-        app:layout_constraintBottom_toBottomOf="@id/preview_view"
-        app:layout_constraintEnd_toEndOf="@id/preview_view"/>
+        <androidx.camera.view.PreviewView
+            android:id="@+id/preview_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:id="@+id/haze_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#40FFFFFF" />
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,16 +12,21 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.jwindustries.isitvegan.CameraXViewModel;
 import com.jwindustries.isitvegan.R;
 
 public class MainActivity extends BaseActivity {
+    private ViewGroup layoutContainerView;
+    private CardView previewContainerView;
     private PreviewView previewView;
     private View hazeView;
+
     private float originalAlpha = -1f;
     private int originalHeight = -1;
+
     // Animation duration in ms
     private static final int ANIMATION_DURATION = 250;
 
@@ -31,9 +36,14 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        hazeView = findViewById(R.id.haze_view);
+        layoutContainerView = findViewById(R.id.layout_container);
+
+        previewContainerView = findViewById(R.id.preview_container);
+        previewContainerView.setOnClickListener(view -> startScanActivity());
+
         previewView = findViewById(R.id.preview_view);
-        previewView.setOnClickListener(view -> startScanActivity());
+
+        hazeView = findViewById(R.id.haze_view);
 
         new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
                 .get(CameraXViewModel.class)
@@ -52,9 +62,9 @@ public class MainActivity extends BaseActivity {
 
         // Restore initial preview view size that has been changed by transition
         if (originalHeight != -1) {
-            ViewGroup.LayoutParams layoutParams = previewView.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams = previewContainerView.getLayoutParams();
             layoutParams.height = originalHeight;
-            previewView.setLayoutParams(layoutParams);
+            previewContainerView.setLayoutParams(layoutParams);
         }
     }
 
@@ -64,15 +74,14 @@ public class MainActivity extends BaseActivity {
      * view in the scanning activity.
      */
     private void startScanActivity() {
-        View container = findViewById(R.id.container);
-
-        originalHeight = previewView.getMeasuredHeight();
-        ValueAnimator previewHeightAnimator = ValueAnimator.ofInt(originalHeight, container.getMeasuredHeight());
+        originalHeight = previewContainerView.getMeasuredHeight();
+        int verticalOffset = -((ViewGroup.MarginLayoutParams) previewContainerView.getLayoutParams()).topMargin;
+        ValueAnimator previewHeightAnimator = ValueAnimator.ofInt(originalHeight, layoutContainerView.getMeasuredHeight() + 2 * verticalOffset);
         previewHeightAnimator.addUpdateListener(valueAnimator -> {
             int intermediateHeight = (Integer) valueAnimator.getAnimatedValue();
-            ViewGroup.LayoutParams layoutParams = previewView.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams = previewContainerView.getLayoutParams();
             layoutParams.height = intermediateHeight;
-            previewView.setLayoutParams(layoutParams);
+            previewContainerView.setLayoutParams(layoutParams);
         });
 
         originalAlpha = hazeView.getAlpha();
