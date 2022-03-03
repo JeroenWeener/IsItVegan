@@ -6,10 +6,15 @@
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <!-- Status bar and action bar -->
-        <item name="android:statusBarColor">@color/colorApp</item>
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Action bar -->
         <item name="actionBarStyle">@style/ActionBarStyle</item>
+
+        <!-- Navigation bar -->
+        <item name="android:windowTranslucentNavigation">true</item>
 
         <!-- Shared element transitions -->
         <item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
@@ -26,7 +31,7 @@
 
     <!-- Action bar style -->
     <style name="ActionBarStyle" parent="Widget.AppCompat.ActionBar">
-        <item name="background">@color/colorApp</item>
+        <item name="background">@android:color/transparent</item>
     </style>
 
     <!-- Splash screen theme -->
