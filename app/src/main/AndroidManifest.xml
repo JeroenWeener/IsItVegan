@@ -30,11 +30,6 @@
             android:name=".activities.MainActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activities.ARScanActivity"
-            android:label="@string/title_scan"
-            android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/TranslucentTheme" />
-        <activity
             android:name=".activities.IngredientOverviewActivity"
             android:label="@string/title_overview"
             android:parentActivityName=".activities.MainActivity" />

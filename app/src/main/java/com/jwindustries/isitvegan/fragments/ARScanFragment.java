@@ -1,4 +1,4 @@
-package com.jwindustries.isitvegan.activities;
+package com.jwindustries.isitvegan.fragments;
 
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -6,6 +6,7 @@ import android.media.Image;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.ArCoreApk;
@@ -38,6 +40,7 @@ import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.graphics.BackgroundRenderer;
 import com.jwindustries.isitvegan.graphics.Framebuffer;
@@ -55,7 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ARScanActivity extends BaseActivity implements Render.Renderer {
+public class ARScanFragment extends Fragment implements Render.Renderer {
     private TextRecognizer textRecognizer;
     private boolean textRecognizerReady = true;
 
@@ -67,11 +70,12 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
     private GLSurfaceView surfaceView;
 
     private boolean installRequested;
+    private boolean isInPreviewMode;
 
     private Session session;
     private final SnackbarHelper messageSnackbarHelper = new SnackbarHelper();
     private DisplayRotationHelper displayRotationHelper;
-    private final TrackingStateHelper trackingStateHelper = new TrackingStateHelper(this);
+    private TrackingStateHelper trackingStateHelper;
     private TapHelper tapHelper;
     private BoundingBoxHelper boundingBoxHelper;
     private Render render;
@@ -79,7 +83,6 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
     private BackgroundRenderer backgroundRenderer;
     private Framebuffer virtualSceneFramebuffer;
     private boolean hasSetTextureNames = false;
-    private boolean hasRenderedFirstFrame = false;
 
     // Assumed distance from the device camera to the surface on which user will try to place objects.
     // This value affects the apparent scale of objects while the tracking method of the
@@ -102,27 +105,30 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
     private final float[] modelViewProjectionMatrix = new float[16]; // projection x view x model
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        // Disable layout transition to make the transition more seamless
-        overridePendingTransition(0, 0);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_ar_scan, container, false);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ar_scan);
-
-        surfaceView = findViewById(R.id.surface_view);
-
-        displayRotationHelper = new DisplayRotationHelper(/*context=*/ this);
-
-        tapHelper = new TapHelper(/*context=*/ this);
+        surfaceView = rootView.findViewById(R.id.surface_view);
+        tapHelper = new TapHelper(/*context=*/ this.getContext());
         surfaceView.setOnTouchListener(tapHelper);
+        render = new Render(surfaceView, this, getActivity().getAssets());
 
+        displayRotationHelper = new DisplayRotationHelper(/*context=*/ getContext());
+        trackingStateHelper = new TrackingStateHelper(/*context=*/ getActivity());
         boundingBoxHelper = new BoundingBoxHelper();
-
-        render = new Render(surfaceView, this, getAssets());
-
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
         installRequested = false;
+        isInPreviewMode = true;
+
+        // Listen to parent to determine whether the fragment is in preview mode
+        getParentFragmentManager().setFragmentResultListener(
+                "requestKey",
+                this,
+                (requestKey, bundle) -> isInPreviewMode = bundle.getBoolean("isInPreviewMode")
+        );
+
+        return rootView;
     }
 
     @Override
@@ -143,7 +149,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         if (session == null) {
             String message = null;
             try {
-                switch (ArCoreApk.getInstance().requestInstall(this, !installRequested)) {
+                switch (ArCoreApk.getInstance().requestInstall(getActivity(), !installRequested)) {
                     case INSTALL_REQUESTED:
                         installRequested = true;
                         return;
@@ -153,12 +159,12 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
 
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
-                if (!CameraPermissionHelper.hasCameraPermission(this)) {
-                    CameraPermissionHelper.requestCameraPermission(this);
+                if (!CameraPermissionHelper.hasCameraPermission(getActivity())) {
+                    CameraPermissionHelper.requestCameraPermission(getActivity());
                     return;
                 }
 
-                session = new Session(/* context= */ this);
+                session = new Session(/* context= */ getContext());
             } catch (UnavailableArcoreNotInstalledException | UnavailableUserDeclinedInstallationException e) {
                 message = "Please install ARCore";
             } catch (UnavailableApkTooOldException e) {
@@ -172,7 +178,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
             }
 
             if (message != null) {
-                messageSnackbarHelper.showError(this, message);
+                messageSnackbarHelper.showError(getActivity(), message);
                 return;
             }
         }
@@ -180,7 +186,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         try {
             session.resume();
         } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(this, "Camera not available. Try restarting the app.");
+            messageSnackbarHelper.showError(getActivity(), "Camera not available. Try restarting the app.");
             session = null;
             return;
         }
@@ -205,16 +211,16 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
-        if (!CameraPermissionHelper.hasCameraPermission(this)) {
+        if (!CameraPermissionHelper.hasCameraPermission(getActivity())) {
             // Use toast instead of snackbar here since the activity will exit.
             Toast
-                    .makeText(this, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
+                    .makeText(getContext(), "Camera permission is needed to run this application", Toast.LENGTH_LONG)
                     .show();
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(getActivity())) {
                 // Permission denied with checking "Do not ask again".
-                CameraPermissionHelper.launchPermissionSettings(this);
+                CameraPermissionHelper.launchPermissionSettings(getActivity());
             }
-            finish();
+            getActivity().finish();
         }
     }
 
@@ -232,7 +238,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
                     .createFromAssets(render, "shaders/rectangle.vert", "shaders/rectangle.frag")
                     .setVec4("u_Color", new float[]{255.0f / 255.0f, 136.0f / 255.0f, 0.0f / 255.0f, 0.8f});
         } catch (IOException e) {
-            messageSnackbarHelper.showError(this, "Failed to read a required asset file: " + e);
+            messageSnackbarHelper.showError(getActivity(), "Failed to read a required asset file: " + e);
         }
     }
 
@@ -265,7 +271,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         try {
             frame = session.update();
         } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(this, "Camera not available. Try restarting the app.");
+            messageSnackbarHelper.showError(getActivity(), "Camera not available. Try restarting the app.");
             return;
         }
 
@@ -274,6 +280,16 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         // BackgroundRenderer.updateDisplayGeometry must be called every frame to update the coordinates
         // used to draw the background camera image.
         backgroundRenderer.updateDisplayGeometry(frame);
+
+        // -- Draw background
+        if (frame.getTimestamp() != 0) {
+            // Suppress rendering if the camera did not produce the first frame yet. This is to avoid
+            // drawing possible leftover data from previous sessions if the texture is reused.
+            backgroundRenderer.drawBackground(render);
+        }
+
+        // If we are in preview mode, we do not need to do anything else
+        if (isInPreviewMode) return;
 
         // Handle one tap per frame.
         handleTap();
@@ -305,22 +321,9 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
             message = MESSAGE_SEARCHING;
         }
         if (message == null) {
-            messageSnackbarHelper.hide(this);
+            messageSnackbarHelper.hide(getActivity());
         } else {
-            messageSnackbarHelper.showMessage(this, message);
-        }
-
-        // -- Draw background
-        if (frame.getTimestamp() != 0) {
-            // Suppress rendering if the camera did not produce the first frame yet. This is to avoid
-            // drawing possible leftover data from previous sessions if the texture is reused.
-            backgroundRenderer.drawBackground(render);
-
-            // Only after the first rendered frame, show the surface view
-            if (!hasRenderedFirstFrame) {
-                hasRenderedFirstFrame = true;
-                showSurfaceView();
-            }
+            messageSnackbarHelper.showMessage(getActivity(), message);
         }
 
         // If not tracking, don't draw 3D objects.
@@ -421,7 +424,7 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
         textRecognizerReady = false;
         int rotation = displayRotationHelper.getCameraSensorToDisplayRotation(session.getCameraConfig().getCameraId());
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
-        ContextCompat.getMainExecutor(this).execute(() -> textRecognizer.process(inputImage)
+        ContextCompat.getMainExecutor(getContext()).execute(() -> textRecognizer.process(inputImage)
                 .addOnCompleteListener(result -> {
                     image.close();
                     textRecognizerReady = true;
@@ -461,27 +464,17 @@ public class ARScanActivity extends BaseActivity implements Render.Renderer {
                 }));
     }
 
-    /**
-     * The surface view is 'hidden' at first, to avoid showing a black screen to the user. In order
-     * to still trigger its methods responsible for drawing etc, we set its dimensions to 1 dp. This
-     * method changes the dimensions of the surface view to make it visible to the user.
-     */
-    private void showSurfaceView() {
-        ViewGroup.LayoutParams layoutParams = surfaceView.getLayoutParams();
-        View container = findViewById(R.id.container);
-        layoutParams.height = container.getMeasuredHeight();
-        layoutParams.width = container.getMeasuredWidth();
-        runOnUiThread(() -> surfaceView.setLayoutParams(layoutParams));
-    }
-
     private void configureSession() {
         Config config = session.getConfig();
-        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
-        config.setDepthMode(Config.DepthMode.DISABLED);
-        config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
+
         config.setCloudAnchorMode(Config.CloudAnchorMode.DISABLED);
-        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
+        config.setDepthMode(Config.DepthMode.DISABLED);
         config.setFocusMode(Config.FocusMode.AUTO);
+        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
+        config.setLightEstimationMode(Config.LightEstimationMode.DISABLED);
+        config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+
         session.configure(config);
     }
 }
