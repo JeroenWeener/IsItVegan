@@ -11,8 +11,10 @@ import android.view.View;
 import com.jwindustries.isitvegan.R;
 
 public class DragHandleView extends View {
+    private static final int TRANSPARENT_COLOR = Color.parseColor("#00000000");
+
     private final Path mPath = new Path();
-    private int mColor;
+    private int mColor = -1;
 
     public DragHandleView(Context context) {
         super(context);
@@ -23,7 +25,7 @@ public class DragHandleView extends View {
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DragHandleView, 0, 0);
         try {
-            mColor = a.getColor(R.styleable.DragHandleView_color, Color.parseColor("#00000000"));
+            mColor = a.getColor(R.styleable.DragHandleView_color, TRANSPARENT_COLOR);
         } finally {
             a.recycle();
         }
@@ -34,7 +36,7 @@ public class DragHandleView extends View {
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DragHandleView, 0, 0);
         try {
-            mColor = a.getColor(R.styleable.DragHandleView_color, Color.parseColor("#00000000"));
+            mColor = a.getColor(R.styleable.DragHandleView_color, TRANSPARENT_COLOR);
         } finally {
             a.recycle();
         }
@@ -56,6 +58,6 @@ public class DragHandleView extends View {
         mPath.setFillType(Path.FillType.EVEN_ODD);
         canvas.clipPath(mPath);
 
-        canvas.drawColor(mColor);
+        canvas.drawColor(mColor == -1 ? TRANSPARENT_COLOR : mColor);
     }
 }
