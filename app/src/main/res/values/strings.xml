@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Is it Vegan?</string>
+    <string name="app_name">Is it Vegan</string>
     <string name="search_view_hint">Search ingredients</string>
     <string name="key_ingredient" translatable="false">INGREDIENT_KEY</string>
     <string name="ingredient_name_placeholder">Ingredient name</string>

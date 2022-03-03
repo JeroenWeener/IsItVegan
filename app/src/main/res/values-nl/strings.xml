@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Is \'t Vegan?</string>
+    <string name="app_name">Is \'t Vegan</string>
     <string name="search_view_hint">Zoek ingrediënten</string>
     <string name="ingredient_name_placeholder">Naam ingrediënt</string>
     <string name="ingredient_information_placeholder">Informatie</string>
