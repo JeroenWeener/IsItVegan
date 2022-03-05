@@ -1,23 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item
-        android:id="@+id/search_view"
-        android:title="@string/search_view_hint"
-        android:icon="@drawable/search"
-        app:showAsAction="collapseActionView|always"
-        app:actionViewClass="android.widget.SearchView" />
-
-    <item
-        android:id="@+id/action_camera"
-        android:title="@string/action_camera"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/camera_alt_white" />
-
+>
     <item
         android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:icon="@drawable/settings_white"
+        app:showAsAction="always"
+        android:title="@string/action_settings" />
 </menu>

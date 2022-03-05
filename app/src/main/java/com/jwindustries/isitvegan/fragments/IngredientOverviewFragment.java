@@ -1,14 +1,14 @@
-package com.jwindustries.isitvegan.activities;
+package com.jwindustries.isitvegan.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +18,7 @@ import com.jwindustries.isitvegan.Utils;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
-public class IngredientOverviewActivity extends BaseActivity {
+public class IngredientOverviewFragment extends Fragment {
     private String appLocale;
     private String ingredientsLocale;
 
@@ -29,41 +29,38 @@ public class IngredientOverviewActivity extends BaseActivity {
     private RecyclerView.OnScrollListener scrollListener;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Utils.handleTheme(this);
-
-        // Trigger update of DEBUG variable in Utils
-        Utils.isDebugging(this);
-
-        this.appLocale = Utils.handleAppLocale(this);
-        this.ingredientsLocale = Utils.getIngredientLocale(this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.appLocale = Utils.handleAppLocale(getContext());
+        this.ingredientsLocale = Utils.getIngredientLocale(getContext());
 
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_overview);
+        View rootView = inflater.inflate(R.layout.activity_overview, container, false);
 
-        this.layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        this.adapter = new IngredientAdapter(this);
+        this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        this.adapter = new IngredientAdapter(getActivity());
 
-        this.recyclerView = this.findViewById(R.id.ingredient_view);
+        this.recyclerView = rootView.findViewById(R.id.ingredient_view);
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.setAdapter(adapter);
 
-        ((DragScrollBar) this.findViewById(R.id.dragScrollBar)).setIndicator(new AlphabetIndicator(this), true);
+        ((DragScrollBar) rootView.findViewById(R.id.dragScrollBar)).setIndicator(new AlphabetIndicator(getContext()), true);
 
-        this.scrollToTopButton = this.findViewById(R.id.scroll_to_top_button);
+        this.scrollToTopButton = rootView.findViewById(R.id.scroll_to_top_button);
         scrollToTopButton.setOnClickListener(v -> recyclerView.smoothScrollToPosition(0));
+
+        return rootView;
     }
 
-    @Override
-    public void onRestart() {
-        super.onRestart();
-
-        // Recreate when language has changed
-        if (!Utils.getAppLocale(this).equals(this.appLocale) ||
-                !Utils.getIngredientLocale(this).equals(this.ingredientsLocale)) {
-            this.recreate();
-        }
-    }
+//    @Override
+//    public void onRestart() {
+//        super.onRestart();
+//
+//         Recreate when language has changed
+//        if (!Utils.getAppLocale(this).equals(this.appLocale) ||
+//                !Utils.getIngredientLocale(this).equals(this.ingredientsLocale)) {
+//            this.recreate();
+//        }
+//    }
 
     @Override
     public void onStart() {
@@ -72,72 +69,52 @@ public class IngredientOverviewActivity extends BaseActivity {
         this.handleScrollToTopButton();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.getMenuInflater().inflate(R.menu.actionbar_menu, menu);
-
-        MenuItem menuItem = menu.findItem(R.id.search_view);
-        final SearchView searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint(this.getString(R.string.search_view_hint));
-        final IngredientOverviewActivity activity = this;
-
-        menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                searchView.requestFocus();
-                activity.showKeyboard();
-                return true;
-            }
-
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                searchView.setQuery("", false);
-                activity.hideKeyboard();
-                return true;
-            }
-        });
-
-        searchView.setIconifiedByDefault(false);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                adapter.filterItems(s);
-                return false;
-            }
-        });
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_camera) {
-//            this.startActivity(new Intent(this, ARScanActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.action_settings) {
-//            this.startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
+//        MenuItem menuItem = menu.findItem(R.id.search_view);
+//        final SearchView searchView = (SearchView) menuItem.getActionView();
+//        searchView.setQueryHint(this.getString(R.string.search_view_hint));
+//        final IngredientOverviewFragment activity = this;
+//
+//        menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+//                searchView.requestFocus();
+//                activity.showKeyboard();
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+//                searchView.setQuery("", false);
+//                activity.hideKeyboard();
+//                return true;
+//            }
+//        });
+//
+//        searchView.setIconifiedByDefault(false);
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String s) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String s) {
+//                adapter.filterItems(s);
+//                return false;
+//            }
+//        });
 
     private void showKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
         }
     }
 
     private void hideKeyboard() {
-        View view = this.getCurrentFocus();
+        View view = getActivity().getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }

@@ -7,14 +7,11 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- Status bar -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/colorApp</item>
 
         <!-- Action bar -->
         <item name="actionBarStyle">@style/ActionBarStyle</item>
-
-        <!-- Navigation bar -->
-        <item name="android:windowTranslucentNavigation">true</item>
 
         <!-- Shared element transitions -->
         <item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
@@ -31,6 +28,11 @@
 
     <!-- Action bar style -->
     <style name="ActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/colorApp</item>
+    </style>
+
+    <!-- Transparent action bar style -->
+    <style name="TransparentActionBarStyle" parent="Widget.AppCompat.ActionBar">
         <item name="background">@android:color/transparent</item>
     </style>
 
@@ -40,6 +42,18 @@
         <item name="android:statusBarColor">@color/colorApp</item>
         <item name="android:buttonStyle">@style/PoppinsButtonStyle</item>
         <item name="android:textViewStyle">@style/PoppinsTextViewStyle</item>
+    </style>
+
+    <!-- Transparent top theme -->
+    <style name="TransparentTopBarTheme" parent="AppTheme">
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!-- Action bar -->
+        <item name="actionBarStyle">@style/TransparentActionBarStyle</item>
+
+        <!-- Navigation bar -->
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <!-- Dialog -->

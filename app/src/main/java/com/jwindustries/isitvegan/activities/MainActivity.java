@@ -3,9 +3,13 @@ package com.jwindustries.isitvegan.activities;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.jwindustries.isitvegan.R;
+import com.jwindustries.isitvegan.Utils;
+import com.jwindustries.isitvegan.fragments.IngredientOverviewFragment;
 
 public class MainActivity extends BaseActivity {
     private View hazeView;
@@ -19,15 +23,31 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Utils.handleTheme(this);
+
+        // Trigger update of DEBUG variable in Utils
+        Utils.isDebugging(this);
+
         hazeView = findViewById(R.id.haze_view);
         cameraOverlay = findViewById(R.id.camera_overlay);
         View dragHandle = findViewById(R.id.drag_handle);
         dragHandle.setOnClickListener(view -> startARScanning());
+    }
 
-        findViewById(R.id.settings_button).setOnClickListener(view ->
-                startActivity(new Intent(this, SettingsActivity.class)));
-        findViewById(R.id.ingredient_list_button).setOnClickListener(view ->
-                startActivity(new Intent(this, IngredientOverviewActivity.class)));
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            this.startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     private void startARScanning() {
