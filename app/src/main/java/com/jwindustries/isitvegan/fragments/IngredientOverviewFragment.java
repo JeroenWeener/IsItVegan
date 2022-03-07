@@ -1,5 +1,6 @@
 package com.jwindustries.isitvegan.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.DragScrollBar;
 
 public class IngredientOverviewFragment extends Fragment {
+    private Activity hostActivity;
+
     private String appLocale;
     private String ingredientsLocale;
 
@@ -30,22 +33,24 @@ public class IngredientOverviewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.appLocale = Utils.handleAppLocale(getContext());
-        this.ingredientsLocale = Utils.getIngredientLocale(getContext());
+        hostActivity = getActivity();
+
+        appLocale = Utils.handleAppLocale(hostActivity);
+        ingredientsLocale = Utils.getIngredientLocale(hostActivity);
 
         super.onCreate(savedInstanceState);
         View rootView = inflater.inflate(R.layout.activity_overview, container, false);
 
-        this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        this.adapter = new IngredientAdapter(getActivity());
+        layoutManager = new LinearLayoutManager(hostActivity, LinearLayoutManager.VERTICAL, false);
+        adapter = new IngredientAdapter(hostActivity);
 
-        this.recyclerView = rootView.findViewById(R.id.ingredient_view);
-        this.recyclerView.setLayoutManager(layoutManager);
-        this.recyclerView.setAdapter(adapter);
+        recyclerView = rootView.findViewById(R.id.ingredient_view);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
 
-        ((DragScrollBar) rootView.findViewById(R.id.dragScrollBar)).setIndicator(new AlphabetIndicator(getContext()), true);
+        ((DragScrollBar) rootView.findViewById(R.id.dragScrollBar)).setIndicator(new AlphabetIndicator(hostActivity), true);
 
-        this.scrollToTopButton = rootView.findViewById(R.id.scroll_to_top_button);
+        scrollToTopButton = rootView.findViewById(R.id.scroll_to_top_button);
         scrollToTopButton.setOnClickListener(v -> recyclerView.smoothScrollToPosition(0));
 
         return rootView;
@@ -105,16 +110,16 @@ public class IngredientOverviewFragment extends Fragment {
 //        });
 
     private void showKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) hostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
         }
     }
 
     private void hideKeyboard() {
-        View view = getActivity().getCurrentFocus();
+        View view = hostActivity.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) hostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
             if (imm != null) {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }

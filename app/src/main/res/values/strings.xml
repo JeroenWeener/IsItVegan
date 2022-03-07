@@ -49,6 +49,8 @@
     <string name="about_text_barcode">When scanning barcodes, the online database of Open Food Facts is queried for the product\'s ingredient list. Open Food Facts is a food products database made by everyone, for everyone. Be aware that data might be incomplete or incorrect. For more information, visit <a href="https://world.openfoodfacts.org">openfoodfacts.org</a>.</string>
     <string name="title_overview">Ingredients</string>
     <string name="button_tap_to_scan">Tap to scan</string>
+    <string name="key_bundle_is_in_preview_mode" translatable="false">key_bundle_is_in_preview_mode</string>
+    <string name="key_fragment_result" translatable="false">key_fragment_result</string>
 
     <!-- Suggestion email -->
     <string name="suggestion_mail_chooser_label">Send email…</string>

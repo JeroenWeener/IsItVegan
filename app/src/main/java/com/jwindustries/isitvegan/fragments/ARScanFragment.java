@@ -1,5 +1,6 @@
 package com.jwindustries.isitvegan.fragments;
 
+import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.Image;
@@ -59,6 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ARScanFragment extends Fragment implements Render.Renderer {
+    private Activity hostActivity;
+
     private TextRecognizer textRecognizer;
     private boolean textRecognizerReady = true;
 
@@ -106,15 +109,17 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        hostActivity = getActivity();
+
         View rootView = inflater.inflate(R.layout.fragment_ar_scan, container, false);
 
         surfaceView = rootView.findViewById(R.id.surface_view);
-        tapHelper = new TapHelper(/*context=*/ this.getContext());
+        tapHelper = new TapHelper(/*context=*/ hostActivity);
         surfaceView.setOnTouchListener(tapHelper);
-        render = new Render(surfaceView, this, getActivity().getAssets());
+        render = new Render(surfaceView, this, hostActivity.getAssets());
 
-        displayRotationHelper = new DisplayRotationHelper(/*context=*/ getContext());
-        trackingStateHelper = new TrackingStateHelper(/*context=*/ getActivity());
+        displayRotationHelper = new DisplayRotationHelper(/*context=*/ hostActivity);
+        trackingStateHelper = new TrackingStateHelper(/*context=*/ hostActivity);
         boundingBoxHelper = new BoundingBoxHelper();
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
@@ -123,9 +128,9 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
 
         // Listen to parent to determine whether the fragment is in preview mode
         getParentFragmentManager().setFragmentResultListener(
-                "requestKey",
+                getString(R.string.key_fragment_result),
                 this,
-                (requestKey, bundle) -> isInPreviewMode = bundle.getBoolean("isInPreviewMode")
+                (requestKey, bundle) -> isInPreviewMode = bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode))
         );
 
         return rootView;
@@ -149,7 +154,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         if (session == null) {
             String message = null;
             try {
-                switch (ArCoreApk.getInstance().requestInstall(getActivity(), !installRequested)) {
+                switch (ArCoreApk.getInstance().requestInstall(hostActivity, !installRequested)) {
                     case INSTALL_REQUESTED:
                         installRequested = true;
                         return;
@@ -159,12 +164,12 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
 
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
-                if (!CameraPermissionHelper.hasCameraPermission(getActivity())) {
-                    CameraPermissionHelper.requestCameraPermission(getActivity());
+                if (!CameraPermissionHelper.hasCameraPermission(hostActivity)) {
+                    CameraPermissionHelper.requestCameraPermission(hostActivity);
                     return;
                 }
 
-                session = new Session(/* context= */ getContext());
+                session = new Session(/* context= */ hostActivity);
             } catch (UnavailableArcoreNotInstalledException | UnavailableUserDeclinedInstallationException e) {
                 message = "Please install ARCore";
             } catch (UnavailableApkTooOldException e) {
@@ -178,7 +183,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
             }
 
             if (message != null) {
-                messageSnackbarHelper.showError(getActivity(), message);
+                messageSnackbarHelper.showError(hostActivity, message);
                 return;
             }
         }
@@ -186,7 +191,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         try {
             session.resume();
         } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(getActivity(), "Camera not available. Try restarting the app.");
+            messageSnackbarHelper.showError(hostActivity, "Camera not available. Try restarting the app.");
             session = null;
             return;
         }
@@ -211,16 +216,16 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
-        if (!CameraPermissionHelper.hasCameraPermission(getActivity())) {
+        if (!CameraPermissionHelper.hasCameraPermission(hostActivity)) {
             // Use toast instead of snackbar here since the activity will exit.
             Toast
-                    .makeText(getContext(), "Camera permission is needed to run this application", Toast.LENGTH_LONG)
+                    .makeText(hostActivity, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
                     .show();
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(getActivity())) {
+            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(hostActivity)) {
                 // Permission denied with checking "Do not ask again".
-                CameraPermissionHelper.launchPermissionSettings(getActivity());
+                CameraPermissionHelper.launchPermissionSettings(hostActivity);
             }
-            getActivity().finish();
+            hostActivity.finish();
         }
     }
 
@@ -238,7 +243,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
                     .createFromAssets(render, "shaders/rectangle.vert", "shaders/rectangle.frag")
                     .setVec4("u_Color", new float[]{255.0f / 255.0f, 136.0f / 255.0f, 0.0f / 255.0f, 0.8f});
         } catch (IOException e) {
-            messageSnackbarHelper.showError(getActivity(), "Failed to read a required asset file: " + e);
+            messageSnackbarHelper.showError(hostActivity, "Failed to read a required asset file: " + e);
         }
     }
 
@@ -271,7 +276,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         try {
             frame = session.update();
         } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(getActivity(), "Camera not available. Try restarting the app.");
+            messageSnackbarHelper.showError(hostActivity, "Camera not available. Try restarting the app.");
             return;
         }
 
@@ -321,9 +326,9 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
             message = MESSAGE_SEARCHING;
         }
         if (message == null) {
-            messageSnackbarHelper.hide(getActivity());
+            messageSnackbarHelper.hide(hostActivity);
         } else {
-            messageSnackbarHelper.showMessage(getActivity(), message);
+            messageSnackbarHelper.showMessage(hostActivity, message);
         }
 
         // If not tracking, don't draw 3D objects.
@@ -424,7 +429,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         textRecognizerReady = false;
         int rotation = displayRotationHelper.getCameraSensorToDisplayRotation(session.getCameraConfig().getCameraId());
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
-        ContextCompat.getMainExecutor(getContext()).execute(() -> textRecognizer.process(inputImage)
+        ContextCompat.getMainExecutor(hostActivity).execute(() -> textRecognizer.process(inputImage)
                 .addOnCompleteListener(result -> {
                     image.close();
                     textRecognizerReady = true;
