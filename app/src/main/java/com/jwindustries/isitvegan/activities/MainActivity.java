@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.ActionBar;
@@ -69,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupSwipeDetector();
 
-        setupActionBar();
+        setupSystemBars();
     }
 
     @Override
@@ -92,11 +96,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupActionBar() {
+    /**
+     * Programmatically set system bar properties
+     * - Status bar
+     * - Action bar
+     * - Navigation bar
+     */
+    private void setupSystemBars() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setDisplayShowHomeEnabled (false);
+            actionBar.setDisplayShowHomeEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setCustomView(R.layout.action_bar);
@@ -107,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
             ImageButton settingsButton = findViewById(R.id.action_bar_button_settings);
             settingsButton.setOnClickListener(view -> startActivity(new Intent(this, SettingsActivity.class)));
         }
+
+        // Account for navigation bar
+        ViewGroup view = findViewById(R.id.layout_container);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        params.bottomMargin = Utils.getNavigationBarHeight(this);
+        view.setLayoutParams(params);
     }
 
     private void setupSwipeDetector() {

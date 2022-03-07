@@ -24,6 +24,18 @@ public class Utils {
         }
     }
 
+    /**
+     * Returns the height of the navigation bar, i.e., the bottom bar
+     */
+    public static int getNavigationBarHeight(Context context) {
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
     public static void handleTheme(Context context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         String themeSetting = preferences.getString("theme", "system");
