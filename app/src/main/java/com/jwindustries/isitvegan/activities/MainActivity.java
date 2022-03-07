@@ -1,19 +1,24 @@
 package com.jwindustries.isitvegan.activities;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 
+import com.jwindustries.isitvegan.OnSwipeListener;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 
 public class MainActivity extends BaseActivity {
     private View hazeView;
     private View cameraOverlay;
+    private View dragHandle;
 
     // Animation duration in ms
     private static final int ANIMATION_DURATION = 250;
@@ -37,8 +42,13 @@ public class MainActivity extends BaseActivity {
 
         hazeView = findViewById(R.id.haze_view);
         cameraOverlay = findViewById(R.id.camera_overlay);
-        View dragHandle = findViewById(R.id.drag_handle);
-        dragHandle.setOnClickListener(view -> startARScanning());
+        dragHandle = findViewById(R.id.drag_handle);
+        // Use onTouch rather than onClick as this fires even if the motionEvent ends outside of the view
+        dragHandle.setOnTouchListener((view, motionEvent) -> {
+            view.performClick();
+            startARScanning();
+            return true;
+        });
 
         // Listen for rendering to finish before initializing value animators, as they depend on rendered height
         final View layoutContainer = findViewById(R.id.layout_container);
@@ -53,6 +63,8 @@ public class MainActivity extends BaseActivity {
         // Store locales so we can refresh the activity upon locale change
         appLocale = Utils.handleAppLocale(this);
         ingredientsLocale = Utils.getIngredientLocale(this);
+
+        setupSwipeDetector();
     }
 
     @Override
@@ -91,6 +103,24 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private void setupSwipeDetector() {
+        final GestureDetector stopDetector = new GestureDetector(this, new OnSwipeListener() {
+            @Override
+            public boolean onSwipe(Direction direction) {
+                if (direction == Direction.up) {
+                    stopARScanning();
+                }
+                return true;
+            }
+        });
+
+        hazeView.setOnTouchListener((view, motionEvent) -> {
+            view.performClick();
+            stopDetector.onTouchEvent(motionEvent);
+            return true;
+        });
+    }
+
     private void initValueAnimators() {
         hazeAnimator = ValueAnimator.ofFloat(hazeView.getAlpha(), 0f);
         hazeAnimator.addUpdateListener(valueAnimator -> {
@@ -109,17 +139,23 @@ public class MainActivity extends BaseActivity {
     }
 
     private void startARScanning() {
-        hazeAnimator.start();
-        overlayAnimator.start();
+        if (isInPreviewMode) {
+            hideKeyboard();
 
-        setPreviewMode(false);
+            hazeAnimator.start();
+            overlayAnimator.start();
+
+            setPreviewMode(false);
+        }
     }
 
     private void stopARScanning() {
-        hazeAnimator.reverse();
-        overlayAnimator.reverse();
+        if (!isInPreviewMode) {
+            hazeAnimator.reverse();
+            overlayAnimator.reverse();
 
-        setPreviewMode(true);
+            setPreviewMode(true);
+        }
     }
 
     private void setPreviewMode(boolean isInPreviewMode) {
@@ -128,5 +164,15 @@ public class MainActivity extends BaseActivity {
         Bundle result = new Bundle();
         result.putBoolean(getString(R.string.key_bundle_is_in_preview_mode), isInPreviewMode);
         getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);
+    }
+
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
     }
 }
