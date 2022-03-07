@@ -5,20 +5,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.jwindustries.isitvegan.OnSwipeListener;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
     private View hazeView;
     private View cameraOverlay;
     private View dragHandle;
+    private ImageButton closeButton;
 
     // Animation duration in ms
     private static final int ANIMATION_DURATION = 250;
@@ -65,6 +68,8 @@ public class MainActivity extends BaseActivity {
         ingredientsLocale = Utils.getIngredientLocale(this);
 
         setupSwipeDetector();
+
+        setupActionBar();
     }
 
     @Override
@@ -79,27 +84,28 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.getMenuInflater().inflate(R.menu.actionbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            this.startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         if (isInPreviewMode) {
             super.onBackPressed();
         } else {
             stopARScanning();
+        }
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setDisplayShowHomeEnabled (false);
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setCustomView(R.layout.action_bar);
+
+            closeButton = findViewById(R.id.action_bar_button_close);
+            closeButton.setOnClickListener(view -> stopARScanning());
+
+            ImageButton settingsButton = findViewById(R.id.action_bar_button_settings);
+            settingsButton.setOnClickListener(view -> startActivity(new Intent(this, SettingsActivity.class)));
         }
     }
 
@@ -158,9 +164,17 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    public void showCloseButtonInActionBar(boolean show) {
+        closeButton.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
     private void setPreviewMode(boolean isInPreviewMode) {
         this.isInPreviewMode = isInPreviewMode;
 
+        // Show/hide close button
+        showCloseButtonInActionBar(!isInPreviewMode);
+
+        // Communicate to AR scan fragment
         Bundle result = new Bundle();
         result.putBoolean(getString(R.string.key_bundle_is_in_preview_mode), isInPreviewMode);
         getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);
