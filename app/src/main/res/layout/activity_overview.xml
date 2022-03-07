@@ -14,39 +14,43 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
     />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/search_bar"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ingredient_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/search_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layoutAnimation="@anim/layout_animation"
-        android:paddingBottom="100dp"
-        android:clipToPadding="false"
-    />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ingredient_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layoutAnimation="@anim/layout_animation"
+            android:paddingBottom="100dp"
+            android:clipToPadding="false"
+        />
 
-    <com.turingtechnologies.materialscrollbar.DragScrollBar
-        android:id="@+id/dragScrollBar"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:msb_recyclerView="@id/ingredient_view"
-        app:msb_lightOnTouch="true"
-        app:msb_scrollMode="lastElement"
-        app:msb_handleColor="@color/colorPrimary"
-        app:msb_textColor="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.turingtechnologies.materialscrollbar.DragScrollBar
+            android:id="@+id/dragScrollBar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:msb_recyclerView="@id/ingredient_view"
+            app:msb_lightOnTouch="true"
+            app:msb_scrollMode="lastElement"
+            app:msb_handleColor="@color/colorPrimary"
+            app:msb_textColor="@color/colorAccent"
+            android:layout_alignParentEnd="true"
+         />
 
-    <ImageView
-        android:id="@+id/scroll_to_top_button"
-        android:layout_height="60dp"
-        android:layout_width="60dp"
-        android:src="@drawable/scroll_to_top_button"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="24dp"
-    />
+        <ImageView
+            android:id="@+id/scroll_to_top_button"
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:src="@drawable/scroll_to_top_button"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="24dp"
+        />
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
