@@ -15,13 +15,15 @@ public class MainActivity extends BaseActivity {
     private View hazeView;
     private View cameraOverlay;
 
+    // Animation duration in ms
+    private static final int ANIMATION_DURATION = 250;
     private ValueAnimator hazeAnimator;
     private ValueAnimator overlayAnimator;
 
     private boolean isInPreviewMode = true;
 
-    // Animation duration in ms
-    private static final int ANIMATION_DURATION = 250;
+    private String appLocale;
+    private String ingredientsLocale;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,21 @@ public class MainActivity extends BaseActivity {
                 initValueAnimators();
             }
         });
+
+        // Store locales so we can refresh the activity upon locale change
+        appLocale = Utils.handleAppLocale(this);
+        ingredientsLocale = Utils.getIngredientLocale(this);
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        // Recreate when language has changed
+        if (!Utils.getAppLocale(this).equals(appLocale) ||
+                !Utils.getIngredientLocale(this).equals(ingredientsLocale)) {
+            this.recreate();
+        }
     }
 
     @Override

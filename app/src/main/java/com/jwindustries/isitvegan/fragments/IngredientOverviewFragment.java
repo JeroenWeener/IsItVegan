@@ -1,12 +1,11 @@
 package com.jwindustries.isitvegan.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,9 +21,6 @@ import com.turingtechnologies.materialscrollbar.DragScrollBar;
 public class IngredientOverviewFragment extends Fragment {
     private Activity hostActivity;
 
-    private String appLocale;
-    private String ingredientsLocale;
-
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private IngredientAdapter adapter;
@@ -34,9 +30,6 @@ public class IngredientOverviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         hostActivity = getActivity();
-
-        appLocale = Utils.handleAppLocale(hostActivity);
-        ingredientsLocale = Utils.getIngredientLocale(hostActivity);
 
         super.onCreate(savedInstanceState);
         View rootView = inflater.inflate(R.layout.activity_overview, container, false);
@@ -53,77 +46,28 @@ public class IngredientOverviewFragment extends Fragment {
         scrollToTopButton = rootView.findViewById(R.id.scroll_to_top_button);
         scrollToTopButton.setOnClickListener(v -> recyclerView.smoothScrollToPosition(0));
 
+        SearchView searchView = rootView.findViewById(R.id.search_bar);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                adapter.filterItems(s);
+                return false;
+            }
+        });
+
         return rootView;
     }
-
-//    @Override
-//    public void onRestart() {
-//        super.onRestart();
-//
-//         Recreate when language has changed
-//        if (!Utils.getAppLocale(this).equals(this.appLocale) ||
-//                !Utils.getIngredientLocale(this).equals(this.ingredientsLocale)) {
-//            this.recreate();
-//        }
-//    }
 
     @Override
     public void onStart() {
         super.onStart();
 
         this.handleScrollToTopButton();
-    }
-
-//        MenuItem menuItem = menu.findItem(R.id.search_view);
-//        final SearchView searchView = (SearchView) menuItem.getActionView();
-//        searchView.setQueryHint(this.getString(R.string.search_view_hint));
-//        final IngredientOverviewFragment activity = this;
-//
-//        menuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
-//            @Override
-//            public boolean onMenuItemActionExpand(MenuItem menuItem) {
-//                searchView.requestFocus();
-//                activity.showKeyboard();
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-//                searchView.setQuery("", false);
-//                activity.hideKeyboard();
-//                return true;
-//            }
-//        });
-//
-//        searchView.setIconifiedByDefault(false);
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String s) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String s) {
-//                adapter.filterItems(s);
-//                return false;
-//            }
-//        });
-
-    private void showKeyboard() {
-        InputMethodManager imm = (InputMethodManager) hostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
-        }
-    }
-
-    private void hideKeyboard() {
-        View view = hostActivity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) hostActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-        }
     }
 
     private void handleScrollToTopButton() {
