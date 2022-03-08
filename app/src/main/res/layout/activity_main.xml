@@ -64,7 +64,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/ingredient_list_fragment"
-            android:name="com.jwindustries.isitvegan.fragments.IngredientOverviewFragment"
+            android:name="com.jwindustries.isitvegan.fragments.IngredientListFragment"
             android:layout_height="0dp"
             android:layout_width="match_parent"
             android:background="@color/colorPrimary"

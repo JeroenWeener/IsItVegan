@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> implements INameableAdapter {
     private final Activity activity;
     private List<Ingredient> ingredientList;
+    private String query;
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder {
         public View ingredientView;
@@ -40,25 +41,51 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
 
     public IngredientAdapter(Activity activity) {
         this.activity = activity;
-        this.ingredientList = IngredientList.getIngredientList(activity);
+        filterItems();
     }
 
     public void filterItems(String query) {
+        this.query = query;
+
+        boolean showVegan = Utils.getShowVegan(activity);
+        boolean showMaybeVegan = Utils.getShowMaybeVegan(activity);
+        boolean showNotVegan = Utils.getShowNonVegan(activity);
+
         final String normalizedQuery = Utils.normalizeString(query, true);
-        this.ingredientList = IngredientList.getIngredientList(this.activity).stream().filter((ingredient) -> {
-            boolean nameMatch = Utils.normalizeString(ingredient.getName(this.activity), true).contains(normalizedQuery);
-            boolean eNumberMatch = ingredient.hasENumber() && Utils.normalizeString(ingredient.getENumber(), true).contains(normalizedQuery);
-            return nameMatch || eNumberMatch;
-        }).collect(Collectors.toList());
+        this.ingredientList = IngredientList
+                .getIngredientList(this.activity)
+                .stream()
+                .filter((ingredient) -> {
+                    IngredientType ingredientType = ingredient.getIngredientType();
+                    boolean typeMatch =
+                            ingredientType == IngredientType.VEGAN && showVegan ||
+                            ingredientType == IngredientType.DEPENDS && showMaybeVegan ||
+                            ingredientType == IngredientType.NOT_VEGAN && showNotVegan;
+                    if (!typeMatch) return false;
+                    if (query == null) return true;
+                    boolean nameMatch = Utils
+                            .normalizeString(ingredient.getName(this.activity), true)
+                            .contains(normalizedQuery);
+                    if (nameMatch) return true;
+                    boolean eNumberMatch =
+                            ingredient.hasENumber() &&
+                            Utils.normalizeString(ingredient.getENumber(), true).contains(normalizedQuery);
+                    return eNumberMatch;
+                })
+                .collect(Collectors.toList());
 
         this.notifyDataSetChanged();
+    }
+
+    public void filterItems() {
+        filterItems(query);
     }
 
     @Override
     public Character getCharacterForElement(int position) {
         Ingredient ingredient = this.ingredientList.get(position);
-        char character =  ingredient.getName(this.activity).replace("(", "").charAt(0);
-        if(Character.isDigit(character)) {
+        char character = ingredient.getName(this.activity).replace("(", "").charAt(0);
+        if (Character.isDigit(character)) {
             character = '#';
         }
         return character;

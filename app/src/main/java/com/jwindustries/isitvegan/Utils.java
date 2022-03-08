@@ -113,6 +113,36 @@ public class Utils {
         return preferences.getBoolean("tutorial", false);
     }
 
+    public static void setShowVegan(Context context, boolean showVegan) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean("show_vegan", showVegan).apply();
+    }
+
+    public static boolean getShowVegan(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean("show_vegan", true);
+    }
+
+    public static void setShowNonVegan(Context context, boolean showNonVegan) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean("show_non_vegan", showNonVegan).apply();
+    }
+
+    public static boolean getShowNonVegan(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean("show_non_vegan", true);
+    }
+
+    public static void setShowMaybeVegan(Context context, boolean showMaybeVegan) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.edit().putBoolean("show_maybe_vegan", showMaybeVegan).apply();
+    }
+
+    public static boolean getShowMaybeVegan(Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getBoolean("show_maybe_vegan", true);
+    }
+
     public static void setDebugging(Context context, boolean debugging) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit().putBoolean("debug", debugging).apply();
@@ -134,7 +164,7 @@ public class Utils {
     }
 
     public static String normalizeString(String string, boolean removeSpacing) {
-        return string
+        return string == null ? null : string
                 .toLowerCase()
                 .trim()
 

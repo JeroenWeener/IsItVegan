@@ -51,6 +51,10 @@
     <string name="button_tap_to_scan">Tap to scan</string>
     <string name="key_bundle_is_in_preview_mode" translatable="false">key_bundle_is_in_preview_mode</string>
     <string name="key_fragment_result" translatable="false">key_fragment_result</string>
+    <string name="label_vegan">Vegan</string>
+    <string name="label_not_vegan">Not vegan</string>
+    <string name="label_maybe_vegan">Maybe vegan</string>
+    <string name="label_e_numbers">E-numbers</string>
 
     <!-- Suggestion email -->
     <string name="suggestion_mail_chooser_label">Send email…</string>

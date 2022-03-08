@@ -32,7 +32,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".activities.IngredientViewActivity"
-            android:parentActivityName=".fragments.IngredientOverviewFragment" />
+            android:parentActivityName=".fragments.IngredientListFragment" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"
