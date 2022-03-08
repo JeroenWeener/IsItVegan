@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_e_numbers"
                 android:textColor="@drawable/chip_text_inverted"
-                app:chipBackgroundColor="@drawable/chip_e_numbers"
+                app:chipBackgroundColor="@drawable/chip_bg_e_numbers"
                 app:chipStrokeColor="@color/colorAccent"
                 app:chipStrokeWidth="1dp"
             />
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_not_vegan"
                 android:textColor="@color/colorAccent"
-                app:chipBackgroundColor="@drawable/chip_not_vegan"
+                app:chipBackgroundColor="@drawable/chip_bg_not_vegan"
                 app:chipStrokeColor="@color/colorError"
                 app:chipStrokeWidth="1dp"
             />
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_maybe_vegan"
                 android:textColor="@color/colorAccent"
-                app:chipBackgroundColor="@drawable/chip_maybe_vegan"
+                app:chipBackgroundColor="@drawable/chip_bg_maybe_vegan"
                 app:chipStrokeColor="@color/colorWarning"
                 app:chipStrokeWidth="1dp"
             />

@@ -5,7 +5,7 @@
 
     <ImageButton
         android:id="@+id/action_bar_button_close"
-        android:background="@null"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:visibility="invisible"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -24,8 +24,7 @@
 
     <ImageButton
         android:id="@+id/action_bar_button_settings"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:background="@null"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_alignParentEnd="true"
