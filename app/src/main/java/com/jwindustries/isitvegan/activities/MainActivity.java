@@ -8,8 +8,6 @@ import android.view.GestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -136,11 +134,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        hazeView.setOnTouchListener((view, motionEvent) -> {
-            view.performClick();
-            stopDetector.onTouchEvent(motionEvent);
-            return true;
-        });
+        // TODO uncomment to capture gesture, but ignore tapping on surface view
+//        hazeView.setOnTouchListener((view, motionEvent) -> {
+//            view.performClick();
+//            return stopDetector.onTouchEvent(motionEvent);
+//        });
     }
 
     private void initValueAnimators() {

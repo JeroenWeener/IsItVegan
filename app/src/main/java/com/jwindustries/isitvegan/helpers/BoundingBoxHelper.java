@@ -1,5 +1,6 @@
 package com.jwindustries.isitvegan.helpers;
 
+import android.graphics.Point;
 import android.graphics.RectF;
 
 /**
@@ -17,14 +18,18 @@ public final class BoundingBoxHelper {
 //        return queuedBoundingBoxes.poll();
 //    }
 
-    private RectF lastBoundingBox;
+//    private RectF lastBoundingBox;
+//
+//    public void add(RectF boundingBox) {
+//        lastBoundingBox = boundingBox;
+//    }
+//
+//    public RectF poll() {
+//        return lastBoundingBox;
+//    }
 
-    public void add(RectF boundingBox) {
-        lastBoundingBox = boundingBox;
-    }
-
-    public RectF poll() {
-        return lastBoundingBox;
-    }
+    private Point[] points;
+    public void add(Point[] points) { this.points = points; }
+    public Point[] poll() { return points; }
 }
 

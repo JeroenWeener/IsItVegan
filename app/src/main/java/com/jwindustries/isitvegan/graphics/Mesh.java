@@ -89,7 +89,7 @@ public class Mesh implements Closeable {
      * Constructs a rectangle {@link Mesh} from the given points.
      */
     public static Mesh createRectangleFromPoints(float[] pointA, float[] pointB, float[] pointC, float[] pointD) {
-        // number of vertices per point, points per rectangle, rectangles, byte size of floats
+        // number of vertices per point, points per triangle, triangles, byte size of floats
         FloatBuffer floatBuffer = ByteBuffer.allocateDirect(3 * 3 * 2 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
         floatBuffer.put(new float[]{
                 pointA[0], pointA[1], pointA[2],

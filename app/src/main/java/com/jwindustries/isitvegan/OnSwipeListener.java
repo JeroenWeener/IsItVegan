@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 /**
  * https://stackoverflow.com/questions/13095494/how-to-detect-swipe-direction-between-left-right-and-up-down
  */
-public class OnSwipeListener extends GestureDetector.SimpleOnGestureListener {
+public abstract class OnSwipeListener extends GestureDetector.SimpleOnGestureListener {
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         // Grab two events located on the plane at e1=(x1, y1) and e2=(x2, y2)
@@ -41,9 +41,7 @@ public class OnSwipeListener extends GestureDetector.SimpleOnGestureListener {
     /**
      * Override this method. The Direction enum will tell you how the user swiped.
      */
-    public boolean onSwipe(Direction direction) {
-        return false;
-    }
+    public abstract boolean onSwipe(Direction direction);
 
     /**
      * Given two points in the plane p1=(x1, x2) and p2=(y1, y1), this method
@@ -72,7 +70,6 @@ public class OnSwipeListener extends GestureDetector.SimpleOnGestureListener {
      * @return the angle between two points
      */
     public double getAngle(float x1, float y1, float x2, float y2) {
-
         double rad = Math.atan2(y1 - y2, x2 - x1) + Math.PI;
         return (rad * 180 / Math.PI + 180) % 360;
     }

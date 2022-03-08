@@ -1,8 +1,7 @@
 package com.jwindustries.isitvegan.fragments;
 
 import android.app.Activity;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import android.graphics.Point;
 import android.media.Image;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -25,7 +24,6 @@ import com.google.ar.core.Config.InstantPlacementMode;
 import com.google.ar.core.Coordinates2d;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
-import com.google.ar.core.InstantPlacementPoint;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;
@@ -41,7 +39,6 @@ import com.google.mlkit.vision.text.Text;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.graphics.BackgroundRenderer;
 import com.jwindustries.isitvegan.graphics.Framebuffer;
@@ -94,7 +91,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     // values for AR experiences where users are expected to place objects on surfaces close to the
     // camera. Use larger values for experiences where the user will likely be standing and trying to
     // place an object on the ground or floor in front of them.
-    private static final float APPROXIMATE_DISTANCE_METERS = .2f;
+    private static final float APPROXIMATE_DISTANCE_METERS = .15f;
 
     private Shader labelShader;
 
@@ -352,21 +349,11 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
 
         if (anchors.size() == 4) {
-            Anchor anchorA = anchors.get(0);
-            Anchor anchorB = anchors.get(1);
-            Anchor anchorC = anchors.get(2);
-            Anchor anchorD = anchors.get(3);
-
-            if (anchorA.getTrackingState() == TrackingState.TRACKING) {
-                float[] pointA = anchorA.getPose().getTranslation();
-//                float[] pointB = new float[]{anchorA.getPose().getTranslation()[0] + .01f, anchorA.getPose().getTranslation()[1], anchorA.getPose().getTranslation()[2] + .005f};
-//                float[] pointC = new float[]{anchorD.getPose().getTranslation()[0] + .01f, anchorD.getPose().getTranslation()[1], anchorD.getPose().getTranslation()[2] - .005f};
-                float[] pointD = anchorD.getPose().getTranslation();
-
-//                float[] pointA = new float[]{anchorB.getPose().getTranslation()[0] - .01f, anchorB.getPose().getTranslation()[1], anchorB.getPose().getTranslation()[2] + .005f};
-                float[] pointB = anchorB.getPose().getTranslation();
-                float[] pointC = anchorC.getPose().getTranslation();
-//                float[] pointD = new float[]{anchorC.getPose().getTranslation()[0] - .01f, anchorC.getPose().getTranslation()[1], anchorC.getPose().getTranslation()[2] - .005f};
+            if (camera.getTrackingState() == TrackingState.TRACKING) {
+                float[] pointA = anchors.get(0).getPose().getTranslation();
+                float[] pointB = anchors.get(1).getPose().getTranslation();
+                float[] pointC = anchors.get(2).getPose().getTranslation();
+                float[] pointD = anchors.get(3).getPose().getTranslation();
 
                 // 0: width
                 // 1: depth
@@ -384,8 +371,8 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     }
 
     private void handleBoundingBox(Frame frame) {
-        RectF boundingBox = boundingBoxHelper.poll();
-        if (boundingBox == null) {
+        Point[] points = boundingBoxHelper.poll();
+        if (points == null) {
             return;
         }
 
@@ -393,22 +380,14 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
             return;
         }
 
-        float[][] cpuCoordinateLists = new float[][]{
-                new float[]{boundingBox.top, boundingBox.left},
-                new float[]{boundingBox.top, boundingBox.right},
-                new float[]{boundingBox.bottom, boundingBox.right},
-                new float[]{boundingBox.bottom, boundingBox.left},
-        };
         float[] viewCoordinates = new float[2];
         List<Anchor> newAnchors = new ArrayList<>();
-        for (float[] cpuCoordinates : cpuCoordinateLists) {
+        for (Point point : points) {
+            float[] cpuCoordinates = new float[]{point.y, point.x};
             frame.transformCoordinates2d(Coordinates2d.IMAGE_PIXELS, cpuCoordinates, Coordinates2d.VIEW, viewCoordinates);
             List<HitResult> hits = frame.hitTestInstantPlacement(viewCoordinates[0], viewCoordinates[1], APPROXIMATE_DISTANCE_METERS);
-            for (HitResult hit : hits) {
-                if (hit.getTrackable() instanceof InstantPlacementPoint) {
-                    newAnchors.add(hit.createAnchor());
-                    break;
-                }
+            if (hits.size() > 0) {
+                newAnchors.add(hits.get(0).createAnchor());
             }
         }
 
@@ -429,6 +408,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         textRecognizerReady = false;
         int rotation = displayRotationHelper.getCameraSensorToDisplayRotation(session.getCameraConfig().getCameraId());
         InputImage inputImage = InputImage.fromMediaImage(image, rotation);
+        int imageHeight = inputImage.getHeight();
         ContextCompat.getMainExecutor(hostActivity).execute(() -> textRecognizer.process(inputImage)
                 .addOnCompleteListener(result -> {
                     image.close();
@@ -436,35 +416,40 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
                 })
                 .addOnSuccessListener(result -> {
                     List<Text.TextBlock> blocks = result.getTextBlocks();
+                    if (blocks.size() > 0
+                            && blocks.get(0) != null
+                            && blocks.get(0).getCornerPoints() != null
+                            && blocks.get(0).getCornerPoints().length > 0
+                    ) {
+                        int topLeftX = blocks.get(0).getCornerPoints()[0].x;
+                        int topLeftY = blocks.get(0).getCornerPoints()[0].y;
+                        int topRightX = blocks.get(0).getCornerPoints()[1].x;
+                        int topRightY = blocks.get(0).getCornerPoints()[1].y;
+                        int bottomRightX = blocks.get(0).getCornerPoints()[2].x;
+                        int bottomRightY = blocks.get(0).getCornerPoints()[2].y;
+                        int bottomLeftX = blocks.get(0).getCornerPoints()[3].x;
+                        int bottomLeftY = blocks.get(0).getCornerPoints()[3].y;
 
-                    if (blocks.size() > 0) {
-                        RectF resultRect = new RectF(blocks
-                                .get(0)
-                                .getLines()
-                                .get(0)
-                                .getElements()
-                                .get(0)
-                                .getBoundingBox()
-                        );
-                        for (Text.TextBlock block : blocks) {
-                            List<Text.Line> lines = block.getLines();
-                            for (Text.Line line : lines) {
-                                List<Text.Element> elements = line.getElements();
-                                for (Text.Element element : elements) {
-                                    Rect boundingBox = element.getBoundingBox();
-                                    if (boundingBox == null) return;
-                                    if (boundingBox.left < resultRect.left)
-                                        resultRect.left = boundingBox.left;
-                                    if (boundingBox.right > resultRect.right)
-                                        resultRect.right = boundingBox.right;
-                                    if (boundingBox.top < resultRect.top)
-                                        resultRect.top = boundingBox.top;
-                                    if (boundingBox.bottom > resultRect.bottom)
-                                        resultRect.bottom = boundingBox.bottom;
-                                }
-                            }
+                        for (int i = 0; i < blocks.size(); i++) {
+                            Point[] points = blocks.get(i).getCornerPoints();
+                            Point topLeft = points[0];
+                            Point topRight = points[1];
+                            Point bottomRight = points[2];
+                            Point bottomLeft = points[3];
+                            if (topLeft.x < topLeftX) topLeftX = topLeft.x;
+                            if (topLeft.y < topLeftY) topLeftY = topLeft.y;
+                            if (topRight.x > topRightX) topRightX = topRight.x;
+                            if (topRight.y < topRightY) topRightY = topRight.y;
+                            if (bottomRight.x > bottomRightX) bottomRightX = bottomRight.x;
+                            if (bottomRight.y > bottomRightY) bottomRightY = bottomRight.y;
+                            if (bottomLeft.x < bottomLeftX) bottomLeftX = bottomLeft.x;
+                            if (bottomLeft.y > bottomLeftY) bottomLeftY = bottomLeft.y;
                         }
-                        boundingBoxHelper.add(resultRect);
+                        Point topLeft = new Point(imageHeight - topLeftX, topLeftY);
+                        Point topRight = new Point(imageHeight - topRightX, topRightY);
+                        Point bottomRight = new Point(imageHeight - bottomRightX, bottomRightY);
+                        Point bottomLeft = new Point(imageHeight - bottomLeftX, bottomLeftY);
+                        boundingBoxHelper.add(new Point[]{topLeft, topRight, bottomRight, bottomLeft});
                     }
                 }));
     }
