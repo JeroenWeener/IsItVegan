@@ -55,16 +55,17 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/camera_alt_white" />
+                    android:src="@drawable/camera_round" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_horizontal"
-                    android:textSize="20sp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="15sp"
                     android:textColor="@android:color/white"
                     android:text="@string/title_scan" />
             </LinearLayout>
