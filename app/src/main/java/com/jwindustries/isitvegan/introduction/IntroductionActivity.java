@@ -15,6 +15,7 @@ import android.widget.Button;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jwindustries.isitvegan.R;
+import com.jwindustries.isitvegan.TestActivity;
 import com.jwindustries.isitvegan.Utils;
 import com.jwindustries.isitvegan.activities.MainActivity;
 
