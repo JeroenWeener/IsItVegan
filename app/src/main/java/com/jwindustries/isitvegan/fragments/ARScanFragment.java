@@ -73,7 +73,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     private boolean isInPreviewMode;
 
     private Session session;
-    private final SnackbarHelper messageSnackbarHelper = new SnackbarHelper();
+    private SnackbarHelper messageSnackbarHelper;
     private DisplayRotationHelper displayRotationHelper;
     private TrackingStateHelper trackingStateHelper;
     private TapHelper tapHelper;
@@ -93,6 +93,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     // place an object on the ground or floor in front of them.
     private static final float APPROXIMATE_DISTANCE_METERS = .15f;
 
+    private Shader productShader;
     private Shader labelShader;
 
     private final List<Anchor> anchors = new ArrayList<>();
@@ -117,6 +118,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
 
         displayRotationHelper = new DisplayRotationHelper(/*context=*/ hostActivity);
         trackingStateHelper = new TrackingStateHelper(/*context=*/ hostActivity);
+        messageSnackbarHelper = new SnackbarHelper();
         boundingBoxHelper = new BoundingBoxHelper();
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
@@ -180,7 +182,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
             }
 
             if (message != null) {
-                messageSnackbarHelper.showError(hostActivity, message);
+                messageSnackbarHelper.showMessage(hostActivity, message);
                 return;
             }
         }
@@ -188,7 +190,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         try {
             session.resume();
         } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(hostActivity, "Camera not available. Try restarting the app.");
+            messageSnackbarHelper.showMessage(hostActivity, "Camera not available. Try restarting the app.");
             session = null;
             return;
         }
@@ -236,11 +238,14 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
             backgroundRenderer = new BackgroundRenderer(render);
             virtualSceneFramebuffer = new Framebuffer(/*width=*/ 1, /*height=*/ 1);
 
-            labelShader = Shader
+            productShader = Shader
                     .createFromAssets(render, "shaders/rectangle.vert", "shaders/rectangle.frag")
                     .setVec4("u_Color", new float[]{255.0f / 255.0f, 136.0f / 255.0f, 0.0f / 255.0f, 0.8f});
+            labelShader = Shader
+                    .createFromAssets(render, "shaders/rectangle.vert", "shaders/rectangle.frag")
+                    .setVec4("u_Color", new float[]{0.0f / 255.0f, 170.0f / 255.0f, 86.0f / 255.0f, 0.8f});
         } catch (IOException e) {
-            messageSnackbarHelper.showError(hostActivity, "Failed to read a required asset file: " + e);
+            messageSnackbarHelper.showMessage(hostActivity, "Failed to read a required asset file: " + e);
         }
     }
 
@@ -273,7 +278,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         try {
             frame = session.update();
         } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(hostActivity, "Camera not available. Try restarting the app.");
+            messageSnackbarHelper.showMessage(hostActivity, "Camera not available. Try restarting the app.");
             return;
         }
 
@@ -325,7 +330,8 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         if (message == null) {
             messageSnackbarHelper.hide(hostActivity);
         } else {
-            messageSnackbarHelper.showMessage(hostActivity, message);
+            // TODO enable once main UI scrolling is implemented
+//            messageSnackbarHelper.showMessage(hostActivity, message);
         }
 
         // If not tracking, don't draw 3D objects.
@@ -360,9 +366,9 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
                 // 2: height
 
                 // Ingredient labels
-                Mesh labelMesh = Mesh.createRectangleFromPoints(pointA, pointB, pointC, pointD);
-                labelShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
-                render.draw(labelMesh, labelShader, virtualSceneFramebuffer);
+                Mesh productMesh = Mesh.createRectangleFromPoints(pointA, pointB, pointC, pointD);
+                productShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
+                render.draw(productMesh, productShader, virtualSceneFramebuffer);
             }
         }
 
@@ -373,10 +379,11 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     private void handleBoundingBox(Frame frame) {
         Point[] points = boundingBoxHelper.poll();
         if (points == null) {
+            anchors.clear();
             return;
         }
 
-        if (anchors.size() >= 4) {
+        if (anchors.size() == 4) {
             return;
         }
 
@@ -416,11 +423,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
                 })
                 .addOnSuccessListener(result -> {
                     List<Text.TextBlock> blocks = result.getTextBlocks();
-                    if (blocks.size() > 0
-                            && blocks.get(0) != null
-                            && blocks.get(0).getCornerPoints() != null
-                            && blocks.get(0).getCornerPoints().length > 0
-                    ) {
+                    if (blocks.size() > 0) {
                         int topLeftX = blocks.get(0).getCornerPoints()[0].x;
                         int topLeftY = blocks.get(0).getCornerPoints()[0].y;
                         int topRightX = blocks.get(0).getCornerPoints()[1].x;
@@ -444,12 +447,22 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
                             if (bottomRight.y > bottomRightY) bottomRightY = bottomRight.y;
                             if (bottomLeft.x < bottomLeftX) bottomLeftX = bottomLeft.x;
                             if (bottomLeft.y > bottomLeftY) bottomLeftY = bottomLeft.y;
+
+                            for (Text.Line line : blocks.get(i).getLines()) {
+                                for (Text.Element element : line.getElements()) {
+                                    if (element.getText().toLowerCase().equals("melk")) {
+                                        boundingBoxHelper.addKeyword(element.getCornerPoints());
+                                    }
+                                }
+                            }
                         }
                         Point topLeft = new Point(imageHeight - topLeftX, topLeftY);
                         Point topRight = new Point(imageHeight - topRightX, topRightY);
                         Point bottomRight = new Point(imageHeight - bottomRightX, bottomRightY);
                         Point bottomLeft = new Point(imageHeight - bottomLeftX, bottomLeftY);
                         boundingBoxHelper.add(new Point[]{topLeft, topRight, bottomRight, bottomLeft});
+                    } else {
+                        boundingBoxHelper.add(null);
                     }
                 }));
     }
