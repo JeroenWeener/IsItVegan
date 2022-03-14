@@ -29,14 +29,14 @@ public final class TapHelper implements OnTouchListener {
                         new GestureDetector.SimpleOnGestureListener() {
                             @Override
                             public boolean onSingleTapUp(MotionEvent e) {
-                                return true;
+                                return false;
                             }
 
                             @Override
                             public boolean onDown(MotionEvent e) {
                                 // Queue tap if there is space. Tap is lost if queue is full.
                                 queuedSingleTaps.offer(e);
-                                return true;
+                                return false;
                             }
                         });
     }

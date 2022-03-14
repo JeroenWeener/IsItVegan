@@ -6,20 +6,29 @@
     android:layout_height="match_parent"
     app:layoutDescription="@xml/scene_26">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/scan_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.jwindustries.isitvegan.fragments.ARScanFragment"
+    />
+
     <View
         android:id="@+id/view1"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="#ff0000"/>
+        android:background="#00ff0000"
+        app:layout_constraintTop_toTopOf="parent" />
 
-
-    <View
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/view2"
+        android:name="com.jwindustries.isitvegan.fragments.IngredientListFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/view1"
-        android:background="#00ff00"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        android:background="#ff0000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view1">
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
