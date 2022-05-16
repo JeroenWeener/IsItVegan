@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private View cameraOverlay;
     private View dragHandle;
     private ImageButton closeButton;
+    private ImageButton torchButton;
+    private ImageButton settingsButton;
 
     // Animation duration in ms
     private static final int ANIMATION_DURATION = 250;
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         // Use onTouch rather than onClick as this fires even if the motionEvent ends outside of the view
         dragHandle.setOnTouchListener((view, motionEvent) -> {
             view.performClick();
-            startARScanning();
+            startScanning();
             return true;
         });
 
@@ -68,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
         // Store locales so we can refresh the activity upon locale change
         appLocale = Utils.handleAppLocale(this);
         ingredientsLocale = Utils.getIngredientLocale(this);
-
-        setupSwipeDetector();
 
         setupSystemBars();
     }
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         if (isInPreviewMode) {
             super.onBackPressed();
         } else {
-            stopARScanning();
+            stopScanning();
         }
     }
 
@@ -110,9 +110,12 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setCustomView(R.layout.action_bar);
 
             closeButton = findViewById(R.id.action_bar_button_close);
-            closeButton.setOnClickListener(view -> stopARScanning());
+            closeButton.setOnClickListener(view -> stopScanning());
 
-            ImageButton settingsButton = findViewById(R.id.action_bar_button_settings);
+            torchButton = findViewById(R.id.action_bar_button_torch);
+            // TODO: torchButton.setOnClickListener();
+
+            settingsButton = findViewById(R.id.action_bar_button_settings);
             settingsButton.setOnClickListener(view -> startActivity(new Intent(this, SettingsActivity.class)));
         }
 
@@ -121,24 +124,6 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
         params.bottomMargin = Utils.getNavigationBarHeight(this);
         view.setLayoutParams(params);
-    }
-
-    private void setupSwipeDetector() {
-        final GestureDetector stopDetector = new GestureDetector(this, new OnSwipeListener() {
-            @Override
-            public boolean onSwipe(Direction direction) {
-                if (direction == Direction.up) {
-                    stopARScanning();
-                }
-                return true;
-            }
-        });
-
-        // TODO uncomment to capture gesture, but ignore tapping on surface view
-//        hazeView.setOnTouchListener((view, motionEvent) -> {
-//            view.performClick();
-//            return stopDetector.onTouchEvent(motionEvent);
-//        });
     }
 
     private void initValueAnimators() {
@@ -158,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         overlayAnimator.setDuration(ANIMATION_DURATION);
     }
 
-    private void startARScanning() {
+    private void startScanning() {
         if (isInPreviewMode) {
             hideKeyboard();
 
@@ -169,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void stopARScanning() {
+    private void stopScanning() {
         if (!isInPreviewMode) {
             hazeAnimator.reverse();
             overlayAnimator.reverse();
@@ -180,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCloseButtonInActionBar(boolean show) {
         closeButton.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        torchButton.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        settingsButton.setVisibility(show ? View.INVISIBLE : View.VISIBLE);
     }
 
     private void setPreviewMode(boolean isInPreviewMode) {
@@ -188,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         // Show/hide close button
         showCloseButtonInActionBar(!isInPreviewMode);
 
-        // Communicate to AR scan fragment
+        // Communicate to scan fragment
         Bundle result = new Bundle();
         result.putBoolean(getString(R.string.key_bundle_is_in_preview_mode), isInPreviewMode);
         getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);

@@ -36,15 +36,16 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.material:material:1.6.0-alpha03'
 
+    // Volley
+    implementation 'com.android.volley:volley:1.2.1'
+
     // Camera preview
     implementation 'androidx.camera:camera-camera2:1.1.0-beta02'
     implementation 'androidx.camera:camera-lifecycle:1.1.0-beta02'
+    implementation 'androidx.camera:camera-view:1.0.0-alpha32'
 
     // Scrollbar implementation
     implementation 'com.github.turing-tech:MaterialScrollBar:13.3.4'
-
-    // ARCore (Google Play Services for AR) library.
-    implementation 'com.google.ar:core:1.29.0'
 
     // ML Kit: text and barcode recognition
     implementation 'com.google.android.gms:play-services-mlkit-text-recognition:18.0.0'

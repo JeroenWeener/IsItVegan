@@ -10,10 +10,10 @@
     tools:context=".activities.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/ar_scan_fragment"
+        android:id="@+id/scan_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.jwindustries.isitvegan.fragments.ARScanFragment" />
+        android:name="com.jwindustries.isitvegan.scanning.ScanFragment" />
 
     <!-- Darken top edge of the screen to make buttons and text visible -->
     <View
