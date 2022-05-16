@@ -30,17 +30,17 @@
             android:layout_height="wrap_content"
             app:singleLine="true"
         >
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chip_e_numbers"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_e_numbers"
-                android:textColor="@drawable/chip_text_inverted"
-                app:chipBackgroundColor="@drawable/chip_bg_e_numbers"
-                app:chipStrokeColor="@color/colorAccent"
-                app:chipStrokeWidth="1dp"
-            />
+<!--            <com.google.android.material.chip.Chip-->
+<!--                android:id="@+id/chip_e_numbers"-->
+<!--                style="@style/Widget.MaterialComponents.Chip.Choice"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/label_e_numbers"-->
+<!--                android:textColor="@drawable/chip_text_inverted"-->
+<!--                app:chipBackgroundColor="@drawable/chip_bg_e_numbers"-->
+<!--                app:chipStrokeColor="@color/colorAccent"-->
+<!--                app:chipStrokeWidth="1dp"-->
+<!--            />-->
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_vegan"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
