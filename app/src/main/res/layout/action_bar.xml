@@ -24,6 +24,7 @@
 
     <ImageButton
         android:id="@+id/action_bar_button_torch"
+        android:visibility="invisible"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
