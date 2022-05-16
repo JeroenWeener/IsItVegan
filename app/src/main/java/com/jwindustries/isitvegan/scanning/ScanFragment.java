@@ -128,6 +128,9 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
                 (requestKey, bundle) -> {
                     boolean isInPreviewMode = bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode));
                     imageAnalyzer.setEnabled(!isInPreviewMode);
+                    if (isInPreviewMode) {
+                        clearList();
+                    }
                 }
         );
 

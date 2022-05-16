@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -15,7 +14,6 @@ import android.widget.ImageButton;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.jwindustries.isitvegan.OnSwipeListener;
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
 
@@ -133,10 +131,12 @@ public class MainActivity extends AppCompatActivity {
             hazeView.setAlpha(intermediateAlpha);
         });
 
-        overlayAnimator = ValueAnimator.ofInt(cameraOverlay.getTop(), cameraOverlay.getMeasuredHeight());
+        int measuredHeight = cameraOverlay.getMeasuredHeight();
+        overlayAnimator = ValueAnimator.ofInt(cameraOverlay.getTop(), measuredHeight);
         overlayAnimator.addUpdateListener(valueAnimator -> {
             int intermediateY = (Integer) overlayAnimator.getAnimatedValue();
             cameraOverlay.setTop(intermediateY);
+            cameraOverlay.setVisibility(intermediateY == measuredHeight ? View.INVISIBLE : View.VISIBLE);
         });
 
         hazeAnimator.setDuration(ANIMATION_DURATION);
