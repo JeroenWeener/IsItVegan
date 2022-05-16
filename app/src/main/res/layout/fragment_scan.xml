@@ -66,12 +66,12 @@
             </RelativeLayout>
 
             <Button
+                android:id="@+id/clear_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:textColor="@color/colorAccent"
                 android:text="@string/button_clear"
-                android:onClick="clearList"
                 />
         </LinearLayout>
 

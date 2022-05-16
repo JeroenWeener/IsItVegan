@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -126,10 +127,12 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
                 this,
                 (requestKey, bundle) -> {
                     boolean isInPreviewMode = bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode));
-                    Log.d("TREST", String.valueOf(isInPreviewMode));
                     imageAnalyzer.setEnabled(!isInPreviewMode);
                 }
         );
+
+        Button clearButton = rootView.findViewById(R.id.clear_button);
+        clearButton.setOnClickListener((v) -> clearList());
 
         return rootView;
     }
@@ -287,7 +290,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
         );
     }
 
-    public void clearList(View view) {
+    public void clearList() {
         this.adapter.clearList();
         this.scanListContainer.showNext();
         this.requestedBarcodes.clear();
