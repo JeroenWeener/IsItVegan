@@ -130,6 +130,9 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
                     imageAnalyzer.setEnabled(!isInPreviewMode);
                     if (isInPreviewMode) {
                         clearList();
+                        if (scanListContainer.getCurrentView() == rootView.findViewById(R.id.inner_scan_list_container)) {
+                            scanListContainer.showNext();
+                        }
                     }
                 }
         );
