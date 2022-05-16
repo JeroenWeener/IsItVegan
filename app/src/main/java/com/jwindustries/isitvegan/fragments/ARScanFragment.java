@@ -1,11 +1,24 @@
 package com.jwindustries.isitvegan.fragments;
 
+/**
+ * Detecting vertical planes does not work for moving objects (show HelloAR)
+ * HelloAR allows you to tap spots to track, this seems to work reasonably well. Why does it not
+ * work for recognized text?
+ *
+ * Use old technique?
+ *
+ * Currently:
+ * - tracking middle of product with a single anchor
+ * - only update position if distance is within expected bounds
+ */
+
 import android.app.Activity;
 import android.graphics.Point;
 import android.media.Image;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -97,6 +110,7 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     private Shader labelShader;
 
     private final List<Anchor> anchors = new ArrayList<>();
+    private float[] previousTranslation;
 
     // Temporary matrix allocated here to reduce number of allocations for each frame.
     private final float[] modelMatrix = new float[16];
@@ -255,6 +269,13 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         virtualSceneFramebuffer.resize(width, height);
     }
 
+    private float distance(float[] a, float[] b) {
+        if (a == null || b == null) {
+            return 0;
+        }
+        return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]) + (a[2] - b[2]) * (a[2] - b[2]);
+    }
+
     @Override
     public void onDrawFrame(Render render) {
         // Texture names should only be set once on a GL thread unless they change. This is done during
@@ -354,12 +375,21 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
         // Visualize anchors created by touch.
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
 
-        if (anchors.size() == 4) {
+        if (anchors.size() >= 1) {
             if (camera.getTrackingState() == TrackingState.TRACKING) {
-                float[] pointA = anchors.get(0).getPose().getTranslation();
-                float[] pointB = anchors.get(1).getPose().getTranslation();
-                float[] pointC = anchors.get(2).getPose().getTranslation();
-                float[] pointD = anchors.get(3).getPose().getTranslation();
+                float[] point = anchors.get(0).getPose().getTranslation();
+
+                float distance = distance(previousTranslation, point);
+                Log.d("TREST4", String.valueOf(distance));
+                if (distance > 1e-6) {
+                    point = previousTranslation;
+                }
+                previousTranslation = point;
+
+                float[] pointA = new float[]{point[0] - .01f, point[1], point[2] - .01f};
+                float[] pointB = new float[]{point[0] + .01f, point[1], point[2] - .01f};
+                float[] pointC = new float[]{point[0] + .01f, point[1], point[2] + .01f};
+                float[] pointD = new float[]{point[0] - .01f, point[1], point[2] + .01f};
 
                 // 0: width
                 // 1: depth
@@ -379,11 +409,10 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     private void handleBoundingBox(Frame frame) {
         Point[] points = boundingBoxHelper.poll();
         if (points == null) {
-            anchors.clear();
             return;
         }
 
-        if (anchors.size() == 4) {
+        if (anchors.size() >= 1) {
             return;
         }
 
@@ -394,11 +423,15 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
             frame.transformCoordinates2d(Coordinates2d.IMAGE_PIXELS, cpuCoordinates, Coordinates2d.VIEW, viewCoordinates);
             List<HitResult> hits = frame.hitTestInstantPlacement(viewCoordinates[0], viewCoordinates[1], APPROXIMATE_DISTANCE_METERS);
             if (hits.size() > 0) {
+                Log.d("TREST", "Distance: " + hits.get(0).getDistance());
+                Log.d("TREST", "X: " + hits.get(0).getHitPose().getTranslation()[0]);
+                Log.d("TREST", "Y: " + hits.get(0).getHitPose().getTranslation()[1]);
+                Log.d("TREST", "Z: " + hits.get(0).getHitPose().getTranslation()[2]);
                 newAnchors.add(hits.get(0).createAnchor());
             }
         }
 
-        if (newAnchors.size() == 4) {
+        if (newAnchors.size() == 1) {
             anchors.addAll(newAnchors);
         }
     }
@@ -407,7 +440,9 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
     private void handleTap() {
         MotionEvent tap = tapHelper.poll();
         if (tap != null) {
+            anchors.forEach(Anchor::detach);
             anchors.clear();
+            previousTranslation = null;
         }
     }
 
@@ -460,7 +495,8 @@ public class ARScanFragment extends Fragment implements Render.Renderer {
                         Point topRight = new Point(imageHeight - topRightX, topRightY);
                         Point bottomRight = new Point(imageHeight - bottomRightX, bottomRightY);
                         Point bottomLeft = new Point(imageHeight - bottomLeftX, bottomLeftY);
-                        boundingBoxHelper.add(new Point[]{topLeft, topRight, bottomRight, bottomLeft});
+                        Point midPoint = new Point((topLeft.x + topRight.x + bottomRight.x + bottomLeft.x) / 4, (topLeft.y + topRight.y + bottomRight.y + bottomLeft.y) / 4);
+                        boundingBoxHelper.add(new Point[]{midPoint});
                     } else {
                         boundingBoxHelper.add(null);
                     }
