@@ -13,7 +13,6 @@ import android.widget.ImageButton;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;

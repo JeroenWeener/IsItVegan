@@ -6,11 +6,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -84,7 +85,6 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
     private RecyclerView recyclerView;
     private ViewSwitcher scanListContainer;
     private LinearLayoutManager layoutManager;
-    private Menu optionsMenu;
 
     private List<Ingredient> ingredientList;
 
@@ -151,28 +151,8 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
         this.barcodeRequestQueue.cancelAll(BARCODE_REQUEST_TAG);
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        this.getMenuInflater().inflate(R.menu.scan_actionbar_menu, menu);
-//        this.optionsMenu = menu;
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == android.R.id.home) {
-//            this.finishAfterTransition();
-//            return true;
-//        } else if (item.getItemId() == R.id.action_toggle_torch) {
-//            this.toggleTorch();
-//            return true;
-//        } else {
-//            return super.onOptionsItemSelected(item);
-//        }
-//    }
-
     /**
-     * Turn torch on/off and update flash icon in action bar
+     * Turn torch on/off
      * Show a toast to the user if there is no flash on the device
      */
     private void setTorchEnabled(boolean enabled) {
@@ -348,12 +328,23 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
             new Handler(Looper.getMainLooper()).postDelayed(() -> this.queuedMessages.remove(tag), 2000);
 
             Snackbar snackbar = Snackbar.make(hostActivity.findViewById(R.id.scan_root), message, Snackbar.LENGTH_SHORT);
+
+            // Compensate for translucent navigation bar, as otherwise the snackbar will be shown behind it
+            final FrameLayout snackBarView = (FrameLayout) snackbar.getView();
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackBarView.getChildAt(0).getLayoutParams();
+            params.setMargins(params.leftMargin,
+                    params.topMargin,
+                    params.rightMargin,
+                    params.bottomMargin + 80);
+            snackBarView.getChildAt(0).setLayoutParams(params);
+
             snackbar
                     .setAction(R.string.snackbar_action_dismiss, view -> {
                         snackbar.dismiss();
                         this.queuedMessages.remove(tag);
-                    })
-                    .show();
+                    });
+
+            snackbar.show();
         }
     }
 }
