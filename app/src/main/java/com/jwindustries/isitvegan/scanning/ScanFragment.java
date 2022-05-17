@@ -250,12 +250,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
             if (this.scanListContainer.getCurrentView().getId() != R.id.inner_scan_list_container) {
                 this.scanListContainer.showNext();
             }
-
-            // Maintain location at top of the list but do not jump there if the user is scrolling
-            int scrollPosition = this.layoutManager.findFirstVisibleItemPosition();
-            if (scrollPosition == 0) {
-                this.recyclerView.scrollToPosition(0);
-            }
+            this.recyclerView.scrollToPosition(0);
         }
     }
 
