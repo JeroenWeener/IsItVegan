@@ -50,7 +50,6 @@
     <string name="title_overview">Ingredients</string>
     <string name="button_tap_to_scan">Tap to scan</string>
     <string name="key_bundle_is_in_preview_mode" translatable="false">key_bundle_is_in_preview_mode</string>
-    <string name="key_bundle_is_torch_on" translatable="false">key_bundle_is_torch_on</string>
     <string name="key_fragment_result" translatable="false">key_fragment_result</string>
     <string name="label_vegan">Vegan</string>
     <string name="label_not_vegan">Not vegan</string>

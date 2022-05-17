@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private ValueAnimator overlayAnimator;
 
     private boolean isInPreviewMode = true;
-    private boolean isTorchOn = false;
 
     private String appLocale;
     private String ingredientsLocale;
@@ -112,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             closeButton.setOnClickListener(view -> stopScanning());
 
             torchButton = findViewById(R.id.action_bar_button_torch);
-            torchButton.setOnClickListener(view -> toggleTorch());
 
             settingsButton = findViewById(R.id.action_bar_button_settings);
             settingsButton.setOnClickListener(view -> startActivity(new Intent(this, SettingsActivity.class)));
@@ -179,17 +177,6 @@ public class MainActivity extends AppCompatActivity {
         // Communicate to scan fragment
         Bundle result = new Bundle();
         result.putBoolean(getString(R.string.key_bundle_is_in_preview_mode), isInPreviewMode);
-        getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);
-    }
-
-    private void toggleTorch() {
-        this.isTorchOn = !this.isTorchOn;
-
-        torchButton.setImageResource(this.isTorchOn ? R.drawable.flash_on_white : R.drawable.flash_off_white);
-
-        // Communicate to scan fragment
-        Bundle result = new Bundle();
-        result.putBoolean(getString(R.string.key_bundle_is_torch_on), isTorchOn);
         getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);
     }
 

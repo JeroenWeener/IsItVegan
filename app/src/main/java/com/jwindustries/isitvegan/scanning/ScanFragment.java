@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -22,6 +23,7 @@ import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
+import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
@@ -81,6 +83,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
      * UI
      */
     private View rootView;
+    private ImageButton torchIcon;
     private AdditiveIngredientAdapter adapter;
     private RecyclerView recyclerView;
     private ViewSwitcher scanListContainer;
@@ -93,6 +96,8 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
         this.hostActivity = getActivity();
 
         this.rootView = inflater.inflate(R.layout.fragment_scan, container, false);
+        this.torchIcon = hostActivity.findViewById(R.id.action_bar_button_torch);
+        torchIcon.setOnClickListener(v -> toggleTorch());
 
         this.adapter = new AdditiveIngredientAdapter(hostActivity);
 
@@ -125,10 +130,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
         getParentFragmentManager().setFragmentResultListener(
                 getString(R.string.key_fragment_result),
                 this,
-                (requestKey, bundle) -> {
-                    this.setTorchEnabled(bundle.getBoolean(getString(R.string.key_bundle_is_torch_on)));
-                    this.handlePreviewMode(bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode)));
-                }
+                (requestKey, bundle) -> this.handlePreviewMode(bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode)))
         );
 
         return rootView;
@@ -137,7 +139,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
     private void handlePreviewMode(boolean isInPreviewMode) {
         this.imageAnalyzer.setEnabled(!isInPreviewMode);
         if (isInPreviewMode) {
-            setTorchEnabled(false);
+            disableTorch();
             clearList();
             if (scanListContainer.getCurrentView() == this.rootView.findViewById(R.id.inner_scan_list_container)) {
                 scanListContainer.showNext();
@@ -152,17 +154,27 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
     }
 
     /**
-     * Turn torch on/off
+     * Turn torch on/off and toggle the action bar icon
      * Show a toast to the user if there is no flash on the device
      */
-    private void setTorchEnabled(boolean enabled) {
+    private void toggleTorch() {
         CameraInfo cameraInfo = this.camera.getCameraInfo();
         CameraControl cameraControl = this.camera.getCameraControl();
         if (cameraInfo.hasFlashUnit()) {
-            cameraControl.enableTorch(enabled);
+            Integer torchState = cameraInfo.getTorchState().getValue();
+            if (torchState != null) {
+                boolean torchEnabled = torchState == TorchState.ON;
+                cameraControl.enableTorch(!torchEnabled);
+                torchIcon.setImageResource(torchEnabled ? R.drawable.flash_off_white : R.drawable.flash_on_white);
+            }
         } else {
             Toast.makeText(hostActivity, R.string.error_no_flash_on_device, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void disableTorch() {
+        this.camera.getCameraControl().enableTorch(false);
+        torchIcon.setImageResource(R.drawable.flash_off_white);
     }
 
     @Override
