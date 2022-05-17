@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -22,19 +21,16 @@ import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
-import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
@@ -66,6 +62,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
     private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
     private final int PERMISSION_REQUEST_CODE = 10;
     private final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
+    private ImageAnalyzer imageAnalyzer;
     private ImageAnalysis imageAnalysis;
     private Camera camera;
 
@@ -82,6 +79,7 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
     /*
      * UI
      */
+    private View rootView;
     private AdditiveIngredientAdapter adapter;
     private RecyclerView recyclerView;
     private ViewSwitcher scanListContainer;
@@ -92,9 +90,9 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        hostActivity = getActivity();
+        this.hostActivity = getActivity();
 
-        View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
+        this.rootView = inflater.inflate(R.layout.fragment_scan, container, false);
 
         this.adapter = new AdditiveIngredientAdapter(hostActivity);
 
@@ -103,9 +101,11 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
         this.recyclerView.setLayoutManager(this.layoutManager);
         this.recyclerView.setAdapter(this.adapter);
         this.scanListContainer = rootView.findViewById(R.id.outer_scan_list_container);
+        Button clearButton = rootView.findViewById(R.id.clear_button);
+        clearButton.setOnClickListener((v) -> clearList());
 
         this.imageAnalysis = new ImageAnalysis.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
-        ImageAnalyzer imageAnalyzer = new ImageAnalyzer(this, this);
+        this.imageAnalyzer = new ImageAnalyzer(this, this);
         this.imageAnalysis.setAnalyzer(this.cameraExecutor, imageAnalyzer);
 
         this.ingredientList = IngredientList.getIngredientList(hostActivity);
@@ -126,21 +126,23 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
                 getString(R.string.key_fragment_result),
                 this,
                 (requestKey, bundle) -> {
-                    boolean isInPreviewMode = bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode));
-                    imageAnalyzer.setEnabled(!isInPreviewMode);
-                    if (isInPreviewMode) {
-                        clearList();
-                        if (scanListContainer.getCurrentView() == rootView.findViewById(R.id.inner_scan_list_container)) {
-                            scanListContainer.showNext();
-                        }
-                    }
+                    this.setTorchEnabled(bundle.getBoolean(getString(R.string.key_bundle_is_torch_on)));
+                    this.handlePreviewMode(bundle.getBoolean(getString(R.string.key_bundle_is_in_preview_mode)));
                 }
         );
 
-        Button clearButton = rootView.findViewById(R.id.clear_button);
-        clearButton.setOnClickListener((v) -> clearList());
-
         return rootView;
+    }
+
+    private void handlePreviewMode(boolean isInPreviewMode) {
+        this.imageAnalyzer.setEnabled(!isInPreviewMode);
+        if (isInPreviewMode) {
+            setTorchEnabled(false);
+            clearList();
+            if (scanListContainer.getCurrentView() == this.rootView.findViewById(R.id.inner_scan_list_container)) {
+                scanListContainer.showNext();
+            }
+        }
     }
 
     @Override
@@ -173,20 +175,11 @@ public class ScanFragment extends Fragment implements BarcodeFoundListener, Text
      * Turn torch on/off and update flash icon in action bar
      * Show a toast to the user if there is no flash on the device
      */
-    private void toggleTorch() {
+    private void setTorchEnabled(boolean enabled) {
         CameraInfo cameraInfo = this.camera.getCameraInfo();
         CameraControl cameraControl = this.camera.getCameraControl();
         if (cameraInfo.hasFlashUnit()) {
-            LiveData<Integer> torchState = cameraInfo.getTorchState();
-            if (torchState.getValue() != null) {
-                if (torchState.getValue() == TorchState.OFF) {
-                    cameraControl.enableTorch(true);
-                    this.optionsMenu.getItem(0).setIcon(ContextCompat.getDrawable(hostActivity, R.drawable.flash_on_white));
-                } else {
-                    cameraControl.enableTorch(false);
-                    this.optionsMenu.getItem(0).setIcon(ContextCompat.getDrawable(hostActivity, R.drawable.flash_off_white));
-                }
-            }
+            cameraControl.enableTorch(enabled);
         } else {
             Toast.makeText(hostActivity, R.string.error_no_flash_on_device, Toast.LENGTH_SHORT).show();
         }

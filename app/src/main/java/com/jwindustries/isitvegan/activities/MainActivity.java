@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.jwindustries.isitvegan.R;
 import com.jwindustries.isitvegan.Utils;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private ValueAnimator overlayAnimator;
 
     private boolean isInPreviewMode = true;
+    private boolean isTorchOn = false;
 
     private String appLocale;
     private String ingredientsLocale;
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             closeButton.setOnClickListener(view -> stopScanning());
 
             torchButton = findViewById(R.id.action_bar_button_torch);
-            // TODO: torchButton.setOnClickListener();
+            torchButton.setOnClickListener(view -> toggleTorch());
 
             settingsButton = findViewById(R.id.action_bar_button_settings);
             settingsButton.setOnClickListener(view -> startActivity(new Intent(this, SettingsActivity.class)));
@@ -163,21 +165,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void showCloseButtonInActionBar(boolean show) {
-        closeButton.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
-        torchButton.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
-        settingsButton.setVisibility(show ? View.INVISIBLE : View.VISIBLE);
+    public void updateActionButtons(boolean isInPreviewMode) {
+        closeButton.setVisibility(isInPreviewMode ? View.INVISIBLE : View.VISIBLE);
+        torchButton.setVisibility(isInPreviewMode ? View.INVISIBLE : View.VISIBLE);
+        settingsButton.setVisibility(isInPreviewMode ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void setPreviewMode(boolean isInPreviewMode) {
         this.isInPreviewMode = isInPreviewMode;
 
         // Show/hide close button
-        showCloseButtonInActionBar(!isInPreviewMode);
+        updateActionButtons(isInPreviewMode);
 
         // Communicate to scan fragment
         Bundle result = new Bundle();
         result.putBoolean(getString(R.string.key_bundle_is_in_preview_mode), isInPreviewMode);
+        getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);
+    }
+
+    private void toggleTorch() {
+        this.isTorchOn = !this.isTorchOn;
+
+        torchButton.setImageResource(this.isTorchOn ? R.drawable.flash_on_white : R.drawable.flash_off_white);
+
+        // Communicate to scan fragment
+        Bundle result = new Bundle();
+        result.putBoolean(getString(R.string.key_bundle_is_torch_on), isTorchOn);
         getSupportFragmentManager().setFragmentResult(getString(R.string.key_fragment_result), result);
     }
 

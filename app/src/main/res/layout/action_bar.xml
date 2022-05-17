@@ -29,7 +29,7 @@
         android:layout_height="32dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/flash_on_white" />
+        android:src="@drawable/flash_off_white" />
 
     <ImageButton
         android:id="@+id/action_bar_button_settings"
